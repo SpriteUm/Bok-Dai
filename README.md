@@ -17,7 +17,7 @@ Project นี้ช่วยให้องค์กรสามารถ **จ
 <pre>
 # Clone repository
 git clone <repository-url>
-cd BokDai
+cd Bok-Dai
 
 # Create virtual environment
 python -m venv venv
@@ -38,6 +38,7 @@ npx tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --watch
 </pre>
 **Setup Environment Variables**
 สร้างไฟล์ .env แล้วเพิ่มค่า config
+
 **Run Flask App**
 <pre>flask run</pre>
 
