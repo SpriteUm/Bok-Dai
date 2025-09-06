@@ -16,7 +16,7 @@ Project นี้ช่วยให้องค์กรสามารถ **จ
 **Clone repository and Setup Python Environment**
 <pre>
 # Clone repository
-git clone <repository-url>
+git clone (repository-url)
 cd Bok-Dai
 
 # Create virtual environment
