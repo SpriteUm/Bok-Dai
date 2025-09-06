@@ -1,11 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>Tailwind Test</title>
-  <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
+  <title>Dashboard Example</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-green-500 text-white text-center ">
-  <h1 class="text-3xl font-bold">แม่น้องปลื้ม</h1>
-</body>
-</html>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Layout -->
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-green-700 text-white flex flex-col p-4">
+      <!-- Logo -->
+      <div class="bg-green-600 p-4 rounded-xl text-center mb-6 shadow-md">
+        <h1 class="text-3xl font-bold leading-tight">
+          <span class="block">BOK</span>
+          <span class="block text-green-300">DAI</span>
+        </h1>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex flex-col space-y-2">
+        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">Dashboard</a>
+        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">รายงานภาพรวม</a>
+        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">สถานะปัญหาล่าสุด</a>
+        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">รายงานปัญหา</a>
+      </nav>
+
+      <!-- Bottom Menu -->
+      <div class="mt-auto space-y-2">
+        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">Settings</a>
+        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">โปรไฟล์</a>
+        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">Logout</a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 space-y-6">
+      <h2 class="text-2xl font-bold">หน้าหลัก</h2>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white p-4 rounded-xl shadow-md">
+          <h3 class="font-semibold text-gray-700">รายงานทั้งหมด</h3>
+          <p class="text-2xl font-bold text-green-600">47 เคส</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow-md">
+          <h3 class="font-semibold text-gray-700">รอดำเนินการ</h3>
+          <p class="text-2xl font-bold text-yellow-600">5 เคส</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow-md">
+          <h3 class="font-semibold text-gray-700">สำเร็จแล้ว</h3>
+          <p class="text-2xl font-bold text-green-500">32 เคส</p>
+        </div>
+      </div>
+
+      <!-- Issues Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- ปัญหาล่าสุด -->
+        <div class="bg-white p-4 rounded-xl shadow-md">
+          <h3 class="font-semibold text-gray-700 mb-2">ปัญหาล่าสุด</h3>
+          <ul class="space-y-2">
+            <li class="p-2 border rounded">🔥 ไฟฟ้าดับ เขต A</li>
+            <li class="p-2 border rounded">💧 น้ำรั่ว อาคาร B</li>
+            <li class="p-2 border rounded">⚡ ระบบล่ม ช่วงเช้า</li>
+          </ul>
+        </div>
+
+        <!-- ปัญหาที่พบรายเดือน (แทน Chart ด้วยแท่งสี) -->
+        <div class="bg-white p-4 rounded-xl shadow-md">
+          <h3 class="font-semibold text-gray-700 mb-2">ปัญหาที่พบรายเดือน</h3>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <span class="w-20">ม.ค.</span>
+              <div class="bg-green-500 h-4 ro
