@@ -34,7 +34,7 @@ pip install -r requirements.txt
 npm install
 
 # Build TailwindCSS
-npx tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --watch
+npm run dev
 </pre>
 **Setup Environment Variables**
 สร้างไฟล์ .env แล้วเพิ่มค่า config
