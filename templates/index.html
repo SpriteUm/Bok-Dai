@@ -1,77 +1,147 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard Example</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Scroll Blur Showcase</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+      height: 100vh;
+    }
+
+    /* พื้นหลังเบลอ */
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .background img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.1);
+      transition: filter 0.3s ease;
+    }
+
+    /* Taskbar */
+    .taskbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 90px;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .taskbar button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.3em;
+      cursor: pointer;
+      transition: transform 0.3s, color 0.3s;
+    }
+
+    .taskbar button:hover {
+      transform: scale(1.1);
+      color: #00bfff;
+    }
+
+    /* Content */
+    .content {
+      margin-top: 180px; /* เว้นจาก Taskbar มากขึ้น */
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 1000px;
+      width: 95%;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .spacer {
+      height: 300px;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body>
 
-  <!-- Layout -->
-  <div class="flex min-h-screen">
+  <!-- พื้นหลังเบลอ -->
+  <div class="background">
+    <img id="bg-image" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb" alt="background">
+  </div>
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-green-700 text-white flex flex-col p-4">
-      <!-- Logo -->
-      <div class="bg-green-600 p-4 rounded-xl text-center mb-6 shadow-md">
-        <h1 class="text-3xl font-bold leading-tight">
-          <span class="block">BOK</span>
-          <span class="block text-green-300">DAI</span>
-        </h1>
-      </div>
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <button>Home</button>
+    <button>About</button>
+    <button>Services</button>
+    <button>Contact</button>
+  </div>
 
-      <!-- Navigation -->
-      <nav class="flex flex-col space-y-2">
-        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">Dashboard</a>
-        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">รายงานภาพรวม</a>
-        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">สถานะปัญหาล่าสุด</a>
-        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">รายงานปัญหา</a>
-      </nav>
+  <div class="spacer"></div> <!-- ช่องว่างตรงกลาง -->
 
-      <!-- Bottom Menu -->
-      <div class="mt-auto space-y-2">
-        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">Settings</a>
-        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">โปรไฟล์</a>
-        <a href="#" class="px-3 py-2 rounded hover:bg-green-600">Logout</a>
-      </div>
-    </aside>
+  <!-- เนื้อหา -->
+  <div class="content">
+    <div class="card">
+      <h2>Welcome</h2>
+      <p>This is a modern layout with scroll-based blur and floating content blocks.</p>
+    </div>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-6 space-y-6">
-      <h2 class="text-2xl font-bold">หน้าหลัก</h2>
+    <div class="card">
+      <h2>Our Mission</h2>
+      <p>We aim to create immersive web experiences that blend design and interactivity.</p>
+    </div>
 
-      <!-- Summary Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white p-4 rounded-xl shadow-md">
-          <h3 class="font-semibold text-gray-700">รายงานทั้งหมด</h3>
-          <p class="text-2xl font-bold text-green-600">47 เคส</p>
-        </div>
-        <div class="bg-white p-4 rounded-xl shadow-md">
-          <h3 class="font-semibold text-gray-700">รอดำเนินการ</h3>
-          <p class="text-2xl font-bold text-yellow-600">5 เคส</p>
-        </div>
-        <div class="bg-white p-4 rounded-xl shadow-md">
-          <h3 class="font-semibold text-gray-700">สำเร็จแล้ว</h3>
-          <p class="text-2xl font-bold text-green-500">32 เคส</p>
-        </div>
-      </div>
+    <div class="card">
+      <h2>Gallery</h2>
+      <p>Enjoy the visual showcase behind the scenes. Scroll to reveal more depth.</p>
+    </div>
 
-      <!-- Issues Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- ปัญหาล่าสุด -->
-        <div class="bg-white p-4 rounded-xl shadow-md">
-          <h3 class="font-semibold text-gray-700 mb-2">ปัญหาล่าสุด</h3>
-          <ul class="space-y-2">
-            <li class="p-2 border rounded">🔥 ไฟฟ้าดับ เขต A</li>
-            <li class="p-2 border rounded">💧 น้ำรั่ว อาคาร B</li>
-            <li class="p-2 border rounded">⚡ ระบบล่ม ช่วงเช้า</li>
-          </ul>
-        </div>
+    <div class="card">
+      <h2>Contact Us</h2>
+      <p>Reach out anytime. We're here to help and collaborate with you.</p>
+    </div>
+  </div>
 
-        <!-- ปัญหาที่พบรายเดือน (แทน Chart ด้วยแท่งสี) -->
-        <div class="bg-white p-4 rounded-xl shadow-md">
-          <h3 class="font-semibold text-gray-700 mb-2">ปัญหาที่พบรายเดือน</h3>
-          <div class="space-y-2">
-            <div class="flex items-center">
-              <span class="w-20">ม.ค.</span>
-              <div class="bg-green-500 h-4 ro
+  <!-- JavaScript: scroll blur -->
+  <script>
+    const bg = document.getElementById('bg-image');
+    window.addEventListener('scroll', () => {
+      const blurLevel = Math.min(window.scrollY / 100, 10); // จำกัด blur สูงสุดที่ 10px
+      bg.style.filter = `blur(${blurLevel}px)`;
+    });
+  </script>
+
+</body>
+</html>
