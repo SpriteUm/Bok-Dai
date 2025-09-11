@@ -1,11 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Tailwind Test</title>
-  <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOK DAI - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .sidebar {
+            background-image: linear-gradient(to bottom, #A9D6A9, #BBDDBB);
+        }
+        .main-content {
+            background-color: #F0FFF0;
+        }
+    </style>
 </head>
-<body class="bg-purple-500 text-white text-center ">
-  <h1 class="text-3xl font-bold">Tailwind CSS ทำงานแล้ว!</h1>
+<body class="font-sans text-gray-800">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <div class="w-64 flex-shrink-0 relative">
+            <div class="sidebar h-full flex flex-col items-center pt-8">
+                <div class="text-2xl font-bold mb-8">BOK DAI</div>
+                <nav class="w-full px-4 space-y-2">
+                    <a href="#" class="flex items-center p-3 rounded-xl bg-white bg-opacity-70 font-semibold text-gray-800 shadow">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
+                        <i class="fas fa-chart-bar mr-3"></i>
+                        รายงานสถานะ
+                    </a>
+                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
+                        <i class="fas fa-clipboard-list mr-3"></i>
+                        สถานะที่อนุมัติแล้ว
+                    </a>
+                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
+                        <i class="fas fa-exclamation-triangle mr-3"></i>
+                        รายการปัญหา
+                    </a>
+                </nav>
+                <div class="mt-auto w-full px-4 py-8 space-y-2">
+                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
+                        <i class="fas fa-cog mr-3"></i>
+                        Settings
+                    </a>
+                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
+                        <i class="fas fa-user-circle mr-3"></i>
+                        โปรไฟล์
+                    </a>
+                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
+                        <i class="fas fa-sign-out-alt mr-3"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto main-content p-8">
+            <header class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold">หน้าหลัก</h1>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm">หน้าหลัก</span>
+                </div>
+            </header>
+
+            <div class="bg-white rounded-2xl shadow p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4">ภาพรวมสถานะ</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div class="flex items-center p-4 rounded-xl bg-[#CCF4C7] shadow-md">
+                        <i class="fas fa-file-alt text-2xl mr-4 text-[#4F8B4F]"></i>
+                        <div>
+                            <p class="text-sm font-medium">รายงานทั้งหมด</p>
+                            <p class="text-lg font-bold">42 คน</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 rounded-xl bg-[#FFFACD] shadow-md">
+                        <i class="fas fa-clock text-2xl mr-4 text-[#D4A135]"></i>
+                        <div>
+                            <p class="text-sm font-medium">รอรับเรื่อง</p>
+                            <p class="text-lg font-bold">5 คน</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 rounded-xl bg-[#A1C9A1] shadow-md">
+                        <i class="fas fa-tasks text-2xl mr-4 text-[#4F8B4F]"></i>
+                        <div>
+                            <p class="text-sm font-medium">กำลังดำเนินการ</p>
+                            <p class="text-lg font-bold">5 รายการ</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 rounded-xl bg-[#D4EDDA] shadow-md">
+                        <i class="fas fa-clipboard-check text-2xl mr-4 text-[#28A745]"></i>
+                        <div>
+                            <p class="text-sm font-medium">สำเร็จแล้ว</p>
+                            <p class="text-lg font-bold">7 รายการ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-2xl shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4">ปัญหา</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-start p-4 bg-[#F9FCF9] rounded-xl shadow-inner">
+                            <i class="fas fa-user-circle text-2xl mr-4 text-gray-500"></i>
+                            <div>
+                                <p class="font-semibold">ขยะล้นมากตรงหน้าตึก</p>
+                                <p class="text-sm text-gray-600">คลิกเพื่อดูรายละเอียด</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start p-4 bg-[#F9FCF9] rounded-xl shadow-inner">
+                            <i class="fas fa-user-circle text-2xl mr-4 text-gray-500"></i>
+                            <div>
+                                <p class="font-semibold">ท่อน้ำห้องน้ำชายชำรุด</p>
+                                <p class="text-sm text-gray-600">คลิกเพื่อดูรายละเอียด</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4">ปัญหาที่พบโดยเฉลี่ย</h2>
+                    <div class="grid grid-cols-2 gap-4 h-64">
+                        <div class="flex flex-col justify-end items-center">
+                            <div class="w-full bg-[#FFDA7B] rounded-t-lg" style="height: 40%"></div>
+                            <div class="text-center mt-2 text-sm">10 รายการ</div>
+                            <div class="text-xs text-gray-600">น้ำเน่า, ท่อน้ำตัน</div>
+                        </div>
+                        <div class="flex flex-col justify-end items-center">
+                            <div class="w-full bg-[#6CC644] rounded-t-lg" style="height: 80%"></div>
+                            <div class="text-center mt-2 text-sm">20 รายการ</div>
+                            <div class="text-xs text-gray-600"> ท่อน้ำทิ้ง</div>
+                        </div>
+                        <div class="flex flex-col justify-end items-center">
+                            <div class="w-full bg-[#3B82F6] rounded-t-lg" style="height: 48%"></div>
+                            <div class="text-center mt-2 text-sm">12 รายการ</div>
+                            <div class="text-xs text-gray-600">ของเสีย, ของเน่าเสียเหม็น</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 </body>
 </html>
