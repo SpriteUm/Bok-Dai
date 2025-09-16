@@ -45,13 +45,24 @@
       background-color: rgba(0, 0, 0, 0.6);
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 50px;
+      justify-content: space-between;
+      padding: 0 30px;
       z-index: 1000;
       backdrop-filter: blur(10px);
     }
 
-    .taskbar button {
+    .logo img {
+      height: 40px;
+      width: auto;
+      display: block;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 40px;
+    }
+
+    .nav-buttons button {
       background: none;
       border: none;
       color: white;
@@ -60,14 +71,39 @@
       transition: transform 0.3s, color 0.3s;
     }
 
-    .taskbar button:hover {
+    .nav-buttons button:hover {
       transform: scale(1.1);
       color: #00bfff;
     }
 
+    .auth-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .auth-buttons .register {
+      background-color: white;
+      color: #2c3e50;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .auth-buttons .login {
+      background-color: transparent;
+      color: white;
+      border: 2px solid white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     /* Content */
     .content {
-      margin-top: 180px; /* เว้นจาก Taskbar มากขึ้น */
+      margin-top: 180px;
       padding: 40px 20px;
       display: flex;
       flex-direction: column;
@@ -103,13 +139,24 @@
 
   <!-- Taskbar -->
   <div class="taskbar">
-    <button>Home</button>
-    <button>About</button>
-    <button>Services</button>
-    <button>Contact</button>
+    <div class="logo">
+       <img src="templates/Image/530463904_24183026261358367_8288018239024381870_n.png" alt="Logo">
+    </div>
+
+    <div class="nav-buttons">
+      <button>Home</button>
+      <button>About</button>
+      <button>Services</button>
+      <button>Contact</button>
+    </div>
+
+    <div class="auth-buttons">
+      <button class="register">Register</button>
+      <button class="login">Login</button>
+    </div>
   </div>
 
-  <div class="spacer"></div> <!-- ช่องว่างตรงกลาง -->
+  <div class="spacer"></div>
 
   <!-- เนื้อหา -->
   <div class="content">
@@ -138,7 +185,7 @@
   <script>
     const bg = document.getElementById('bg-image');
     window.addEventListener('scroll', () => {
-      const blurLevel = Math.min(window.scrollY / 100, 10); // จำกัด blur สูงสุดที่ 10px
+      const blurLevel = Math.min(window.scrollY / 100, 10);
       bg.style.filter = `blur(${blurLevel}px)`;
     });
   </script>
