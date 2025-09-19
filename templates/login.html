@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Tailwind Test</title>
+    <title>login</title>
     <link
       href="{{ url_for('static', filename='dist/output.css') }}"
       rel="stylesheet"
@@ -22,7 +22,7 @@
         </div>
         <form onSubmit="event.preventDefault()" class="space-y-5">
           <div>
-            <label class="font-medium">  </label>
+            <label class="font-medium">Email</label>
             <input
               type="email"
               required
@@ -62,18 +62,7 @@
             Sign in
           </button>
         </form>
-        <button
-          class="w-full flex items-center justify-center gap-x-3 py-2.5 border rounded-lg text-sm font-medium hover:bg-gray-50 duration-150 active:bg-gray-100"
-        >
-          <!-- SVG for Google Sign In -->
-          <img
-            src="https://raw.githubusercontent.com/sidiDev/remote-assets/7cd06bf1d8859c578c2efbfda2c68bd6bedc66d8/google-icon.svg"
-            alt="Google"
-            class="w-5 h-5"
-          />
-          <!-- Comment: Google Icon SVG here -->
-          Continue with Google
-        </button>
+        
         <p class="text-center">
           Don't have an account?
           <a
