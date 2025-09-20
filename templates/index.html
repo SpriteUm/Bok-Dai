@@ -2,193 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Scroll Blur Showcase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOK DAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
-      height: 100vh;
+    .animate-fadeInUp {
+      animation: fadeInUp 0.8s ease-out forwards;
     }
 
-    /* พื้นหลังเบลอ */
-    .background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      overflow: hidden;
-    }
-
-    .background img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scale(1.1);
-      transition: filter 0.3s ease;
-    }
-
-    /* Taskbar */
-    .taskbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 90px;
-      background-color: rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 30px;
-      z-index: 1000;
-      backdrop-filter: blur(10px);
-    }
-
-    .logo img {
-      height: 40px;
-      width: auto;
-      display: block;
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 40px;
-    }
-
-    .nav-buttons button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.3em;
-      cursor: pointer;
-      transition: transform 0.3s, color 0.3s;
-    }
-
-    .nav-buttons button:hover {
-      transform: scale(1.1);
-      color: #00bfff;
-    }
-
-    .auth-buttons {
-      display: flex;
-      gap: 15px;
-    }
-
-    .auth-buttons .register {
-      background-color: white;
-      color: #2c3e50;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .auth-buttons .login {
-      background-color: transparent;
-      color: white;
-      border: 2px solid white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    /* Content */
-    .content {
-      margin-top: 180px;
-      padding: 40px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 60px;
-      align-items: center;
-    }
-
-    .card {
-      background-color: rgba(255, 255, 255, 0.9);
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      max-width: 1000px;
-      width: 95%;
-      transition: transform 0.3s;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-    }
-
-    .spacer {
-      height: 300px;
+    /* Hero background image */
+    .hero-bg {
+      background-image: url("templates/Image/karu.jpg");
+      background-size: cover;
+      background-position: center;
     }
   </style>
 </head>
-<body>
+<body class="bg-gray-50">
 
-  <!-- พื้นหลังเบลอ -->
-  <div class="background">
-    <img id="bg-image" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb" alt="background">
-  </div>
-
-  <!-- Taskbar -->
-  <div class="taskbar">
-    <div class="logo">
-       <img src="templates/Image/530463904_24183026261358367_8288018239024381870_n.png" alt="Logo">
+  <!-- Navigation -->
+  <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 flex items-center">
+            <i data-lucide="code" class="w-8 h-8 text-indigo-600 mr-2"></i>
+            <h1 class="text-2xl font-bold text-indigo-600">BOKDAI</h1>
+          </div>
+        </div>
+        <div class="hidden md:block">
+          <div class="ml-10 flex items-baseline space-x-8">
+            <a href="#home" class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium flex items-center">
+              <i data-lucide="home" class="w-4 h-4 mr-1"></i>Home
+            </a>
+            <a href="#about" class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium flex items-center">
+              <i data-lucide="users" class="w-4 h-4 mr-1"></i>About
+            </a>
+            <a href="#services" class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium flex items-center">
+              <i data-lucide="briefcase" class="w-4 h-4 mr-1"></i>Services
+            </a>
+            <a href="#contact" class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium flex items-center">
+              <i data-lucide="mail" class="w-4 h-4 mr-1"></i>Contact
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
+  </nav>
 
-    <div class="nav-buttons">
-      <button>Home</button>
-      <button>About</button>
-      <button>Services</button>
-      <button>Contact</button>
+  <!-- Hero Section -->
+  <section id="home" class="relative min-h-screen flex items-center justify-center hero-bg">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="relative z-10 text-center px-4 sm:px-6 lg:px-8">
+      <div class="animate-fadeInUp">
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold text-white mb-6">
+          Welcome to
+          <span class="block bg-gradient-to-r from-indigo-200 to-Green-200 bg-clip-text text-transparent">
+            BOKDAI
+          </span>
+        </h1>
+        <p class="text-xl sm:text-2xl text-indigo-100 mb-8 max-w-3xl mx-auto">
+          Transform your business with cutting-edge solutions and professional expertise that drives real results.
+        </p>
+        <!-- ปุ่ม Get Started ตรงกลาง -->
+        <div class="flex justify-center">
+          <button class="bg-white text-indigo-600 px-8 py-4 rounded-lg font-semibold hover:bg-indigo-50 transform hover:scale-105 transition-all duration-300 shadow-lg flex items-center">
+            <i data-lucide="Rocket" class="w-5 h-5 mr-2"></i>
+            Get Report
+          </button>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="auth-buttons">
-      <button class="register">Register</button>
-      <button class="login">Login</button>
+  <!-- About Section -->
+  <section id="about" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+      <h2 class="text-4xl font-bold text-gray-800 mb-6">About Me</h2>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+        I’m a passionate developer and digital solutions expert with experience in modern web technologies,
+        business automation, and design. I help individuals and businesses grow by building tools that make
+        processes smoother and faster.
+      </p>
     </div>
-  </div>
+  </section>
 
-  <div class="spacer"></div>
-
-  <!-- เนื้อหา -->
-  <div class="content">
-    <div class="card">
-      <h2>Welcome</h2>
-      <p>This is a modern layout with scroll-based blur and floating content blocks.</p>
+  <!-- Services Section -->
+  <section id="services" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+      <h2 class="text-4xl font-bold text-gray-800 mb-12">Services</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="p-6 bg-white rounded-xl shadow hover:shadow-lg transition">
+          <i data-lucide="monitor" class="w-10 h-10 text-indigo-600 mx-auto mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2">Web Development</h3>
+          <p class="text-gray-600">Responsive, fast, and modern websites tailored for your business needs.</p>
+        </div>
+        <div class="p-6 bg-white rounded-xl shadow hover:shadow-lg transition">
+          <i data-lucide="cpu" class="w-10 h-10 text-indigo-600 mx-auto mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2">Automation</h3>
+          <p class="text-gray-600">Custom scripts and tools to automate repetitive business tasks.</p>
+        </div>
+        <div class="p-6 bg-white rounded-xl shadow hover:shadow-lg transition">
+          <i data-lucide="pen-tool" class="w-10 h-10 text-indigo-600 mx-auto mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2">UI/UX Design</h3>
+          <p class="text-gray-600">Beautiful and user-friendly designs that improve engagement.</p>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="card">
-      <h2>Our Mission</h2>
-      <p>We aim to create immersive web experiences that blend design and interactivity.</p>
+  <!-- Contact Section -->
+  <section id="contact" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+      <h2 class="text-4xl font-bold text-gray-800 mb-6">Contact Me</h2>
+      <p class="text-lg text-gray-600 mb-8">Have a project in mind? Let’s talk!</p>
+      <form class="max-w-xl mx-auto space-y-4">
+        <input type="text" placeholder="Your Name" class="w-full p-4 border rounded-lg">
+        <input type="email" placeholder="Your Email" class="w-full p-4 border rounded-lg">
+        <textarea placeholder="Your Message" class="w-full p-4 border rounded-lg h-32"></textarea>
+        <button class="bg-indigo-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-indigo-700 transition">Send Message</button>
+      </form>
     </div>
+  </section>
 
-    <div class="card">
-      <h2>Gallery</h2>
-      <p>Enjoy the visual showcase behind the scenes. Scroll to reveal more depth.</p>
-    </div>
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-6 text-center">
+    <p>&copy; 2025 IrahozaDaniel. All rights reserved.</p>
+  </footer>
 
-    <div class="card">
-      <h2>Contact Us</h2>
-      <p>Reach out anytime. We're here to help and collaborate with you.</p>
-    </div>
-  </div>
-
-  <!-- JavaScript: scroll blur -->
   <script>
-    const bg = document.getElementById('bg-image');
-    window.addEventListener('scroll', () => {
-      const blurLevel = Math.min(window.scrollY / 100, 10);
-      bg.style.filter = `blur(${blurLevel}px)`;
-    });
+    lucide.createIcons();
   </script>
-
 </body>
 </html>
