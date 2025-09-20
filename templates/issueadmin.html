@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Issue Detail | BOK DAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#E6E8E5] text-[#2F4F2F]">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-60 bg-[#5C7F5C] text-white flex flex-col">
+      <div class="px-4 py-4 border-b border-[#8FAF8F]">
+        <h1 class="text-lg font-bold">BOK DAI</h1>
+        <p class="text-xs text-[#C2D3C2]">ระบบผู้ดูแล</p>
+      </div>
+      <nav class="flex-1 px-4 py-4 space-y-2 text-sm">
+        <a href="#" class="block px-2 py-1 rounded bg-[#C2D3C2] text-[#2F4F2F] font-medium">หน้าหลัก</a>
+        <a href="#" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">แผนที่</a>
+        <a href="#" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">กรอบปัญหา</a>
+        <a href="#" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">อัปเดตสถานะ</a>
+        <a href="#" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">รายงาน</a>
+        <a href="#" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">ออกจากระบบ</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+      <!-- Page Header -->
+      <header class="mb-6">
+        <h2 class="text-2xl font-semibold">รายละเอียดปัญหา #1234</h2>
+        <p class="text-xs text-[#8FAF8F]">ถนนพังเป็นหลุมบ่อ — แจ้งเมื่อ 2025-09-20</p>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- LEFT COLUMN: Issue Details -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Issue Info Card -->
+          <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+            <h3 class="text-lg font-medium mb-2">ข้อมูลเบื้องต้น</h3>
+            <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              <dt class="font-medium">ผู้แจ้ง</dt><dd>นายสมชาย ใจดี</dd>
+              <dt class="font-medium">เบอร์ติดต่อ</dt><dd>081-234-5678</dd>
+              <dt class="font-medium">พิกัด (lat, lng)</dt><dd>13.9876, 100.1234</dd>
+              <dt class="font-medium">หมวดหมู่</dt><dd>ถนน</dd>
+              <dt class="font-medium">ความเร่งด่วน</dt><dd class="text-red-600">เร่งด่วนมาก</dd>
+              <dt class="font-medium">รายละเอียด</dt>
+              <dd class="col-span-2">
+                ถนนบริเวณหน้าบ้านพักครูพังเป็นหลุมบ่อลึก 30 ซม. น้ำขังทุกครั้งหลังฝนตก 
+              </dd>
+            </dl>
+          </div>
+
+          <!-- Photo Gallery -->
+          <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+            <h3 class="text-lg font-medium mb-2">รูปภาพประกอบ</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <img src="https://via.placeholder.com/300x200" alt="ภาพปัญหา 1" class="rounded-md" />
+              <img src="https://via.placeholder.com/300x200" alt="ภาพปัญหา 2" class="rounded-md" />
+            </div>
+          </div>
+
+          <!-- Map & Location -->
+          <div class="bg-white border border-[#8FAF8F] rounded-lg overflow-hidden shadow">
+            <h3 class="text-lg font-medium p-4">แผนที่สถานที่แจ้ง</h3>
+            <iframe
+              class="w-full h-64"
+              src="https://www.google.com/maps?q=13.9876,100.1234&output=embed"
+              allowfullscreen=""
+              loading="lazy">
+            </iframe>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Status Update & Timeline -->
+        <div class="space-y-6">
+          <!-- Status Update Form -->
+          <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+            <h3 class="text-lg font-medium mb-3">อัปเดตสถานะ</h3>
+            <form class="space-y-4 text-sm">
+              <div>
+                <label class="block mb-1">สถานะปัจจุบัน</label>
+                <select class="w-full border rounded p-2 text-sm">
+                  <option>รอรับเรื่อง</option>
+                  <option selected>กำลังดำเนินการ</option>
+                  <option>สำเร็จแล้ว</option>
+                  <option>ยกเลิก</option>
+                </select>
+              </div>
+              <div>
+                <label class="block mb-1">หมายเหตุ</label>
+                <textarea rows="3" class="w-full border rounded p-2 text-sm" placeholder="ระบุหมายเหตุ"></textarea>
+              </div>
+              <div>
+                <label class="block mb-1">แนบรูปภาพ (ถ้ามี)</label>
+                <input type="file" class="w-full text-sm" />
+              </div>
+              <button
+                type="submit"
+                class="w-full bg-[#5C7F5C] text-white py-2 rounded-lg hover:bg-[#4e6e4e] transition">
+                บันทึกการอัปเดต
+              </button>
+            </form>
+          </div>
+
+          <!-- Timeline -->
+          <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+            <h3 class="text-lg font-medium mb-3">ประวัติการเปลี่ยนสถานะ</h3>
+            <ul class="space-y-3 text-sm">
+              <li>
+                <div class="flex justify-between">
+                  <span>2025-09-20 10:15</span>
+                  <span class="text-yellow-600">กำลังดำเนินการ</span>
+                </div>
+                <p class="pl-4">เจ้าหน้าที่รับเรื่องและกำลังดำเนินการแก้ไข</p>
+              </li>
+              <li>
+                <div class="flex justify-between">
+                  <span>2025-09-19 15:02</span>
+                  <span class="text-red-600">รอรับเรื่อง</span>
+                </div>
+                <p class="pl-4">ตรวจสอบเบื้องต้นแล้ว รอเจ้าหน้าที่รับเรื่อง</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
