@@ -25,4 +25,4 @@ if __name__ == "__main__":
 
 @app.route("/")
 def index():
-    return render_template("login.html")
+    return render_template("register.html")
