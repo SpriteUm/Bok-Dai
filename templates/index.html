@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,53 +9,70 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <!-- Header/Navigation -->
     <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md">
         <nav class="container mx-auto px-6 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <a href="#" class="text-2xl font-bold text-gray-800 dark:text-white">
-                        <span class="text-blue-600">Code</span>Hub
+                    <a href="#" class="text-3xl font-bold text-gray-800 dark:text-white">
+                        <span class="text-Green-600">BOK</span>DAI
                     </a>
                 </div>
-                
+
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="#" class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Home</a>
-                    <a href="#projects" class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Projects</a>
-                    <a href="#categories" class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Categories</a>
-                    <a href="#about" class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">About</a>
-                    <a href="#contact" class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Contact</a>
+                    <a href="#"
+                        class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+                    <a href="#projects"
+                        class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Projects</a>
+                    <a href="#categories"
+                        class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Categories</a>
+                    <a href="#about"
+                        class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">About</a>
+                    <a href="#contact"
+                        class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Contact</a>
                 </div>
-                
+
                 <div class="flex items-center space-x-4">
-                    <button id="theme-toggle" type="button" title="Toggle dark/light mode" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <button id="theme-toggle" type="button" title="Toggle dark/light mode"
+                        class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
                         <i class="fas fa-moon dark:hidden"></i>
                         <i class="fas fa-sun hidden dark:block text-yellow-300"></i>
                     </button>
-                    
+
                     <div class="relative">
-                        <input type="text" id="search-input" placeholder="Search projects..." 
+                        <input type="text" id="search-input" placeholder="Search projects..."
                             class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <div id="search-results" class="hidden absolute mt-2 w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg z-50 max-h-96 overflow-y-auto"></div>
+                        <div id="search-results"
+                            class="hidden absolute mt-2 w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg z-50 max-h-96 overflow-y-auto">
+                        </div>
                     </div>
-                    
-                    <button id="mobile-menu-button" type="button" title="Open mobile menu" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+
+                    <button id="mobile-menu-button" type="button" title="Open mobile menu"
+                        class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
                         <i class="fas fa-bars text-gray-700 dark:text-gray-200"></i>
                     </button>
                 </div>
             </div>
-            
+
             <!-- Mobile menu -->
             <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
-                <a href="#" class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Home</a>
-                <a href="#projects" class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Projects</a>
-                <a href="#categories" class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Categories</a>
-                <a href="#about" class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">About</a>
-                <a href="#contact" class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Contact</a>
+                <a href="#"
+                    class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+                <a href="#projects"
+                    class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Projects</a>
+                <a href="#categories"
+                    class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Categories</a>
+                <a href="#about"
+                    class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">About</a>
+                <a href="#contact"
+                    class="block px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Contact</a>
                 <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <a href="#" class="block px-3 py-2 bg-blue-600 text-white rounded-lg text-center hover:bg-blue-700">Login</a>
-                    <a href="#" class="block px-3 py-2 mt-2 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-lg text-center hover:bg-blue-50 dark:hover:bg-gray-700">Register</a>
+                    <a href="#"
+                        class="block px-3 py-2 bg-blue-600 text-white rounded-lg text-center hover:bg-blue-700">Login</a>
+                    <a href="#"
+                        class="block px-3 py-2 mt-2 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-lg text-center hover:bg-blue-50 dark:hover:bg-gray-700">Register</a>
                 </div>
             </div>
         </nav>
@@ -64,10 +82,15 @@
     <section class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-20">
         <div class="container mx-auto px-6 text-center">
             <h1 class="text-4xl md:text-6xl font-bold mb-6">Discover & Share Open Source Projects</h1>
-            <p class="text-xl md:text-2xl mb-8">Find, contribute to, or download high-quality open source software for your next project.</p>
+            <p class="text-xl md:text-2xl mb-8">Find, contribute to, or download high-quality open source software for
+                your next project.</p>
             <div class="flex flex-col md:flex-row justify-center gap-4">
-                <a href="#projects" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">Browse Projects</a>
-                <a href="#" class="bg-transparent border-2 border-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-300">Submit Project</a>
+                <a href="#projects"
+                    class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">Browse
+                    Projects</a>
+                <a href="#"
+                    class="bg-transparent border-2 border-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-300">Submit
+                    Project</a>
             </div>
         </div>
     </section>
@@ -76,29 +99,33 @@
     <section id="projects" class="py-16 bg-gray-50 dark:bg-gray-900">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">Featured Projects</h2>
-            
+
             <!-- Filter/Sort Controls -->
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                 <div class="flex items-center space-x-4">
-                    <button id="filter-button" class="flex items-center space-x-2 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-sm">
+                    <button id="filter-button"
+                        class="flex items-center space-x-2 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-sm">
                         <i class="fas fa-filter"></i>
                         <span>Filters</span>
                     </button>
-                    
-                    <div id="filter-dropdown" class="hidden absolute mt-2 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 z-50 w-64">
+
+                    <div id="filter-dropdown"
+                        class="hidden absolute mt-2 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 z-50 w-64">
                         <div class="mb-4">
                             <h3 class="font-semibold mb-2 dark:text-white">Category</h3>
-                            <select title="Filter by category" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                <option>All Categories</option>
-                                <option>Web Application</option>
-                                <option>Mobile App</option>
-                                <option>Library</option>
-                                <option>Utility</option>
+                            <select title="Filter by category"
+                                class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option>General</option>
+                                <option>Water</option>
+                                <option>Electricity</option>
+                                <option>Environment</option>
+                                <option>Health</option>
                             </select>
                         </div>
                         <div class="mb-4">
                             <h3 class="font-semibold mb-2 dark:text-white">Language</h3>
-                            <select title="Filter by language" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <select title="Filter by language"
+                                class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <option>All Languages</option>
                                 <option>JavaScript</option>
                                 <option>Python</option>
@@ -123,12 +150,14 @@
                                 </label>
                             </div>
                         </div>
-                        <button class="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Apply Filters</button>
+                        <button class="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Apply
+                            Filters</button>
                     </div>
-                    
+
                     <div class="flex items-center space-x-2">
                         <span class="dark:text-white">Sort by:</span>
-                        <select class="bg-white dark:bg-gray-800 dark:text-white p-2 rounded border" title="Sort projects">
+                        <select class="bg-white dark:bg-gray-800 dark:text-white p-2 rounded border"
+                            title="Sort projects">
                             <option>Most Popular</option>
                             <option>Newest</option>
                             <option>Recently Updated</option>
@@ -136,22 +165,25 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="flex items-center space-x-2">
                     <span class="dark:text-white">View:</span>
-                    <button type="button" title="Grid View" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <button type="button" title="Grid View"
+                        class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
                         <i class="fas fa-th-large"></i>
                     </button>
-                    <button type="button" title="List View" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <button type="button" title="List View"
+                        class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
                         <i class="fas fa-list"></i>
                     </button>
                 </div>
             </div>
-            
+
             <!-- Project Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Project Card 1 -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <div class="h-48 bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center">
                         <i class="fas fa-project-diagram text-white text-6xl"></i>
                     </div>
@@ -160,7 +192,8 @@
                             <h3 class="text-xl font-bold text-gray-800 dark:text-white">React Dashboard</h3>
                             <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-300 mb-4">A modern admin dashboard built with React and Tailwind CSS with customizable components.</p>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">A modern admin dashboard built with React and
+                            Tailwind CSS with customizable components.</p>
                         <div class="flex flex-wrap gap-2 mb-4">
                             <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">React</span>
                             <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Tailwind CSS</span>
@@ -175,16 +208,18 @@
                             </div>
                             <div class="flex space-x-2">
                                 <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Details</a>
-                                <a href="#" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300" title="View on GitHub">
+                                <a href="#" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                    title="View on GitHub">
                                     <i class="fab fa-github"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Project Card 2 -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <div class="h-48 bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center">
                         <i class="fas fa-robot text-white text-6xl"></i>
                     </div>
@@ -193,7 +228,8 @@
                             <h3 class="text-xl font-bold text-gray-800 dark:text-white">AI Chatbot</h3>
                             <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Beta</span>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-300 mb-4">A conversational AI chatbot using Python and TensorFlow for natural language processing.</p>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">A conversational AI chatbot using Python and
+                            TensorFlow for natural language processing.</p>
                         <div class="flex flex-wrap gap-2 mb-4">
                             <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Python</span>
                             <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">TensorFlow</span>
@@ -208,16 +244,18 @@
                             </div>
                             <div class="flex space-x-2">
                                 <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Details</a>
-                                <a href="#" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300" title="View on GitHub">
+                                <a href="#" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                    title="View on GitHub">
                                     <i class="fab fa-github"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Project Card 3 -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <div class="h-48 bg-gradient-to-r from-red-400 to-pink-500 flex items-center justify-center">
                         <i class="fas fa-mobile-alt text-white text-6xl"></i>
                     </div>
@@ -226,7 +264,8 @@
                             <h3 class="text-xl font-bold text-gray-800 dark:text-white">Flutter E-Commerce</h3>
                             <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Stable</span>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-300 mb-4">A complete e-commerce mobile application built with Flutter and Firebase backend.</p>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">A complete e-commerce mobile application built
+                            with Flutter and Firebase backend.</p>
                         <div class="flex flex-wrap gap-2 mb-4">
                             <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Flutter</span>
                             <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Firebase</span>
@@ -241,7 +280,8 @@
                             </div>
                             <div class="flex space-x-2">
                                 <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Details</a>
-                                <a href="#" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300" title="View on GitHub">
+                                <a href="#" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                    title="View on GitHub">
                                     <i class="fab fa-github"></i>
                                 </a>
                             </div>
@@ -249,9 +289,10 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-12 text-center">
-                <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300">
+                <button
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300">
                     Load More Projects
                 </button>
             </div>
@@ -262,69 +303,88 @@
     <section id="categories" class="py-16 bg-white dark:bg-gray-800">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">Browse by Category</h2>
-            
+
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                <!-- Category 1 -->
-                <a href="#" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                <!-- Category 1: General -->
+                <a href="#"
+                    class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+                    <div
+                        class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-globe text-blue-600 dark:text-blue-400 text-2xl"></i>
                     </div>
-                    <h3 class="font-semibold text-gray-800 dark:text-white">Web Apps</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">342 projects</p>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">General</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">342 problems</p>
                 </a>
-                
-                <!-- Category 2 -->
-                <a href="#" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-mobile-alt text-purple-600 dark:text-purple-400 text-2xl"></i>
+
+                <!-- Category 2: Water -->
+                <a href="#"
+                    class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+                    <div
+                        class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-tint text-purple-600 dark:text-purple-400 text-2xl"></i>
                     </div>
-                    <h3 class="font-semibold text-gray-800 dark:text-white">Mobile Apps</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">187 projects</p>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">Water</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">187 problems</p>
                 </a>
-                
-                <!-- Category 3 -->
-                <a href="#" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-robot text-green-600 dark:text-green-400 text-2xl"></i>
+
+                <!-- Category 3: Electricity -->
+                <a href="#"
+                    class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+                    <div
+                        class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-bolt text-green-600 dark:text-green-400 text-2xl"></i>
                     </div>
-                    <h3 class="font-semibold text-gray-800 dark:text-white">AI/ML</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">156 projects</p>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">Electricity</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">156 problems</p>
                 </a>
-                
-                <!-- Category 4 -->
-                <a href="#" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-gamepad text-red-600 dark:text-red-400 text-2xl"></i>
+
+                <!-- Category 4: Environment -->
+                <a href="#"
+                    class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+                    <div
+                        class="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-leaf text-red-600 dark:text-red-400 text-2xl"></i>
                     </div>
-                    <h3 class="font-semibold text-gray-800 dark:text-white">Games</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">89 projects</p>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">Environment</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">89 problems</p>
                 </a>
-                
-                <!-- Category 5 -->
-                <a href="#" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-4">
+
+                <!-- Category 5: Others -->
+                <a href="#"
+                    class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+                    <div
+                        class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-tools text-yellow-600 dark:text-yellow-400 text-2xl"></i>
                     </div>
-                    <h3 class="font-semibold text-gray-800 dark:text-white">Utilities</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">231 projects</p>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">Others</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">231 problems</p>
                 </a>
             </div>
             
-            <div class="mt-12">
-                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Popular Tags</h3>
-                <div class="flex flex-wrap gap-2">
-                    <a href="#" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">JavaScript</a>
-                    <a href="#" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Python</a>
-                    <a href="#" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">React</a>
-                    <a href="#" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Vue</a>
-                    <a href="#" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Flutter</a>
-                    <a href="#" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Node.js</a>
-                    <a href="#" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Django</a>
-                    <a href="#" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">TensorFlow</a>
-                    <a href="#" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Firebase</a>
+                <div class="mt-12">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Popular Tags</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="#"
+                            class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">JavaScript</a>
+                        <a href="#"
+                            class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Python</a>
+                        <a href="#"
+                            class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">React</a>
+                        <a href="#"
+                            class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Vue</a>
+                        <a href="#"
+                            class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Flutter</a>
+                        <a href="#"
+                            class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Node.js</a>
+                        <a href="#"
+                            class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Django</a>
+                        <a href="#"
+                            class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">TensorFlow</a>
+                        <a href="#"
+                            class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Firebase</a>
+                    </div>
                 </div>
             </div>
-        </div>
     </section>
 
     <!-- About Section -->
@@ -334,10 +394,13 @@
                 <div class="md:w-1/2">
                     <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">About CodeHub</h2>
                     <p class="text-gray-600 dark:text-gray-300 mb-4">
-                        CodeHub is a platform dedicated to open source software development. We provide a space for developers to discover, share, and collaborate on open source projects across various technologies and domains.
+                        CodeHub is a platform dedicated to open source software development. We provide a space for
+                        developers to discover, share, and collaborate on open source projects across various
+                        technologies and domains.
                     </p>
                     <p class="text-gray-600 dark:text-gray-300 mb-6">
-                        Our mission is to make open source software more accessible and to foster a community where developers can learn from each other and contribute to meaningful projects.
+                        Our mission is to make open source software more accessible and to foster a community where
+                        developers can learn from each other and contribute to meaningful projects.
                     </p>
                     <div class="space-y-4">
                         <div class="flex items-start">
@@ -347,7 +410,8 @@
                                 </div>
                             </div>
                             <p class="ml-3 text-gray-600 dark:text-gray-300">
-                                <span class="font-semibold text-gray-800 dark:text-white">1000+ Projects</span> - A growing collection of open source software
+                                <span class="font-semibold text-gray-800 dark:text-white">1000+ Projects</span> - A
+                                growing collection of open source software
                             </p>
                         </div>
                         <div class="flex items-start">
@@ -357,7 +421,8 @@
                                 </div>
                             </div>
                             <p class="ml-3 text-gray-600 dark:text-gray-300">
-                                <span class="font-semibold text-gray-800 dark:text-white">Active Community</span> - Connect with developers worldwide
+                                <span class="font-semibold text-gray-800 dark:text-white">Active Community</span> -
+                                Connect with developers worldwide
                             </p>
                         </div>
                         <div class="flex items-start">
@@ -367,7 +432,8 @@
                                 </div>
                             </div>
                             <p class="ml-3 text-gray-600 dark:text-gray-300">
-                                <span class="font-semibold text-gray-800 dark:text-white">Free & Open</span> - All projects are free to use and contribute to
+                                <span class="font-semibold text-gray-800 dark:text-white">Free & Open</span> - All
+                                projects are free to use and contribute to
                             </p>
                         </div>
                     </div>
@@ -375,7 +441,8 @@
                 <div class="md:w-1/2">
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Why Contribute to Open Source?</h3>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Why Contribute to Open
+                                Source?</h3>
                             <div class="space-y-4">
                                 <div class="flex items-start">
                                     <div class="flex-shrink-0 mt-1 text-blue-500">
@@ -414,7 +481,8 @@
                         <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4">
                             <p class="text-center text-gray-600 dark:text-gray-300">
                                 Ready to start your open source journey?
-                                <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline ml-1">Submit your first project</a>
+                                <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline ml-1">Submit your
+                                    first project</a>
                             </p>
                         </div>
                     </div>
@@ -429,62 +497,81 @@
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Submit Your Project</h2>
                 <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                    Share your open source project with the community. Fill out the form below to submit your project for review.
+                    Share your open source project with the community. Fill out the form below to submit your project
+                    for review.
                 </p>
             </div>
-            
+
             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md p-6 md:p-8">
                 <form id="submit-project-form">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="project-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project Name*</label>
-                            <input type="text" id="project-name" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                            <label for="project-name"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project
+                                Name*</label>
+                            <input type="text" id="project-name" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
                         </div>
                         <div>
-                            <label for="project-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Repository URL*</label>
-                            <input type="url" id="project-url" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white" placeholder="https://github.com/yourusername/project">
+                            <label for="project-url"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Repository
+                                URL*</label>
+                            <input type="url" id="project-url" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                                placeholder="https://github.com/yourusername/project">
                         </div>
                     </div>
-                    
+
                     <div class="mt-6">
-                        <label for="project-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description*</label>
-                        <textarea id="project-description" rows="4" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"></textarea>
+                        <label for="project-description"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description*</label>
+                        <textarea id="project-description" rows="4" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"></textarea>
                     </div>
-                    
+
                     <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Technologies Used*</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Technologies
+                            Used*</label>
                         <div class="flex flex-wrap gap-2">
                             <label class="inline-flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
+                                <input type="checkbox"
+                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
                                 <span class="ml-2 text-gray-700 dark:text-gray-300">JavaScript</span>
                             </label>
                             <label class="inline-flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
+                                <input type="checkbox"
+                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
                                 <span class="ml-2 text-gray-700 dark:text-gray-300">Python</span>
                             </label>
                             <label class="inline-flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
+                                <input type="checkbox"
+                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
                                 <span class="ml-2 text-gray-700 dark:text-gray-300">Java</span>
                             </label>
                             <label class="inline-flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
+                                <input type="checkbox"
+                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
                                 <span class="ml-2 text-gray-700 dark:text-gray-300">C++</span>
                             </label>
                             <label class="inline-flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
+                                <input type="checkbox"
+                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
                                 <span class="ml-2 text-gray-700 dark:text-gray-300">Go</span>
                             </label>
                             <label class="inline-flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
+                                <input type="checkbox"
+                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
                                 <span class="ml-2 text-gray-700 dark:text-gray-300">Rust</span>
                             </label>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                         <div>
-                            <label for="project-category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category*</label>
-                            <select id="project-category" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                            <label for="project-category"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category*</label>
+                            <select id="project-category" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
                                 <option value="">Select a category</option>
                                 <option value="web">Web Application</option>
                                 <option value="mobile">Mobile App</option>
@@ -497,8 +584,10 @@
                             </select>
                         </div>
                         <div>
-                            <label for="project-license" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">License*</label>
-                            <select id="project-license" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                            <label for="project-license"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">License*</label>
+                            <select id="project-license" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
                                 <option value="">Select a license</option>
                                 <option value="mit">MIT</option>
                                 <option value="apache">Apache 2.0</option>
@@ -513,13 +602,16 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Project Images</label>
-                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Project
+                            Images</label>
+                        <div
+                            class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600">
                             <div class="space-y-1 text-center">
                                 <div class="flex text-sm text-gray-600 dark:text-gray-400">
-                                    <label for="file-upload" class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
+                                    <label for="file-upload"
+                                        class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
                                         <span>Upload files</span>
                                         <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple>
                                     </label>
@@ -531,9 +623,10 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mt-8">
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+                        <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
                             Submit Project
                         </button>
                     </div>
@@ -544,19 +637,22 @@
 
     <!-- Project Detail Modal -->
     <div id="project-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
+        <div
+            class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Project Details</h3>
-                <button id="modal-close" type="button" title="Close Project Modal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                <button id="modal-close" type="button" title="Close Project Modal"
+                    class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <div class="mb-6">
-                <div class="h-64 bg-gradient-to-r from-blue-400 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
+                <div
+                    class="h-64 bg-gradient-to-r from-blue-400 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
                     <i class="fas fa-project-diagram text-white text-8xl"></i>
                 </div>
-                
+
                 <div class="flex justify-between items-start">
                     <div>
                         <h4 class="text-xl font-bold text-gray-800 dark:text-white">React Dashboard</h4>
@@ -577,17 +673,21 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="md:col-span-2">
                     <h5 class="font-semibold text-gray-800 dark:text-white mb-2">Description</h5>
                     <p class="text-gray-600 dark:text-gray-300 mb-4">
-                        A modern admin dashboard built with React and Tailwind CSS with customizable components. This project includes a complete set of UI components, charts, tables, and forms that can be easily integrated into any React application.
+                        A modern admin dashboard built with React and Tailwind CSS with customizable components. This
+                        project includes a complete set of UI components, charts, tables, and forms that can be easily
+                        integrated into any React application.
                     </p>
                     <p class="text-gray-600 dark:text-gray-300">
-                        The dashboard is fully responsive and includes light/dark mode support out of the box. It's designed to be highly customizable with a modular structure that makes it easy to extend or modify components to fit your specific needs.
+                        The dashboard is fully responsive and includes light/dark mode support out of the box. It's
+                        designed to be highly customizable with a modular structure that makes it easy to extend or
+                        modify components to fit your specific needs.
                     </p>
-                    
+
                     <div class="mt-6">
                         <h5 class="font-semibold text-gray-800 dark:text-white mb-2">Features</h5>
                         <ul class="list-disc list-inside text-gray-600 dark:text-gray-300 space-y-1">
@@ -601,11 +701,11 @@
                         </ul>
                     </div>
                 </div>
-                
+
                 <div>
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
                         <h5 class="font-semibold text-gray-800 dark:text-white mb-3">Project Info</h5>
-                        
+
                         <div class="space-y-3">
                             <div>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">License</p>
@@ -629,7 +729,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                         <h5 class="font-semibold text-gray-800 dark:text-white mb-3">Tech Stack</h5>
                         <div class="flex flex-wrap gap-2">
@@ -639,39 +739,46 @@
                             <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Chart.js</span>
                             <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">React Router</span>
                         </div>
-                        
+
                         <div class="mt-4 space-y-2">
-                            <a href="#" class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-lg transition duration-300">
+                            <a href="#"
+                                class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-lg transition duration-300">
                                 <i class="fab fa-github mr-2"></i> View on GitHub
                             </a>
-                            <a href="#" class="block w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white text-center py-2 rounded-lg transition duration-300">
+                            <a href="#"
+                                class="block w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white text-center py-2 rounded-lg transition duration-300">
                                 <i class="fas fa-external-link-alt mr-2"></i> Live Demo
                             </a>
-                            <button class="w-full border border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-600 text-center py-2 rounded-lg transition duration-300">
+                            <button
+                                class="w-full border border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-600 text-center py-2 rounded-lg transition duration-300">
                                 <i class="fas fa-download mr-2"></i> Download
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                 <h5 class="font-semibold text-gray-800 dark:text-white mb-3">Contributors</h5>
                 <div class="flex flex-wrap gap-3">
                     <div class="flex items-center">
-                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Contributor" class="w-8 h-8 rounded-full">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Contributor"
+                            class="w-8 h-8 rounded-full">
                         <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">John Doe</span>
                     </div>
                     <div class="flex items-center">
-                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Contributor" class="w-8 h-8 rounded-full">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Contributor"
+                            class="w-8 h-8 rounded-full">
                         <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Jane Smith</span>
                     </div>
                     <div class="flex items-center">
-                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Contributor" class="w-8 h-8 rounded-full">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Contributor"
+                            class="w-8 h-8 rounded-full">
                         <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Mike Johnson</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-xs">+5</span>
+                        <span
+                            class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-xs">+5</span>
                     </div>
                 </div>
             </div>
@@ -682,53 +789,65 @@
     <section id="contact" class="py-16 bg-gray-50 dark:bg-gray-900">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">Contact Us</h2>
-            
+
             <div class="flex flex-col md:flex-row gap-12">
                 <div class="md:w-1/2">
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 h-full">
                         <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Get in Touch</h3>
                         <p class="text-gray-600 dark:text-gray-300 mb-6">
-                            Have questions about our platform or want to submit a project? Fill out the form and we'll get back to you as soon as possible.
+                            Have questions about our platform or want to submit a project? Fill out the form and we'll
+                            get back to you as soon as possible.
                         </p>
-                        
+
                         <form id="contact-form">
                             <div class="mb-4">
-                                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name*</label>
-                                <input type="text" id="name" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <label for="name"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name*</label>
+                                <input type="text" id="name" required
+                                    class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
                             <div class="mb-4">
-                                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email*</label>
-                                <input type="email" id="email" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <label for="email"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email*</label>
+                                <input type="email" id="email" required
+                                    class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
                             <div class="mb-4">
-                                <label for="subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
-                                <input type="text" id="subject" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <label for="subject"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
+                                <input type="text" id="subject"
+                                    class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
                             <div class="mb-4">
-                                <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message*</label>
-                                <textarea id="message" rows="4" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
+                                <label for="message"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message*</label>
+                                <textarea id="message" rows="4" required
+                                    class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
                             </div>
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+                            <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
                                 Send Message
                             </button>
                         </form>
                     </div>
                 </div>
-                
+
                 <div class="md:w-1/2">
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 h-full">
                         <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Contact Information</h3>
                         <p class="text-gray-600 dark:text-gray-300 mb-6">
-                            You can also reach us through our social media channels or visit our office during business hours.
+                            You can also reach us through our social media channels or visit our office during business
+                            hours.
                         </p>
-                        
+
                         <div class="space-y-4">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0 mt-1 text-blue-500">
                                     <i class="fas fa-map-marker-alt"></i>
                                 </div>
                                 <p class="ml-3 text-gray-600 dark:text-gray-300">
-                                    <span class="font-semibold text-gray-800 dark:text-white">Address:</span> 123 Open Source Street, San Francisco, CA 94107
+                                    <span class="font-semibold text-gray-800 dark:text-white">Address:</span> 123 Open
+                                    Source Street, San Francisco, CA 94107
                                 </p>
                             </div>
                             <div class="flex items-start">
@@ -736,7 +855,8 @@
                                     <i class="fas fa-phone-alt"></i>
                                 </div>
                                 <p class="ml-3 text-gray-600 dark:text-gray-300">
-                                    <span class="font-semibold text-gray-800 dark:text-white">Phone:</span> (123) 456-7890
+                                    <span class="font-semibold text-gray-800 dark:text-white">Phone:</span> (123)
+                                    456-7890
                                 </p>
                             </div>
                             <div class="flex items-start">
@@ -744,7 +864,8 @@
                                     <i class="fas fa-envelope"></i>
                                 </div>
                                 <p class="ml-3 text-gray-600 dark:text-gray-300">
-                                    <span class="font-semibold text-gray-800 dark:text-white">Email:</span> contact@codehub.example.com
+                                    <span class="font-semibold text-gray-800 dark:text-white">Email:</span>
+                                    contact@codehub.example.com
                                 </p>
                             </div>
                             <div class="flex items-start">
@@ -752,27 +873,33 @@
                                     <i class="fas fa-clock"></i>
                                 </div>
                                 <p class="ml-3 text-gray-600 dark:text-gray-300">
-                                    <span class="font-semibold text-gray-800 dark:text-white">Hours:</span> Monday - Friday, 9:00 AM - 5:00 PM PST
+                                    <span class="font-semibold text-gray-800 dark:text-white">Hours:</span> Monday -
+                                    Friday, 9:00 AM - 5:00 PM PST
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div class="mt-8">
                             <h4 class="font-semibold text-gray-800 dark:text-white mb-3">Follow Us</h4>
                             <div class="flex space-x-4">
-                                <a href="#" title="Twitter" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-600">
+                                <a href="#" title="Twitter"
+                                    class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-blue-600 hover:bg-blue-100 dark:hover:bg-gray-600">
                                     <i class="fab fa-twitter" aria-hidden="true"></i>
                                 </a>
-                                <a href="#" title="Facebook" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-blue-800 hover:bg-blue-100 dark:hover:bg-gray-600">
+                                <a href="#" title="Facebook"
+                                    class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-blue-800 hover:bg-blue-100 dark:hover:bg-gray-600">
                                     <i class="fab fa-facebook-f" aria-hidden="true"></i>
                                 </a>
-                                <a href="#" title="Instagram" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-pink-600 hover:bg-pink-100 dark:hover:bg-gray-600">
+                                <a href="#" title="Instagram"
+                                    class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-pink-600 hover:bg-pink-100 dark:hover:bg-gray-600">
                                     <i class="fab fa-instagram" aria-hidden="true"></i>
                                 </a>
-                                <a href="#" title="GitHub" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600">
+                                <a href="#" title="GitHub"
+                                    class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600">
                                     <i class="fab fa-github" aria-hidden="true"></i>
                                 </a>
-                                <a href="#" title="YouTube" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-red-600 hover:bg-red-100 dark:hover:bg-gray-600">
+                                <a href="#" title="YouTube"
+                                    class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-red-600 hover:bg-red-100 dark:hover:bg-gray-600">
                                     <i class="fab fa-youtube"></i>
                                 </a>
                             </div>
@@ -785,35 +912,44 @@
 
     <!-- Login Modal -->
     <div id="login-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
+        <div
+            class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Login</h3>
-                <button id="login-close" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" title="Close Login Modal"></button>
-                    <i class="fas fa-times"></i>
+                <button id="login-close" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                    title="Close Login Modal"></button>
+                <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <form id="login-form">
                 <div class="mb-4">
-                    <label for="login-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email*</label>
-                    <input type="email" id="login-email" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <label for="login-email"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email*</label>
+                    <input type="email" id="login-email" required
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
                 <div class="mb-4">
-                    <label for="login-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password*</label>
-                    <input type="password" id="login-password" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <label for="login-password"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password*</label>
+                    <input type="password" id="login-password" required
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
                 <div class="flex items-center justify-between mb-6">
                     <label class="flex items-center">
-                        <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
+                        <input type="checkbox"
+                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
                         <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">Remember me</span>
                     </label>
                     <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Forgot password?</a>
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 mb-4">
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 mb-4">
                     Login
                 </button>
                 <div class="text-center text-sm text-gray-600 dark:text-gray-300">
-                    Don't have an account? <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline" id="show-register">Register</a>
+                    Don't have an account? <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline"
+                        id="show-register">Register</a>
                 </div>
             </form>
         </div>
@@ -821,42 +957,59 @@
 
     <!-- Register Modal -->
     <div id="register-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
+        <div
+            class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Register</h3>
-                <button id="register-close" type="button" title="Close Register Modal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                <button id="register-close" type="button" title="Close Register Modal"
+                    class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <form id="register-form">
                 <div class="mb-4">
-                    <label for="register-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name*</label>
-                    <input type="text" id="register-name" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <label for="register-name"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name*</label>
+                    <input type="text" id="register-name" required
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
                 <div class="mb-4">
-                    <label for="register-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email*</label>
-                    <input type="email" id="register-email" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <label for="register-email"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email*</label>
+                    <input type="email" id="register-email" required
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
                 <div class="mb-4">
-                    <label for="register-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password*</label>
-                    <input type="password" id="register-password" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <label for="register-password"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password*</label>
+                    <input type="password" id="register-password" required
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
                 <div class="mb-6">
-                    <label for="register-confirm" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password*</label>
-                    <input type="password" id="register-confirm" required class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <label for="register-confirm"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm
+                        Password*</label>
+                    <input type="password" id="register-confirm" required
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
                 <div class="mb-6">
                     <label class="flex items-center">
-                        <input type="checkbox" required class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">I agree to the <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Terms of Service</a> and <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Privacy Policy</a></span>
+                        <input type="checkbox" required
+                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600">
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">I agree to the <a href="#"
+                                class="text-blue-600 dark:text-blue-400 hover:underline">Terms of Service</a> and <a
+                                href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Privacy
+                                Policy</a></span>
                     </label>
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 mb-4">
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 mb-4">
                     Register
                 </button>
                 <div class="text-center text-sm text-gray-600 dark:text-gray-300">
-                    Already have an account? <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline" id="show-login">Login</a>
+                    Already have an account? <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline"
+                        id="show-login">Login</a>
                 </div>
             </form>
         </div>
@@ -886,7 +1039,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <div>
                     <h4 class="font-semibold mb-4">Explore</h4>
                     <ul class="space-y-2">
@@ -896,7 +1049,7 @@
                         <li><a href="#" class="text-gray-400 hover:text-white">Collections</a></li>
                     </ul>
                 </div>
-                
+
                 <div>
                     <h4 class="font-semibold mb-4">Community</h4>
                     <ul class="space-y-2">
@@ -906,7 +1059,7 @@
                         <li><a href="#" class="text-gray-400 hover:text-white">Events</a></li>
                     </ul>
                 </div>
-                
+
                 <div>
                     <h4 class="font-semibold mb-4">Company</h4>
                     <ul class="space-y-2">
@@ -917,7 +1070,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-400 text-sm mb-4 md:mb-0">
                     &copy; 2023 CodeHub. All rights reserved.
@@ -932,75 +1085,75 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        // Dark/Light mode toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        
-        // Check for saved user preference or use system preference
-        const savedTheme = localStorage.getItem('theme') || 
-                        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        html.classList.toggle('dark', savedTheme === 'dark');
-        
-        themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            const theme = html.classList.contains('dark') ? 'dark' : 'light';
-            localStorage.setItem('theme', theme);
-        });
-        
-        // Mobile menu toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-        
-        // Filter dropdown toggle
-        const filterButton = document.getElementById('filter-button');
-        const filterDropdown = document.getElementById('filter-dropdown');
-        
-        filterButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            filterDropdown.classList.toggle('hidden');
-        });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', () => {
-            if (!filterDropdown.classList.contains('hidden')) {
-                filterDropdown.classList.add('hidden');
-            }
-        });
-        
-        // Search functionality
-        const searchInput = document.getElementById('search-input');
-        const searchResults = document.getElementById('search-results');
-        
-        // Sample projects data for search
-        const projects = [
-            { id: 1, title: 'React Dashboard', description: 'Modern admin dashboard with React', tags: ['React', 'Tailwind CSS', 'JavaScript'] },
-            { id: 2, title: 'AI Chatbot', description: 'Conversational AI using Python', tags: ['Python', 'TensorFlow', 'NLP'] },
-            { id: 3, title: 'Flutter E-Commerce', description: 'E-commerce mobile app with Flutter', tags: ['Flutter', 'Firebase', 'Dart'] },
-            { id: 4, title: 'Vue Task Manager', description: 'Task management application with Vue.js', tags: ['Vue', 'JavaScript', 'CSS'] },
-            { id: 5, title: 'Node.js API', description: 'RESTful API with Node.js and Express', tags: ['Node.js', 'Express', 'JavaScript'] }
-        ];
-        
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            
-            if (query.length === 0) {
-                searchResults.classList.add('hidden');
-                return;
-            }
-            
-            const filteredProjects = projects.filter(project => 
-                project.title.toLowerCase().includes(query) || 
-                project.description.toLowerCase().includes(query) ||
-                project.tags.some(tag => tag.toLowerCase().includes(query))
-            );
-            
-            if (filteredProjects.length > 0) {
-                searchResults.innerHTML = filteredProjects.map(project => `
+        document.addEventListener('DOMContentLoaded', function () {
+            // Dark/Light mode toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+
+            // Check for saved user preference or use system preference
+            const savedTheme = localStorage.getItem('theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            html.classList.toggle('dark', savedTheme === 'dark');
+
+            themeToggle.addEventListener('click', () => {
+                html.classList.toggle('dark');
+                const theme = html.classList.contains('dark') ? 'dark' : 'light';
+                localStorage.setItem('theme', theme);
+            });
+
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Filter dropdown toggle
+            const filterButton = document.getElementById('filter-button');
+            const filterDropdown = document.getElementById('filter-dropdown');
+
+            filterButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                filterDropdown.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', () => {
+                if (!filterDropdown.classList.contains('hidden')) {
+                    filterDropdown.classList.add('hidden');
+                }
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+
+            // Sample projects data for search
+            const projects = [
+                { id: 1, title: 'React Dashboard', description: 'Modern admin dashboard with React', tags: ['React', 'Tailwind CSS', 'JavaScript'] },
+                { id: 2, title: 'AI Chatbot', description: 'Conversational AI using Python', tags: ['Python', 'TensorFlow', 'NLP'] },
+                { id: 3, title: 'Flutter E-Commerce', description: 'E-commerce mobile app with Flutter', tags: ['Flutter', 'Firebase', 'Dart'] },
+                { id: 4, title: 'Vue Task Manager', description: 'Task management application with Vue.js', tags: ['Vue', 'JavaScript', 'CSS'] },
+                { id: 5, title: 'Node.js API', description: 'RESTful API with Node.js and Express', tags: ['Node.js', 'Express', 'JavaScript'] }
+            ];
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+
+                if (query.length === 0) {
+                    searchResults.classList.add('hidden');
+                    return;
+                }
+
+                const filteredProjects = projects.filter(project =>
+                    project.title.toLowerCase().includes(query) ||
+                    project.description.toLowerCase().includes(query) ||
+                    project.tags.some(tag => tag.toLowerCase().includes(query))
+                );
+
+                if (filteredProjects.length > 0) {
+                    searchResults.innerHTML = filteredProjects.map(project => `
                     <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                         <div class="font-medium text-gray-800 dark:text-white">${project.title}</div>
                         <div class="text-sm text-gray-500 dark:text-gray-400">${project.description}</div>
@@ -1009,140 +1162,141 @@
                         </div>
                     </a>
                 `).join('');
-                searchResults.classList.remove('hidden');
-            } else {
-                searchResults.innerHTML = `
+                    searchResults.classList.remove('hidden');
+                } else {
+                    searchResults.innerHTML = `
                     <div class="px-4 py-2 text-gray-500 dark:text-gray-400">
                         No projects found for "${query}"
                     </div>
                 `;
-                searchResults.classList.remove('hidden');
+                    searchResults.classList.remove('hidden');
+                }
+            });
+
+            // Close search results when clicking outside
+            document.addEventListener('click', (e) => {
+                if (e.target !== searchInput) {
+                    searchResults.classList.add('hidden');
+                }
+            });
+
+            // Project modal functionality
+            const projectModal = document.getElementById('project-modal');
+            const modalClose = document.getElementById('modal-close');
+            const projectCards = document.querySelectorAll('.project-card');
+
+            function openModal() {
+                projectModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             }
-        });
-        
-        // Close search results when clicking outside
-        document.addEventListener('click', (e) => {
-            if (e.target !== searchInput) {
-                searchResults.classList.add('hidden');
+
+            function closeModal() {
+                projectModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
             }
-        });
-        
-        // Project modal functionality
-        const projectModal = document.getElementById('project-modal');
-        const modalClose = document.getElementById('modal-close');
-        const projectCards = document.querySelectorAll('.project-card');
-        
-        function openModal() {
-            projectModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeModal() {
-            projectModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-        
-        // Add click event to all "Details" links
-        document.querySelectorAll('a[href="#"]').forEach(link => {
-            if (link.textContent === 'Details') {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    openModal();
-                });
+
+            // Add click event to all "Details" links
+            document.querySelectorAll('a[href="#"]').forEach(link => {
+                if (link.textContent === 'Details') {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        openModal();
+                    });
+                }
+            });
+
+            modalClose.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside
+            projectModal.addEventListener('click', (e) => {
+                if (e.target === projectModal) {
+                    closeModal();
+                }
+            });
+
+            // Login/Register modal functionality
+            const loginModal = document.getElementById('login-modal');
+            const loginClose = document.getElementById('login-close');
+            const registerModal = document.getElementById('register-modal');
+            const registerClose = document.getElementById('register-close');
+            const showRegister = document.getElementById('show-register');
+            const showLogin = document.getElementById('show-login');
+
+            function openLoginModal() {
+                loginModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             }
-        });
-        
-        modalClose.addEventListener('click', closeModal);
-        
-        // Close modal when clicking outside
-        projectModal.addEventListener('click', (e) => {
-            if (e.target === projectModal) {
-                closeModal();
+
+            function closeLoginModal() {
+                loginModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
             }
-        });
-        
-        // Login/Register modal functionality
-        const loginModal = document.getElementById('login-modal');
-        const loginClose = document.getElementById('login-close');
-        const registerModal = document.getElementById('register-modal');
-        const registerClose = document.getElementById('register-close');
-        const showRegister = document.getElementById('show-register');
-        const showLogin = document.getElementById('show-login');
-        
-        function openLoginModal() {
-            loginModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeLoginModal() {
-            loginModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function openRegisterModal() {
-            registerModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeRegisterModal() {
-            registerModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-        
-        // Add event listeners to login/register buttons in header
-        document.querySelectorAll('a[href="#"]').forEach(link => {
-            if (link.textContent === 'Login') {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    openLoginModal();
-                });
+
+            function openRegisterModal() {
+                registerModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             }
-            if (link.textContent === 'Register') {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    openRegisterModal();
-                });
+
+            function closeRegisterModal() {
+                registerModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
             }
-        });
-        
-        loginClose.addEventListener('click', closeLoginModal);
-        registerClose.addEventListener('click', closeRegisterModal);
-        
-        showRegister.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeLoginModal();
-            openRegisterModal();
-        });
-        
-        showLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeRegisterModal();
-            openLoginModal();
-        });
-        
-        // Close modals when clicking outside
-        loginModal.addEventListener('click', (e) => {
-            if (e.target === loginModal) {
+
+            // Add event listeners to login/register buttons in header
+            document.querySelectorAll('a[href="#"]').forEach(link => {
+                if (link.textContent === 'Login') {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        openLoginModal();
+                    });
+                }
+                if (link.textContent === 'Register') {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        openRegisterModal();
+                    });
+                }
+            });
+
+            loginClose.addEventListener('click', closeLoginModal);
+            registerClose.addEventListener('click', closeRegisterModal);
+
+            showRegister.addEventListener('click', (e) => {
+                e.preventDefault();
                 closeLoginModal();
-            }
-        });
-        
-        registerModal.addEventListener('click', (e) => {
-            if (e.target === registerModal) {
+                openRegisterModal();
+            });
+
+            showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
                 closeRegisterModal();
-            }
-        });
-        // Contact form submission
-        const contactForm = document.getElementById('contact-form');
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = new FormData(contactForm);
-            const data = Object.fromEntries(formData.entries());
-            console.log('Contact Form Data:', data);
-            alert('Thank you for contacting us! We will get back to you soon.');
-            contactForm.reset();
-        });
+                openLoginModal();
+            });
+
+            // Close modals when clicking outside
+            loginModal.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    closeLoginModal();
+                }
+            });
+
+            registerModal.addEventListener('click', (e) => {
+                if (e.target === registerModal) {
+                    closeRegisterModal();
+                }
+            });
+            // Contact form submission
+            const contactForm = document.getElementById('contact-form');
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(contactForm);
+                const data = Object.fromEntries(formData.entries());
+                console.log('Contact Form Data:', data);
+                alert('Thank you for contacting us! We will get back to you soon.');
+                contactForm.reset();
+            });
         });
     </script>
 </body>
+
 </html>
