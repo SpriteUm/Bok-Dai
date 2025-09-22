@@ -4,11 +4,14 @@ from flask_login import login_user, logout_user, login_required
 from models.user import User
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email
+from wtforms.validators import DataRequired, Email, EqualTo
+from models import db
 
 class FormUsers(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', 
+                         validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -16,18 +19,20 @@ class FormUsers(FlaskForm):
     submit = SubmitField('Register')
 
 auth_bp = Blueprint('auth', __name__) 
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+    
+    if request.method == 'POST': 
         username = request.form.get('username')
         password = request.form.get('password')
         user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password, password):
+        if user and check_password_hash(user.password, password): 
             login_user(user)
-            return redirect(url_for('index'))
+            return redirect(url_for('index')) # เปลี่ยน 'index' เป็นชื่อฟังก์ชันที่คุณต้องการให้ไปหลังจากล็อกอิน
         else:
-            flash('Invalid username or password')
-    return render_template('login.html')
+            flash('Invalid username or password') #
+    return render_template('login.html') 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -49,7 +54,6 @@ def register():
             email=form.email.data,
             Telephone=form.Telephone.data
         )
-        from models import db
         db.session.add(user)
         db.session.commit()
         flash('Register successful! Please login.')

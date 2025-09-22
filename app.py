@@ -1,11 +1,13 @@
 from flask import Flask, render_template, redirect, url_for, request
 from models import db
-from models.user import User
+from models.user import User 
 from flask_login import LoginManager
+from routes.auth import auth_bp, FormUsers
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+app.register_blueprint(auth_bp, url_prefix='/auth')
 
 # init db
 db.init_app(app)
@@ -23,6 +25,8 @@ if __name__ == "__main__":
         db.create_all()   # สร้างตารางใน app.db
     app.run(debug=True)
 
+
 @app.route("/")
 def index():
-    return render_template("register.html")
+    return redirect(url_for('auth.login'))
+

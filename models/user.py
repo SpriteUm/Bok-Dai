@@ -8,5 +8,5 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    Telephone = db.Column(db.String(20), nullable=True)
+    telephone = db.Column(db.String(20), nullable=True)
 
