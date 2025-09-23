@@ -15,7 +15,7 @@ class FormUsers(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    Telephone = StringField('Telephone')
+    telephone = StringField('Telephone')
     submit = SubmitField('Register')
 
 auth_bp = Blueprint('auth', __name__) 
@@ -40,23 +40,34 @@ def register():
     if form.validate_on_submit():
         # ตรวจสอบ username/email ซ้ำ
         if User.query.filter_by(username=form.username.data).first():
-            flash('Username already exists')
+            flash("Username already exists", "error")
             return render_template('register.html', form=form)
         if User.query.filter_by(email=form.email.data).first():
-            flash('Email already exists')
+            flash("Email already exists", "error")
             return render_template('register.html', form=form)
-        hashed_password = generate_password_hash(form.password.data)
-        user = User(
-            username=form.username.data,
-            password=hashed_password,
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            email=form.email.data,
-            Telephone=form.Telephone.data
-        )
-        db.session.add(user)
-        db.session.commit()
-        flash('Register successful! Please login.')
-        return redirect(url_for('auth.login'))
+        try:
+            hashed_password = generate_password_hash(form.password.data)
+            user = User(
+                username=form.username.data,
+                email=form.email.data,
+                password=hashed_password,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                telephone=form.telephone.data
+            )
+            db.session.add(user)
+            db.session.commit()
+            flash("Account created!", "success")
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            db.session.rollback()
+            flash(str(e), "error")
     return render_template('register.html', form=form)
+
+@auth_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("Logged out successfully.", "success")
+    return redirect(url_for('auth.login'))
 
