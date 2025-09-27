@@ -1,11 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimalist White Hero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'framer': ['"Framer Sans"', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'text-shine': 'text-shine 3s ease-out infinite',
+                        'border-pulse': 'border-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fade-in 1.5s ease-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'text-shine': {
+                            '0%': { 'background-position': '0% 50%' },
+                            '100%': { 'background-position': '100% 50%' },
+                        },
+                        'border-pulse': {
+                            '0%, 100%': { 'border-color': 'rgba(0, 0, 0, 0.1)' },
+                            '50%': { 'border-color': 'rgba(0, 0, 0, 0.3)' },
+                        },
+                        'fade-in': {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    },
+                    backgroundImage: {
+                        'subtle-grid': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-stroke-white {
+                -webkit-text-stroke: 1px white;
+                text-stroke: 1px white;
+            }
+            .text-stroke-black {
+                -webkit-text-stroke: 1px rgba(0, 0, 0, 0.1);
+                text-stroke: 1px rgba(0, 0, 0, 0.1);
+            }
+            .perspective-1000 {
+                perspective: 1000px;
+            }
+            .rotate-y-5 {
+                transform: rotateY(5deg);
+            }
+            .rotate-y-10 {
+                transform: rotateY(10deg);
+            }
+            .backface-hidden {
+                backface-visibility: hidden;
+            }
+            .bg-contrast-text {
+                background: linear-gradient(90deg, #000000 0%, #000000 50%, #000000 100%);
+                background-size: 200% auto;
+                color: #0000;
+                background-clip: text;
+                -webkit-background-clip: text;
+            }
+            .bg-contrast-text-white {
+                background: linear-gradient(90deg, #ffffff 0%, #ffffff 50%, #ffffff 100%);
+                background-size: 200% auto;
+                color: #0000;
+                background-clip: text;
+                -webkit-background-clip: text;
+            }
+            .clip-path-hero {
+                clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
+            }
+            .clip-path-hero-inverse {
+                clip-path: polygon(0 15%, 100% 0, 100% 100%, 0% 100%);
+            }
+        }
+    </style>
 </head>
-<body>
-  
+<body class="bg-white text-black font-framer antialiased overflow-x-hidden">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-sm border-b border-black/5">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-12">
+                    <span class="text-2xl font-bold tracking-tighter">STUDIO</span>
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#" class="text-sm font-medium hover:text-black/60 transition-colors duration-300 relative group">
+                            Work
+                            <span class="absolute bottom-0 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                        <a href="#" class="text-sm font-medium hover:text-black/60 transition-colors duration-300 relative group">
+                            Studio
+                            <span class="absolute bottom-0 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                        <a href="#" class="text-sm font-medium hover:text-black/60 transition-colors duration-300 relative group">
+                            Journal
+                            <span class="absolute bottom-0 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                        <a href="#" class="text-sm font-medium hover:text-black/60 transition-colors duration-300 relative group">
+                            Contact
+                            <span class="absolute bottom-0 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <button class="px-6 py-2 border border-black rounded-full text-sm font-medium hover:bg-black hover:text-white transition-all duration-300">
+                        Start a project
+                    </button>
+                </div>
+                <button class="md:hidden">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 12H21" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M3 6H21" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M3 18H21" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="pt-32 pb-24">
+        <div class="max-w-7xl mx-auto px-6">
+            <!-- Animated heading -->
+            <div class="overflow-hidden">
+                <h1 class="text-6xl md:text-8xl lg:text-[7.5rem] xl:text-[8.5rem] font-bold leading-[0.9] tracking-tighter animate-fade-in">
+                    <span class="inline-block overflow-hidden">
+                        <span class="inline-block transform translate-y-0 hover:-translate-y-2 transition-transform duration-500">Design</span>
+                    </span>
+                    <span class="inline-block overflow-hidden">
+                        <span class="inline-block transform translate-y-0 hover:-translate-y-2 transition-transform duration-500 delay-75">with</span>
+                    </span>
+                    <span class="inline-block overflow-hidden">
+                        <span class="inline-block transform translate-y-0 hover:-translate-y-2 transition-transform duration-500 delay-100">precision</span>
+                    </span>
+                </h1>
+            </div>
+
+            <!-- Subheading with shine effect -->
+            <div class="mt-12 max-w-2xl">
+                <p class="text-xl md:text-2xl text-black/70 leading-relaxed">
+                    <span class="bg-contrast-text animate-text-shine">Crafting digital experiences that blend aesthetic purity with functional excellence. Our approach is minimalist, our execution is flawless.</span>
+                </p>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="mt-16 flex flex-wrap gap-4">
+                <button class="px-8 py-4 bg-black text-white rounded-full font-medium hover:bg-black/90 transition-all duration-300 group relative overflow-hidden">
+                    <span class="relative z-10">View our work</span>
+                    <span class="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-all duration-500"></span>
+                </button>
+                <button class="px-8 py-4 border border-black/10 rounded-full font-medium hover:border-black/30 transition-all duration-300 group relative overflow-hidden">
+                    <span class="relative z-10">About studio</span>
+                    <span class="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-all duration-500"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero Image - Pure White with Subtle Effects -->
+        <div class="mt-24 relative">
+            <div class="absolute inset-0 bg-white z-0 flex items-center justify-center">
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9InJnYmEoMCwwLDAsMC4wMykiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0di00aC0ydjRoLTR2Mmg0djRoMnYtNGg0di0yaC00em0wLTMwVjBoLTJ2NGgtNHYyaDR2NGgydi00aDR2LTJoLTR6TTYgMzR2LTRINHY0SDB2Mmg0djRINnYtNGg0di0ySDZ6TTYgNFYwSDR2NEgwdjJoNHY0SDZ2LTRoNFY0SDZ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-10"></div>
+            </div>
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white border border-black/5 rounded-2xl p-8 aspect-square flex flex-col justify-between transform perspective-1000 rotate-y-5 transition-all duration-700 hover:rotate-y-0 hover:shadow-xl">
+                        <div>
+                            <span class="text-xs font-medium text-black/50">Case Study 01</span>
+                            <h3 class="text-2xl font-bold mt-2">Minimal E-commerce</h3>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="w-full h-32 bg-black/5 rounded-lg animate-border-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-black/5 rounded-2xl p-8 aspect-square flex flex-col justify-between transform perspective-1000 rotate-y-5 transition-all duration-700 hover:rotate-y-0 hover:shadow-xl">
+                        <div>
+                            <span class="text-xs font-medium text-black/50">Case Study 02</span>
+                            <h3 class="text-2xl font-bold mt-2">Digital Platform</h3>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="w-full h-32 bg-black/5 rounded-lg animate-border-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-black/5 rounded-2xl p-8 aspect-square flex flex-col justify-between transform perspective-1000 rotate-y-5 transition-all duration-700 hover:rotate-y-0 hover:shadow-xl">
+                        <div>
+                            <span class="text-xs font-medium text-black/50">Case Study 03</span>
+                            <h3 class="text-2xl font-bold mt-2">Brand Identity</h3>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="w-full h-32 bg-black/5 rounded-lg animate-border-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Stats Section -->
+    <section class="py-24 bg-white border-t border-black/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-4 relative">
+                        <span class="text-stroke-black text-white">12</span>
+                        <span class="absolute inset-0">12</span>
+                    </div>
+                    <p class="text-sm text-black/60">Years operating</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-4 relative">
+                        <span class="text-stroke-black text-white">47+</span>
+                        <span class="absolute inset-0">47+</span>
+                    </div>
+                    <p class="text-sm text-black/60">Clients worldwide</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-4 relative">
+                        <span class="text-stroke-black text-white">3</span>
+                        <span class="absolute inset-0">3</span>
+                    </div>
+                    <p class="text-sm text-black/60">Design awards</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-4 relative">
+                        <span class="text-stroke-black text-white">∞</span>
+                        <span class="absolute inset-0">∞</span>
+                    </div>
+                    <p class="text-sm text-black/60">Creative ideas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-black/5 py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div class="mb-8 md:mb-0">
+                    <span class="text-2xl font-bold tracking-tighter">STUDIO</span>
+                    <p class="text-sm text-black/60 mt-2">Minimal design for complex ideas</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-12">
+                    <div>
+                        <h4 class="text-sm font-medium mb-4">Work</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-sm text-black/60 hover:text-black transition-colors duration-300">All projects</a></li>
+                            <li><a href="#" class="text-sm text-black/60 hover:text-black transition-colors duration-300">Case studies</a></li>
+                            <li><a href="#" class="text-sm text-black/60 hover:text-black transition-colors duration-300">Approach</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium mb-4">Studio</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-sm text-black/60 hover:text-black transition-colors duration-300">About</a></li>
+                            <li><a href="#" class="text-sm text-black/60 hover:text-black transition-colors duration-300">Team</a></li>
+                            <li><a href="#" class="text-sm text-black/60 hover:text-black transition-colors duration-300">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium mb-4">Connect</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-sm text-black/60 hover:text-black transition-colors duration-300">Instagram</a></li>
+                            <li><a href="#" class="text-sm text-black/60 hover:text-black transition-colors duration-300">Twitter</a></li>
+                            <li><a href="#" class="text-sm text-black/60 hover:text-black transition-colors duration-300">LinkedIn</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-16 pt-8 border-t border-black/5 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-xs text-black/40">© 2023 Studio. All rights reserved.</p>
+                <div class="mt-4 md:mt-0 flex space-x-6">
+                    <a href="#" class="text-xs text-black/40 hover:text-black transition-colors duration-300">Privacy</a>
+                    <a href="#" class="text-xs text-black/40 hover:text-black transition-colors duration-300">Terms</a>
+                    <a href="#" class="text-xs text-black/40 hover:text-black transition-colors duration-300">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
