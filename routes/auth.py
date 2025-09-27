@@ -15,24 +15,26 @@ class FormUsers(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    telephone = StringField('Telephone')
+    telephone = StringField('Telephone',validators=[DataRequired()])
     submit = SubmitField('Register')
+
 
 auth_bp = Blueprint('auth', __name__) 
 
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    
-    if request.method == 'POST': 
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password, password): 
+    form = FormUsers()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and check_password_hash(user.password, form.password.data):
             login_user(user)
-            return redirect(url_for('index')) # เปลี่ยน 'index' เป็นชื่อฟังก์ชันที่คุณต้องการให้ไปหลังจากล็อกอิน
+            flash("เข้าสู่ระบบเรียบร้อยแล้ว", "success")
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('index'))
         else:
-            flash('Invalid username or password') #
-    return render_template('login.html') 
+            flash("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "error")
+    return render_template('login.html', form=form)
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -40,10 +42,10 @@ def register():
     if form.validate_on_submit():
         # ตรวจสอบ username/email ซ้ำ
         if User.query.filter_by(username=form.username.data).first():
-            flash("Username already exists", "error")
+            form.username.errors.append("ชื่อผู้ใช้นี้ถูกใช้แล้ว")
             return render_template('register.html', form=form)
         if User.query.filter_by(email=form.email.data).first():
-            flash("Email already exists", "error")
+            form.email.errors.append("อีเมลนี้ถูกใช้แล้ว")
             return render_template('register.html', form=form)
         try:
             hashed_password = generate_password_hash(form.password.data)
@@ -57,7 +59,6 @@ def register():
             )
             db.session.add(user)
             db.session.commit()
-            flash("Account created!", "success")
             return redirect(url_for('auth.login'))
         except Exception as e:
             db.session.rollback()

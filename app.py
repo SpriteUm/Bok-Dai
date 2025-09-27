@@ -1,9 +1,8 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template
 from models import db
 from models.user import User 
 from flask_login import LoginManager
 from routes.auth import auth_bp
-
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "x234y5z"
@@ -26,13 +25,11 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
-    return redirect(url_for("auth.register"))
+    return render_template("index.html")
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
 
-@app.route("/")
-def index():
-    return render_template("register.html")
+

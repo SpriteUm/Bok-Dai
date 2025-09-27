@@ -6,8 +6,8 @@ class User(db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
-    first_name = db.Column(db.String(150))
-    last_name = db.Column(db.String(150))
-    telephone = db.Column(db.String(20))
+    first_name = db.Column(db.String(150),nullable=False)
+    last_name = db.Column(db.String(150),nullable=False)
+    telephone = db.Column(db.String(20),nullable=False)
 
 
