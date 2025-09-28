@@ -1,149 +1,615 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOK DAI - Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .sidebar {
-            background-image: linear-gradient(to bottom, #A9D6A9, #BBDDBB);
-        }
-        .main-content {
-            background-color: #F0FFF0;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BOK DAI - Dashboard (Student v2)</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Palette ตามที่ให้มา */
+    :root{
+      --gray-light: #E6E8E5; /* 1 */
+      --green-dull: #C2D3C2; /* 2 */
+      --green-mid:  #8FAF8F; /* 3 */
+      --green-dark: #5C7F5C; /* 4 */
+      --green-deep: #2F4F2F; /* 5 */
+    }
+
+    html,body{
+      height:100%;
+      background-color: var(--gray-light);
+      color: var(--green-deep);
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      background: linear-gradient(180deg, var(--green-dark), var(--green-mid));
+      color: var(--gray-light);
+    }
+    .sidebar a { color: var(--gray-light); }
+    .sidebar a:hover {
+      background: linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+      color: var(--green-deep);
+    }
+
+    /* Card */
+    .card {
+      background-color: white;
+      border: 1px solid var(--green-mid);
+      color: var(--green-deep);
+    }
+
+    /* Small helper */
+    .muted { color: #6b7280; } /* tailwind gray-500 like */
+
+    /* Modal backdrop */
+    .modal-backdrop {
+      background: rgba(0,0,0,0.4);
+    }
+
+    /* Simple animation for items */
+    .fade-up {
+      transform: translateY(8px);
+      opacity: 0;
+      transition: all 350ms ease;
+    }
+    .fade-up.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* table small */
+    .table-scroll { max-height: 260px; overflow-y: auto; }
+
+    /* a little responsive tweak */
+    @media (max-width: 768px) {
+      .sidebar { position: fixed; z-index: 40; transform: translateX(-110%); transition: transform 300ms ease; }
+      .sidebar.open { transform: translateX(0); }
+      .content-overlay { display: none; }
+      .content-overlay.show { display:block; position:fixed; inset:0; background: rgba(0,0,0,0.3); z-index:30; }
+    }
+
+  </style>
 </head>
-<body class="font-sans text-gray-800">
+<body class="font-sans antialiased">
 
-    <div class="flex h-screen overflow-hidden">
-        
-        <div class="w-64 flex-shrink-0 relative">
-            <div class="sidebar h-full flex flex-col items-center pt-8">
-                <div class="text-2xl font-bold mb-8">BOK DAI</div>
-                <nav class="w-full px-4 space-y-2">
-                    <a href="#" class="flex items-center p-3 rounded-xl bg-white bg-opacity-70 font-semibold text-gray-800 shadow">
-                        <i class="fas fa-tachometer-alt mr-3"></i>
-                        Dashboard
-                    </a>
-                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
-                        <i class="fas fa-chart-bar mr-3"></i>
-                        รายงานสถานะ
-                    </a>
-                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
-                        <i class="fas fa-clipboard-list mr-3"></i>
-                        สถานะที่อนุมัติแล้ว
-                    </a>
-                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
-                        <i class="fas fa-exclamation-triangle mr-3"></i>
-                        รายการปัญหา
-                    </a>
-                </nav>
-                <div class="mt-auto w-full px-4 py-8 space-y-2">
-                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
-                        <i class="fas fa-cog mr-3"></i>
-                        Settings
-                    </a>
-                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
-                        <i class="fas fa-user-circle mr-3"></i>
-                        โปรไฟล์
-                    </a>
-                    <a href="#" class="flex items-center p-3 rounded-xl hover:bg-white hover:bg-opacity-50 transition">
-                        <i class="fas fa-sign-out-alt mr-3"></i>
-                        Logout
-                    </a>
-                </div>
-            </div>
+  <div id="app" class="flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar w-64 flex-shrink-0 p-6 hidden md:flex flex-col">
+      <div class="flex items-center mb-6">
+        <div class="rounded-full w-12 h-12 flex items-center justify-center bg-white/20 mr-3">
+          <i class="fas fa-seedling text-xl"></i>
+        </div>
+        <div>
+          <div class="text-lg font-bold">BOK DAI</div>
+        </div>
+      </div>
+
+      <nav class="flex-1 space-y-2">
+        <a class="flex items-center gap-3 p-3 rounded-xl bg-white/10 font-semibold" href="#" data-section="dashboard">
+          <i class="fas fa-tachometer-alt"></i> หน้าหลัก
+        </a>
+        <a class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition" href="#" data-section="reports">
+          <i class="fas fa-chart-bar"></i> รายงานสถานะ
+        </a>
+        <a class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition" href="#" data-section="approved">
+          <i class="fas fa-clipboard-list"></i> สถานะที่อนุมัติแล้ว
+        </a>
+        <a class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition" href="#" data-section="issues">
+          <i class="fas fa-exclamation-triangle"></i> รายการปัญหา
+        </a>
+      </nav>
+
+      <div class="mt-auto w-full space-y-2">
+        <a class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition" href="#" id="settingsBtn">
+          <i class="fas fa-cog"></i> Settings
+        </a>
+        <a class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition" href="#">
+          <i class="fas fa-user-circle"></i> โปรไฟล์
+        </a>
+        <a class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition" href="#">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- MOBILE SIDEBAR (hidden on md+) -->
+    <aside id="sidebarMobile" class="sidebar w-64 p-6 md:hidden">
+      <!-- content same as above but simple -->
+      <div class="flex items-center mb-6">
+        <div class="rounded-full w-10 h-10 flex items-center justify-center bg-white/20 mr-3">
+          <i class="fas fa-seedling"></i>
+        </div>
+        <div>
+          <div class="font-bold">BOK DAI</div>
+        </div>
+      </div>
+      <nav class="space-y-2">
+        <a class="block p-3 rounded-xl bg-white/10" href="#" data-section="dashboard">Dashboard</a>
+        <a class="block p-3 rounded-xl" href="#" data-section="reports">รายงานสถานะ</a>
+        <a class="block p-3 rounded-xl" href="#" data-section="approved">สถานะที่อนุมัติแล้ว</a>
+        <a class="block p-3 rounded-xl" href="#" data-section="issues">รายการปัญหา</a>
+      </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="flex-1 overflow-auto p-6">
+      <!-- topbar -->
+      <header class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-4">
+          <button id="menuToggle" class="md:hidden p-2 rounded bg-white/60">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="text-2xl font-bold">หน้าหลัก</h1>
         </div>
 
-        <div class="flex-1 overflow-y-auto main-content p-8">
-            <header class="flex justify-between items-center mb-8">
-                <h1 class="text-2xl font-bold">หน้าหลัก</h1>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm">หน้าหลัก</span>
-                </div>
-            </header>
-
-            <div class="bg-white rounded-2xl shadow p-6 mb-8">
-                <h2 class="text-xl font-semibold mb-4">ภาพรวมสถานะ</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <div class="flex items-center p-4 rounded-xl bg-[#CCF4C7] shadow-md">
-                        <i class="fas fa-file-alt text-2xl mr-4 text-[#4F8B4F]"></i>
-                        <div>
-                            <p class="text-sm font-medium">รายงานทั้งหมด</p>
-                            <p class="text-lg font-bold">42 คน</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-4 rounded-xl bg-[#FFFACD] shadow-md">
-                        <i class="fas fa-clock text-2xl mr-4 text-[#D4A135]"></i>
-                        <div>
-                            <p class="text-sm font-medium">รอรับเรื่อง</p>
-                            <p class="text-lg font-bold">5 คน</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-4 rounded-xl bg-[#A1C9A1] shadow-md">
-                        <i class="fas fa-tasks text-2xl mr-4 text-[#4F8B4F]"></i>
-                        <div>
-                            <p class="text-sm font-medium">กำลังดำเนินการ</p>
-                            <p class="text-lg font-bold">5 รายการ</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-4 rounded-xl bg-[#D4EDDA] shadow-md">
-                        <i class="fas fa-clipboard-check text-2xl mr-4 text-[#28A745]"></i>
-                        <div>
-                            <p class="text-sm font-medium">สำเร็จแล้ว</p>
-                            <p class="text-lg font-bold">7 รายการ</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white rounded-2xl shadow p-6">
-                    <h2 class="text-xl font-semibold mb-4">ปัญหา</h2>
-                    <div class="space-y-4">
-                        <div class="flex items-start p-4 bg-[#F9FCF9] rounded-xl shadow-inner">
-                            <i class="fas fa-user-circle text-2xl mr-4 text-gray-500"></i>
-                            <div>
-                                <p class="font-semibold">ขยะล้นมากตรงหน้าตึก</p>
-                                <p class="text-sm text-gray-600">คลิกเพื่อดูรายละเอียด</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start p-4 bg-[#F9FCF9] rounded-xl shadow-inner">
-                            <i class="fas fa-user-circle text-2xl mr-4 text-gray-500"></i>
-                            <div>
-                                <p class="font-semibold">ท่อน้ำห้องน้ำชายชำรุด</p>
-                                <p class="text-sm text-gray-600">คลิกเพื่อดูรายละเอียด</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow p-6">
-                    <h2 class="text-xl font-semibold mb-4">ปัญหาที่พบโดยเฉลี่ย</h2>
-                    <div class="grid grid-cols-2 gap-4 h-64">
-                        <div class="flex flex-col justify-end items-center">
-                            <div class="w-full bg-[#FFDA7B] rounded-t-lg" style="height: 40%"></div>
-                            <div class="text-center mt-2 text-sm">10 รายการ</div>
-                            <div class="text-xs text-gray-600">น้ำเน่า, ท่อน้ำตัน</div>
-                        </div>
-                        <div class="flex flex-col justify-end items-center">
-                            <div class="w-full bg-[#6CC644] rounded-t-lg" style="height: 80%"></div>
-                            <div class="text-center mt-2 text-sm">20 รายการ</div>
-                            <div class="text-xs text-gray-600"> ท่อน้ำทิ้ง</div>
-                        </div>
-                        <div class="flex flex-col justify-end items-center">
-                            <div class="w-full bg-[#3B82F6] rounded-t-lg" style="height: 48%"></div>
-                            <div class="text-center mt-2 text-sm">12 รายการ</div>
-                            <div class="text-xs text-gray-600">ของเสีย, ของเน่าเสียเหม็น</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <input id="searchInput" type="text" placeholder="ค้นหา..." class="px-3 py-2 rounded-full border border-gray-200" />
+            <i class="fas fa-search absolute right-3 top-2.5 muted"></i>
+          </div>
+          <button id="notifBtn" class="p-2 rounded bg-white/60"><i class="fas fa-bell"></i></button>
+          <img src="" class="w-9 h-9 rounded-full border-2 border-white" alt="user" />
         </div>
+      </header>
+
+      <!-- Main panels -->
+      <main>
+        <!-- Overview cards -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+
+          <div class="card p-4 rounded-2xl shadow fade-up show">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[color:var(--green-dull)] text-white">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div>
+                <div class="text-sm">รายงานทั้งหมด</div>
+                <div class="text-2xl font-bold" id="totalReports">42 คน</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-4 rounded-2xl shadow fade-up show">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: #FFFACD;">
+                <i class="fas fa-clock text-[color:var(--green-deep)]"></i>
+              </div>
+              <div>
+                <div class="text-sm">รอรับเรื่อง</div>
+                <div class="text-2xl font-bold" id="pendingCount">5 คน</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-4 rounded-2xl shadow fade-up show">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[color:var(--green-mid)] text-white">
+                <i class="fas fa-tasks"></i>
+              </div>
+              <div>
+                <div class="text-sm">กำลังดำเนินการ</div>
+                <div class="text-2xl font-bold" id="inProgressCount">5 รายการ</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-4 rounded-2xl shadow fade-up show">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[color:var(--green-dark)] text-white">
+                <i class="fas fa-clipboard-check"></i>
+              </div>
+              <div>
+                <div class="text-sm">สำเร็จแล้ว</div>
+                <div class="text-2xl font-bold" id="doneCount">7 รายการ</div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Recent bookings / table and chart -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <!-- big table -->
+          <div class="lg:col-span-2 card p-4 rounded-2xl shadow">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-semibold">รายการปัญหา ล่าสุด</h2>
+              <div class="flex items-center gap-2">
+                <select id="filterStatus" class="px-3 py-1 rounded border">
+                  <option value="all">ทั้งหมด</option>
+                  <option value="pending">รอรับเรื่อง</option>
+                  <option value="inprogress">กำลังดำเนินการ</option>
+                  <option value="done">สำเร็จ</option>
+                </select>
+                <button id="refreshBtn" class="px-3 py-1 rounded bg-[color:var(--green-mid)] text-white">รีเฟรช</button>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <table class="min-w-full text-left">
+                <thead class="text-sm text-gray-600 uppercase">
+                  <tr>
+                    <th class="p-2">ผู้แจ้ง</th>
+                    <th class="p-2">คำอธิบาย</th>
+                    <th class="p-2">วันที่</th>
+                    <th class="p-2">สถานะ</th>
+                    <th class="p-2">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="issuesTableBody">
+                  <!-- rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4 flex justify-end">
+              <button id="addIssueBtn" class="px-4 py-2 rounded bg-[color:var(--green-dark)] text-white">
+                <i class="fas fa-plus mr-2"></i> เพิ่มเรื่อง
+              </button>
+            </div>
+          </div>
+
+          <!-- small charts -->
+          <div class="card p-4 rounded-2xl shadow">
+            <h2 class="text-lg font-semibold mb-3">สถิติประเภทปัญหา</h2>
+            <canvas id="typeChart" width="300" height="220"></canvas>
+            <div class="text-sm muted mt-2">อัปเดตครั้งล่าสุด: <span id="lastUpdated">-</span></div>
+          </div>
+        </section>
+
+        <!-- Problems & average chart -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="card p-4 rounded-2xl shadow">
+            <h2 class="text-lg font-semibold mb-3">ปัญหา</h2>
+            <div class="space-y-3" id="issueList">
+              <!-- items injected -->
+            </div>
+          </div>
+
+          <div class="card p-4 rounded-2xl shadow">
+            <h2 class="text-lg font-semibold mb-3">ปัญหาที่พบโดยเฉลี่ย</h2>
+            <div class="grid grid-cols-2 gap-4 h-48">
+              <div class="flex flex-col justify-end items-center">
+                <div class="w-full bg-[color:var(--green-mid)] rounded-t-lg" style="height: 40%"></div>
+                <div class="text-center mt-2 text-sm">10 รายการ</div>
+                <div class="text-xs muted">น้ำเน่า, ท่อน้ำตัน</div>
+              </div>
+              <div class="flex flex-col justify-end items-center">
+                <div class="w-full bg-[color:var(--green-dark)] rounded-t-lg" style="height: 80%"></div>
+                <div class="text-center mt-2 text-sm">20 รายการ</div>
+                <div class="text-xs muted">ท่อน้ำทิ้ง</div>
+              </div>
+              <div class="flex flex-col justify-end items-center">
+                <div class="w-full bg-[#3B82F6] rounded-t-lg" style="height: 48%"></div>
+                <div class="text-center mt-2 text-sm">12 รายการ</div>
+                <div class="text-xs muted">ของเสีย เหม็น</div>
+              </div>
+              <div class="flex flex-col justify-end items-center">
+                <div class="w-full bg-[#FF7B7B] rounded-t-lg" style="height: 10%"></div>
+                <div class="text-center mt-2 text-sm">3 รายการ</div>
+                <div class="text-xs muted">ไฟฟ้า</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Footer small -->
+        <footer class="mt-6 text-sm muted">
+        </footer>
+      </main>
     </div>
+  </div>
+
+  <!-- MODAL (hidden) -->
+  <div id="modalBackdrop" class="hidden modal-backdrop fixed inset-0 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl w-11/12 md:w-1/2 p-6 shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold" id="modalTitle">รายละเอียดปัญหา</h3>
+        <button id="modalClose" class="text-gray-500"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="modalBody" class="text-sm muted">
+        <!-- injected -->
+      </div>
+      <div class="mt-4 flex justify-end">
+        <button id="modalAction" class="px-4 py-2 rounded bg-[color:var(--green-dark)] text-white">ทำเครื่องหมายสำเร็จ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMPLE SCRIPTS (student style, not perfect but works) -->
+  <script>
+    // ---------- Dummy data (in real app, fetch from backend API) ----------
+    let issues = [
+      { id:1, reporter: 'น.ส. เบญจา', desc: 'ขยะล้นมากตรงหน้าตึก', date:'2025-09-20', status:'รอดำเนินการ', type:'ขยะ' },
+      { id:2, reporter: 'นาย สมชาย', desc: 'ท่อน้ำห้องน้ำชายชำรุด', date:'2025-09-19', status:'กำลังดำเนินการ', type:'ท่อน้ำ' },
+      { id:3, reporter: 'น.ส. สมหญิง', desc: 'ไฟฟ้าหลอดเสีย', date:'2025-09-17', status:'เสร็จสิ้น', type:'ไฟฟ้า' },
+      { id:4, reporter: 'นาย สมปอง', desc: 'กลิ่นเหม็นจากห้องอาหาร', date:'2025-09-12', status:'รอดำเนินการ', type:'กลิ่น' },
+      { id:5, reporter: 'น.ส. ปาริชาต', desc: 'ประตูห้องน้ำติด', date:'2025-09-10', status:'กำลังดำเนินการ', type:'ชำรุด' },
+    ];
+
+    // small helper
+    const $ = (q) => document.querySelector(q);
+    const $$ = (q) => document.querySelectorAll(q);
+
+    // ---------- render functions ----------
+    function renderIssuesTable(filter='all'){
+      const tbody = $('#issuesTableBody');
+      tbody.innerHTML = '';
+      let filtered = issues.filter(i => filter==='all' ? true : i.status===filter);
+      // sort by date desc (simple)
+      filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
+      for (const it of filtered){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-2 align-top"><div class="font-medium">${it.reporter}</div><div class="text-xs muted">${it.type}</div></td>
+          <td class="p-2 align-top">${it.desc}</td>
+          <td class="p-2 align-top">${it.date}</td>
+          <td class="p-2 align-top">
+            <span class="px-2 py-1 rounded-full text-xs ${it.status==='pending' ? 'bg-yellow-100 text-yellow-800' : (it.status==='inprogress' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800')}">
+              ${it.status}
+            </span>
+          </td>
+          <td class="p-2 align-top">
+            <button class="openModalBtn px-2 py-1 rounded bg-[color:var(--green-mid)] text-white" data-id="${it.id}">ดู</button>
+            <button class="markDoneBtn px-2 py-1 rounded bg-gray-200 text-sm ml-2" data-id="${it.id}">ทำเสร็จ</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+      attachRowEvents();
+    }
+
+    function renderIssueList(){
+      const container = $('#issueList');
+      container.innerHTML = '';
+      for (const it of issues){
+        const el = document.createElement('div');
+        el.className = 'p-3 bg-[color:var(--gray-light)] rounded-xl flex items-start gap-3';
+        el.innerHTML = `
+          <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center"><i class="fas fa-user-circle text-2xl muted"></i></div>
+          <div>
+            <div class="font-semibold">${it.desc}</div>
+            <div class="text-xs muted">โดย ${it.reporter} • ${it.date}</div>
+          </div>
+        `;
+        container.appendChild(el);
+      }
+    }
+
+    // ---------- attach events to dynamically created rows ----------
+    function attachRowEvents(){
+      $$('.openModalBtn').forEach(btn => {
+        btn.onclick = (e) => {
+          const id = parseInt(btn.dataset.id);
+          openModalForIssue(id);
+        };
+      });
+      $$('.markDoneBtn').forEach(btn => {
+        btn.onclick = (e) => {
+          const id = parseInt(btn.dataset.id);
+          markIssueDone(id);
+        };
+      });
+    }
+
+    function openModalForIssue(id){
+      const it = issues.find(i=>i.id===id);
+      if (!it) return;
+      $('#modalTitle').textContent = `รายละเอียด: ${it.reporter}`;
+      $('#modalBody').innerHTML = `
+        <p class="mb-2"><strong>คำอธิบาย:</strong> ${it.desc}</p>
+        <p class="mb-2"><strong>ประเภท:</strong> ${it.type}</p>
+        <p class="mb-2"><strong>วันที่:</strong> ${it.date}</p>
+        <p class="mb-2"><strong>สถานะ:</strong> ${it.status}</p>
+      `;
+      $('#modalAction').dataset.id = it.id;
+      $('#modalBackdrop').classList.remove('hidden');
+    }
+
+    function closeModal(){
+      $('#modalBackdrop').classList.add('hidden');
+    }
+
+    function markIssueDone(id){
+      const it = issues.find(i=>i.id===id);
+      if (!it) return;
+      it.status = 'done';
+      renderAll();
+    }
+
+    // ---------- chart ----------
+    let typeChart = null;
+    function renderTypeChart(){
+      // count types
+      const counts = {};
+      for (const it of issues){
+        counts[it.type] = (counts[it.type]||0) + 1;
+      }
+      const labels = Object.keys(counts);
+      const data = Object.values(counts);
+      const ctx = document.getElementById('typeChart').getContext('2d');
+      if (typeChart) typeChart.destroy();
+      typeChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{
+            data,
+            backgroundColor: ['#8FAF8F','#5C7F5C','#FFDA7B','#FF7B7B','#3B82F6'],
+          }]
+        },
+        options: {
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+      $('#lastUpdated').textContent = new Date().toLocaleString();
+    }
+
+    // ---------- basic interactions ----------
+    $('#menuToggle').addEventListener('click', ()=> {
+      const s = document.getElementById('sidebarMobile');
+      s.classList.toggle('open');
+      // on mobile we can show backdrop (simple)
+      const overlay = document.createElement('div');
+      overlay.className = 'content-overlay show';
+      overlay.addEventListener('click', ()=> {
+        s.classList.remove('open');
+        overlay.remove();
+      });
+      document.body.appendChild(overlay);
+    });
+
+    $('#refreshBtn').addEventListener('click', ()=> {
+      fetchIssuesFromServer();
+    });
+
+    $('#filterStatus').addEventListener('change', (e)=>{
+      const val = e.target.value;
+      renderIssuesTable(val==='all' ? 'all' : val);
+    });
+
+    $('#modalClose').addEventListener('click', closeModal);
+    $('#modalAction').addEventListener('click', (e)=>{
+      const id = parseInt(e.target.dataset.id);
+      if (id) markIssueDone(id);
+      closeModal();
+    });
+
+    $('#addIssueBtn').addEventListener('click', ()=>{
+      // simple prompt to add
+      const reporter = prompt('ชื่อผู้แจ้ง:') || 'ไม่ระบุ';
+      const desc = prompt('คำอธิบายปัญหา:') || 'ไม่มีคำอธิบาย';
+      const type = prompt('ประเภท:') || 'ทั่วไป';
+      const newItem = {
+        id: Date.now(),
+        reporter, desc, type, date: new Date().toISOString().slice(0,10), status:'รอดำเนินการ'
+      };
+      issues.unshift(newItem);
+      renderAll();
+    });
+
+    // ---------- fake fetch to simulate backend ----------
+    function fetchIssuesFromServer(){
+      // student implementation: simulate network delay
+      $('#refreshBtn').textContent = 'กำลังโหลด...';
+      setTimeout(()=> {
+        // simulate server might update one item
+        if (Math.random() > 0.6){
+          issues.push({
+            id: Date.now(),
+            reporter: 'นักศึกษา ใหม่',
+            desc: 'มีปัญหาเล็กน้อย',
+            date: new Date().toISOString().slice(0,10),
+            status: 'รอดำเนินการ',
+            type: 'อื่นๆ'
+          });
+        }
+        $('#refreshBtn').textContent = 'รีเฟรช';
+        renderAll();
+      }, 900);
+    }
+
+    // ---------- search -->
+    $('#searchInput').addEventListener('input', (e)=>{
+      const q = e.target.value.toLowerCase().trim();
+      const filtered = issues.filter(i => i.reporter.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q) || i.type.toLowerCase().includes(q));
+      renderIssuesTableFilteredArray(filtered);
+    });
+
+    function renderIssuesTableFilteredArray(arr){
+      const tbody = $('#issuesTableBody');
+      tbody.innerHTML = '';
+      for (const it of arr){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-2 align-top"><div class="font-medium">${it.reporter}</div><div class="text-xs muted">${it.type}</div></td>
+          <td class="p-2 align-top">${it.desc}</td>
+          <td class="p-2 align-top">${it.date}</td>
+          <td class="p-2 align-top">
+            <span class="px-2 py-1 rounded-full text-xs ${it.status==='pending' ? 'bg-yellow-100 text-yellow-800' : (it.status==='inprogress' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800')}">
+              ${it.status}
+            </span>
+          </td>
+          <td class="p-2 align-top">
+            <button class="openModalBtn px-2 py-1 rounded bg-[color:var(--green-mid)] text-white" data-id="${it.id}">ดู</button>
+            <button class="markDoneBtn px-2 py-1 rounded bg-gray-200 text-sm ml-2" data-id="${it.id}">ทำเสร็จ</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+      attachRowEvents();
+    }
+
+    // ---------- initial render ----------
+    function renderAll(){
+      renderIssuesTable('all');
+      renderIssueList();
+      renderTypeChart();
+      // update counts
+      $('#totalReports').textContent = issues.length + ' คน';
+      $('#pendingCount').textContent = issues.filter(i=>i.status==='รอดำเนินการ').length + ' คน';
+      $('#inProgressCount').textContent = issues.filter(i=>i.status==='กำลังดำเนินการ').length + ' รายการ';
+      $('#doneCount').textContent = issues.filter(i=>i.status==='เสร็จสิ้น').length + ' รายการ';
+    }
+
+    // run initial
+    renderAll();
+
+    // ---------- keyboard shortcuts (student fun) ----------
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === 'n'){ // n to add
+        document.getElementById('addIssueBtn').click();
+      }
+      if (e.key === 'r'){ // r refresh
+        document.getElementById('refreshBtn').click();
+      }
+    });
+
+    // ---------- simple auto-save example (localStorage) ----------
+    setInterval(()=>{
+      // save to localStorage (student style)
+      try {
+        localStorage.setItem('issues_demo', JSON.stringify(issues));
+      } catch(err) {
+        // ignore
+      }
+    }, 5000);
+
+    // ---------- try load from localStorage on start ----------
+    (function tryLoad(){
+      try {
+        const data = localStorage.getItem('issues_demo');
+        if (data){
+          const parsed = JSON.parse(data);
+          if (Array.isArray(parsed) && parsed.length>0){
+            issues = parsed;
+            renderAll();
+          }
+        }
+      } catch(err){}
+    })();
+
+    // ---------- small UX: show fade-up on scroll (very simple) ----------
+    window.addEventListener('load', ()=>{
+      $$('.fade-up').forEach(el=>{
+        setTimeout(()=> el.classList.add('show'), 80);
+      });
+    });
+
+    // ---------- Placeholder: example of calling backend (Flask) ----------
+    async function loadFromBackend(){
+    }
+
+  </script>
 
 </body>
 </html>

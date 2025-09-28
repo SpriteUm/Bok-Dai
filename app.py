@@ -14,15 +14,23 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+# ระบุว่า login view คือ route ไหน (ถ้าใช้ login_required)
+login_manager.login_view = "login"
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()   # สร้างตารางใน app.db
-    app.run(debug=True)
-
+# 👉 หน้าแรกให้เปิด dashboard
 @app.route("/")
 def index():
-    return render_template("register.html")
+    return render_template("dashboard.html")
+
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
