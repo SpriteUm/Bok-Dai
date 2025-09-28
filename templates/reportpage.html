@@ -62,10 +62,8 @@
               <button type="button" id="btnUseLocation" class="px-3 py-2 bg-green-600 text-white rounded-lg shadow-sm">
                 ตำแหน่งปัจจุบัน
               </button>
-              <a href="https://www.google.com/maps?q={{ location.lat }},{{ location.lng }}" target="_blank">
-                เปิดใน Google Maps
-              </a>
             </div>
+            <div class="text-xs text-red-600 mt-1 hidden" id="errLocation">กรุณากรอกสถานที่</div>
             <span class="text-sm font-medium text-gray-700">Link Google Maps</span>
             <input id="mapLinkInput"
               class="mt-2 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
@@ -238,5 +236,4 @@
     renderPreviews();
   </script>
 </body>
-
 </html>

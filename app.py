@@ -18,11 +18,11 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@app.route("/")
+def index():
+    return render_template("index.html")  # เปลี่ยนชื่อไฟล์ให้ตรง
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()   # สร้างตารางใน app.db
     app.run(debug=True)
-
-@app.route("/")
-def index():
-    return render_template("index.html")
