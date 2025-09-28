@@ -11,7 +11,7 @@ class FormUsers(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', 
-                         validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
+                         validators=[DataRequired(), EqualTo('password', message='รหัสผ่านจะต้องตรงกัน')])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])

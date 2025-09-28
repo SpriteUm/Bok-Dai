@@ -12,32 +12,6 @@
       <form method="POST" action="{{ url_for('auth.login') }}" class="max-w-md w-full space-y-5">
 
         {{ form.csrf_token }}
-
-        <div class="text-center pb-8">
-          <h3 class="text-gray-800 text-2xl font-bold sm:text-3xl">Login to your account</h3>
-        </div>
-        <div>
-          {{ form.username.label(class_="font-medium") }}
-          {% for error in form.username.errors %}
-            <span class="text-red-500 text-sm block">{{ error }}</span>
-          {% endfor %}
-          {{ form.username(class_="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg") }}
-        </div>
-        <div>
-          {{ form.password.label(class_="font-medium") }}
-          {% for error in form.password.errors %}
-            <span class="text-red-500 text-sm block">{{ error }}</span>
-          {% endfor %}
-          {{ form.password(class_="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg") }}
-        </div>
-        <button
-          type="submit"
-          class="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
-        >Login</button>
-        <p class="text-center">
-          Don't have an account?
-          <a href="{{ url_for('auth.register') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
-        </p>
         {% with messages = get_flashed_messages() %}
           {% if messages %}
             <div class="mb-4">
@@ -47,6 +21,36 @@
             </div>
           {% endif %}
         {% endwith %}
+
+        <div class="text-center pb-8">
+          <h3 class="text-gray-800 text-2xl font-bold sm:text-3xl">Login to your account</h3>
+        </div>
+
+        <div>
+          {{ form.username.label(class_="font-medium") }}
+          {{ form.username(autocomplete="username", class_="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg") }}
+          {% for error in form.username.errors %}
+            <span class="text-red-500 text-sm block">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div>
+          {{ form.password.label(class_="font-medium") }}
+          {{ form.password(autocomplete="current-password", class_="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg") }}
+          {% for error in form.password.errors %}
+            <span class="text-red-500 text-sm block">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <button
+          type="submit"
+          class="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
+        >Login</button>
+        <p class="text-center">
+          ยังไม่มีบัญชีใช่ไหม?
+          <a href="{{ url_for('auth.register') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
+        </p>
+
       </form>
 
     </div>
