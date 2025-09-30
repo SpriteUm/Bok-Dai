@@ -1,178 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOK DAI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'framer': ['"Framer Sans"', 'sans-serif'],
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'text-shine': 'text-shine 3s ease-out infinite',
-                        'border-pulse': 'border-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fade-in 1.5s ease-out',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        'text-shine': {
-                            '0%': { 'background-position': '0% 50%' },
-                            '100%': { 'background-position': '100% 50%' },
-                        },
-                        'border-pulse': {
-                            '0%, 100%': { 'border-color': 'rgba(0, 0, 0, 0.1)' },
-                            '50%': { 'border-color': 'rgba(0, 0, 0, 0.3)' },
-                        },
-                        'fade-in': {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    },
-                    backgroundImage: {
-                        'subtle-grid': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap" rel="stylesheet">
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .text-stroke-white {
-                -webkit-text-stroke: 1px white;
-                text-stroke: 1px white;
-            }
-            .text-stroke-black {
-                -webkit-text-stroke: 1px rgba(0, 0, 0, 0.1);
-                text-stroke: 1px rgba(0, 0, 0, 0.1);
-            }
-            .perspective-1000 {
-                perspective: 1000px;
-            }
-            .rotate-y-5 {
-                transform: rotateY(5deg);
-            }
-            .rotate-y-10 {
-                transform: rotateY(10deg);
-            }
-            .backface-hidden {
-                backface-visibility: hidden;
-            }
-            .bg-contrast-text {
-                background: linear-gradient(90deg, #000000 0%, #000000 50%, #000000 100%);
-                background-size: 200% auto;
-                color: #0000;
-                background-clip: text;
-                -webkit-background-clip: text;
-            }
-            .bg-contrast-text-white {
-                background: linear-gradient(90deg, #ffffff 0%, #ffffff 50%, #ffffff 100%);
-                background-size: 200% auto;
-                color: #0000;
-                background-clip: text;
-                -webkit-background-clip: text;
-            }
-            .clip-path-hero {
-                clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
-            }
-            .clip-path-hero-inverse {
-                clip-path: polygon(0 15%, 100% 0, 100% 100%, 0% 100%);
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOK DAI</title>
+  <style>
+    :root {
+      --bg-light: #f0f4f2;
+      --bg-mid: #c8d8cc;
+      --accent: #4a6f5a;
+      --text-dark: #2e3d32;
+      --button: #5c8a6e;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, var(--bg-light), var(--bg-mid));
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    .navbar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 80px; /* ขยับออกจากขอบซ้าย-ขวา */
+      position: absolute;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      padding-left: 10px;
+    }
+
+    .logo img {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+    }
+
+    .nav-center {
+      display: flex;
+      gap: 20px;
+    }
+
+    .navbar button {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .navbar button:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .profile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .profile img {
+      height: 44px;
+      width: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent);
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 55px;
+      right: 0;
+      background-color: white;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: none;
+      flex-direction: column;
+      min-width: 160px;
+      z-index: 20;
+    }
+
+    .dropdown a {
+      padding: 10px 15px;
+      text-decoration: none;
+      color: var(--text-dark);
+      font-size: 14px;
+      border-bottom: 1px solid #eee;
+      transition: background 0.2s ease;
+    }
+
+    .dropdown a:hover {
+      background-color: var(--bg-mid);
+    }
+
+    .title {
+      margin-top: 160px;
+      font-size: 80px;
+      font-weight: bold;
+      color: var(--text-dark);
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    .report-btn {
+      margin-top: 40px;
+      padding: 15px 40px;
+      font-size: 20px;
+      background-color: var(--button);
+      border: none;
+      border-radius: 25px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .report-btn:hover {
+      background-color: var(--accent);
+    }
+
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: transparent;
+      border-top: 1px solid var(--accent);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 15px 30px;
+      }
+
+      .title {
+        font-size: 48px;
+      }
+
+      .report-btn {
+        font-size: 16px;
+        padding: 12px 30px;
+      }
+
+      .profile img {
+        height: 36px;
+        width: 36px;
+      }
+    }
+  </style>
 </head>
-<body class="bg-[#E6F4E6] text-[#2E3D2E] font-framer antialiased overflow-x-hidden">
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-[#A3C9A3]/90 backdrop-blur-sm border-b border-[#5A7D5A]/20">
-        <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-12">
-                    <span class="text-2xl font-bold tracking-tighter text-[#2E3D2E]">BOK DAI</span>
-                    <div class="hidden md:flex space-x-8">
-                        <a href="#" class="text-sm font-medium text-[#2E3D2E] hover:text-[#5A7D5A] transition-colors duration-300 relative group">
-                            หน้าหลัก
-                            <span class="absolute bottom-0 left-0 w-0 h-px bg-[#2E3D2E] transition-all duration-300 group-hover:w-full"></span>
-                        </a>
-                        <a href="#" class="text-sm font-medium text-[#2E3D2E] hover:text-[#5A7D5A] transition-colors duration-300 relative group">
-                            รายงาน
-                            <span class="absolute bottom-0 left-0 w-0 h-px bg-[#2E3D2E] transition-all duration-300 group-hover:w-full"></span>
-                        </a>
-                        <a href="#" class="text-sm font-medium text-[#2E3D2E] hover:text-[#5A7D5A] transition-colors duration-300 relative group">
-                            ติดตามสถานะ
-                            <span class="absolute bottom-0 left-0 w-0 h-px bg-[#2E3D2E] transition-all duration-300 group-hover:w-full"></span>
-                        </a>
-                        <a href="#" class="text-sm font-medium text-[#2E3D2E] hover:text-[#5A7D5A] transition-colors duration-300 relative group">
-                            ประวัติการรายงาน
-                            <span class="absolute bottom-0 left-0 w-0 h-px bg-[#2E3D2E] transition-all duration-300 group-hover:w-full"></span>
-                        </a>
-                        <a href="#" class="text-sm font-medium text-[#2E3D2E] hover:text-[#5A7D5A] transition-colors duration-300 relative group">
-                            เกี่ยวกับเรา
-                            <span class="absolute bottom-0 left-0 w-0 h-px bg-[#2E3D2E] transition-all duration-300 group-hover:w-full"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <!-- Profile Dropdown -->
-                    <div class="hidden md:block relative">
-                        <button id="profileButton" class="flex items-center space-x-2 px-4 py-2 border border-[#5A7D5A] rounded-full text-sm font-medium text-[#2E3D2E] hover:bg-[#5A7D5A] hover:text-white transition-all duration-300">
-                            <img src="https://ui-avatars.com/api/?name=User&background=5A7D5A&color=fff&rounded=true" alt="User" class="w-8 h-8 rounded-full">
-                            <span>Profile</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
+<body>
+  <div class="navbar">
+    <div class="logo">
+      <img src="logo.png" alt="BOK DAI Logo">
+    </div>
 
-                        <!-- Dropdown Menu -->
-                        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#E6F4E6]">โปรไฟล์</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#E6F4E6]">ติดตามสถานะ</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#E6F4E6]">ประวัติการรายงาน</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#E6F4E6]">ตั้งค่า</a>
-                            <div class="border-t border-gray-200"></div>
-                            <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
-                        </div>
-                    </div>
+    <div class="nav-center">
+      <button>หน้าหลัก</button>
+      <button>รายงาน</button>
+      <button>สถานะ</button>
+      <button>ประวัติการรายงาน</button>
+      <button>เกี่ยวกับเรา</button>
+    </div>
 
-                    <!-- Mobile Menu Button -->
-                    <button class="md:hidden ml-2">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 12H21" stroke="#2E3D2E" stroke-width="1.5" stroke-linecap="round"/>
-                            <path d="M3 6H21" stroke="#2E3D2E" stroke-width="1.5" stroke-linecap="round"/>
-                            <path d="M3 18H21" stroke="#2E3D2E" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div class="profile" onclick="toggleDropdown()">
+      <img src="user-avatar.jpg" alt="User Profile">
+      <div class="dropdown" id="profileDropdown">
+        <a href="#">ดูโปรไฟล์</a>
+        <a href="#">ตั้งค่า</a>
+        <a href="#">ออกจากระบบ</a>
+      </div>
+    </div>
+  </div>
 
-    <!-- (ส่วนอื่นๆ ของ Hero, Stats, Footer เหมือนเดิม) -->
+  <div class="title">BOK DAI</div>
+  <button class="report-btn">รายงาน</button>
 
-    <script>
-        // Toggle Dropdown
-        document.addEventListener("DOMContentLoaded", () => {
-            const profileButton = document.getElementById("profileButton");
-            const profileMenu = document.getElementById("profileMenu");
+  <div class="bottom-bar">
+    © 2025 BOK DAI. All rights reserved.
+  </div>
 
-            profileButton.addEventListener("click", () => {
-                profileMenu.classList.toggle("hidden");
-            });
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById("profileDropdown");
+      dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+    }
 
-            // ปิด dropdown ถ้าคลิกข้างนอก
-            document.addEventListener("click", (e) => {
-                if (!profileButton.contains(e.target) && !profileMenu.contains(e.target)) {
-                    profileMenu.classList.add("hidden");
-                }
-            });
-        });
-    </script>
+    window.addEventListener("click", function(e) {
+      const profile = document.querySelector(".profile");
+      const dropdown = document.getElementById("profileDropdown");
+      if (!profile.contains(e.target)) {
+        dropdown.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
