@@ -1,14 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user, login_required, current_user
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import current_user, login_required
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField
-from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms import StringField, SubmitField, SelectField, TextAreaField
+from wtforms.validators import DataRequired
 from wtforms.fields import FloatField, DateField
-from models.user import User
 from models.issue import Issue
 from models import db
-
 
 class ReportForm(FlaskForm):
     category = SelectField('หัวข้อ', choices=[
@@ -32,6 +29,7 @@ class ReportForm(FlaskForm):
 report_bp = Blueprint('report', __name__)
 
 @report_bp.route('/report', methods=['GET', 'POST'])
+@login_required
 def report():
     form = ReportForm()
     if form.validate_on_submit():
