@@ -52,12 +52,6 @@
       gap: 20px;
     }
 
-    .nav-right {
-      display: flex;
-      gap: 10px;
-      margin-right: 10px; /* ขยับออกจากขอบขวา */
-    }
-
     .navbar button {
       background: transparent;
       border: 2px solid var(--accent);
@@ -72,6 +66,49 @@
     .navbar button:hover {
       background: var(--accent);
       color: white;
+    }
+
+    .profile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .profile img {
+      height: 44px;
+      width: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent);
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 55px;
+      right: 0;
+      background-color: white;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: none;
+      flex-direction: column;
+      min-width: 160px;
+      z-index: 20;
+    }
+
+    .dropdown a {
+      padding: 10px 15px;
+      text-decoration: none;
+      color: var(--text-dark);
+      font-size: 14px;
+      border-bottom: 1px solid #eee;
+      transition: background 0.2s ease;
+    }
+
+    .dropdown a:hover {
+      background-color: var(--bg-mid);
     }
 
     .title {
@@ -128,6 +165,11 @@
         font-size: 16px;
         padding: 12px 30px;
       }
+
+      .profile img {
+        height: 36px;
+        width: 36px;
+      }
     }
   </style>
 </head>
@@ -145,9 +187,13 @@
       <button>เกี่ยวกับเรา</button>
     </div>
 
-    <div class="nav-right">
-      <button>เข้าสู่ระบบ</button>
-      <button>ลงทะเบียน</button>
+    <div class="profile" onclick="toggleDropdown()">
+      <img src="user-avatar.jpg" alt="User Profile">
+      <div class="dropdown" id="profileDropdown">
+        <a href="#">ดูโปรไฟล์</a>
+        <a href="#">ตั้งค่า</a>
+        <a href="#">ออกจากระบบ</a>
+      </div>
     </div>
   </div>
 
@@ -157,5 +203,20 @@
   <div class="bottom-bar">
     © 2025 BOK DAI. All rights reserved.
   </div>
+
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById("profileDropdown");
+      dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+    }
+
+    window.addEventListener("click", function(e) {
+      const profile = document.querySelector(".profile");
+      const dropdown = document.getElementById("profileDropdown");
+      if (!profile.contains(e.target)) {
+        dropdown.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
