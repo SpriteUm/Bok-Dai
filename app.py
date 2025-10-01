@@ -18,12 +18,27 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+<<<<<<<<< Temporary merge branch 1
+
+@app.route("/")
+def index():
+    return render_template("index.html")  # เปลี่ยนชื่อไฟล์ให้ตรง
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()   # สร้างตารางใน app.db
+    app.run(debug=True)
+=========
+    # หรือใช้ db.session.get(User, int(user_id)) ถ้า SQLAlchemy 2.x
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
 
-@app.route("/")
-def index():
-    return render_template("reportpage.html")
+
+>>>>>>>>> Temporary merge branch 2
