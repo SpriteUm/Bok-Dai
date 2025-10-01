@@ -21,7 +21,7 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
-    return render_template("index.html")  # เปลี่ยนชื่อไฟล์ให้ตรง
+    return render_template("reportpage1.html")
 
 if __name__ == "__main__":
     with app.app_context():

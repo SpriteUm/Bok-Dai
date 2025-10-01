@@ -1,15 +1,18 @@
-Flask==3.1.0
-Flask-WTF==1.2.2
-flask-cors==5.0.1
-WTForms==3.2.1
-Werkzeug==3.1.3
-Jinja2==3.1.5
-itsdangerous==2.2.0
-MarkupSafe==3.0.2
-SQLAlchemy==2.0.30
-# เพิ่ม flask-login ถ้ายังไม่มี
+blinker==1.9.0
+click==8.2.1
+colorama==0.4.6
+dnspython==2.8.0
+email-validator==2.3.0
+Flask==3.1.1
 Flask-Login==0.6.3
-# เพิ่มอื่น ๆ ตามที่ใช้จริง เช่น flask-migrate, email-validator
-
-# ถ้าใช้ requests ในโปรเจกต์
-requests==2.32.4
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.2
+greenlet==3.2.4
+idna==3.10
+itsdangerous==2.2.0
+Jinja2==3.1.6
+MarkupSafe==3.0.2
+SQLAlchemy==2.0.43
+typing_extensions==4.15.0
+Werkzeug==3.1.3
+WTForms==3.2.1
