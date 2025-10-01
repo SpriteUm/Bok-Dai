@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from models import db
-from models.user import User 
+from models.user import User
 from flask_login import LoginManager
 from routes.auth import auth_bp
 
@@ -16,6 +16,7 @@ db.init_app(app)
 
 # init login
 login_manager = LoginManager()
+login_manager.login_view = "auth.login"
 login_manager.init_app(app)
 
 @login_manager.user_loader
