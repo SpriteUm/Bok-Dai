@@ -25,17 +25,10 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
-
-@app.route("/")
-def index():
-    return render_template("index.html")  # เปลี่ยนชื่อไฟล์ให้ตรง
+    return render_template("reportpage1.html")
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
 
-@app.route("/")
-def index():
-    return render_template("reportpage.html")
