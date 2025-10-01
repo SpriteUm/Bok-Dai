@@ -7,15 +7,21 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
 from models import db
 
-class FormUsers(FlaskForm):
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
+
+
+class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', 
-                         validators=[DataRequired(), EqualTo('password', message='รหัสผ่านจะต้องตรงกัน')])
+                                     validators=[DataRequired(), EqualTo('password', message='รหัสผ่านจะต้องตรงกัน')])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    telephone = StringField('Telephone',validators=[DataRequired()])
+    telephone = StringField('Telephone', validators=[DataRequired()])
     submit = SubmitField('Register')
 
 
@@ -24,9 +30,11 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    form = FormUsers()
+    form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter(
+            (User.username == form.username.data) | (User.email == form.username.data)
+        ).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
             flash("เข้าสู่ระบบเรียบร้อยแล้ว", "success")
@@ -38,14 +46,16 @@ def login():
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    form = FormUsers()
+    form = RegisterForm()
     if form.validate_on_submit():
-        # ตรวจสอบ username/email ซ้ำ
+        has_error = False
         if User.query.filter_by(username=form.username.data).first():
             form.username.errors.append("ชื่อผู้ใช้นี้ถูกใช้แล้ว")
-            return render_template('register.html', form=form)
+            has_error = True
         if User.query.filter_by(email=form.email.data).first():
             form.email.errors.append("อีเมลนี้ถูกใช้แล้ว")
+            has_error = True
+        if has_error:
             return render_template('register.html', form=form)
         try:
             hashed_password = generate_password_hash(form.password.data)
@@ -62,13 +72,12 @@ def register():
             return redirect(url_for('auth.login'))
         except Exception as e:
             db.session.rollback()
-            flash(str(e), "error")
+            flash("เกิดข้อผิดพลาด: " + str(e), "error")
     return render_template('register.html', form=form)
 
 @auth_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash("Logged out successfully.", "success")
+    flash("ออกจากระบบเรียบร้อยแล้ว", "success")
     return redirect(url_for('auth.login'))
-

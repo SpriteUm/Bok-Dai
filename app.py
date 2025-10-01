@@ -1,5 +1,6 @@
-from flask import Flask, render_template, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template
+from models import db
+from models.user import User 
 from flask_login import LoginManager
 from routes.auth import auth_bp
 from models import db
@@ -18,6 +19,7 @@ app.register_blueprint(auth_bp, url_prefix="/auth")
 
 # ตั้งค่า Login Manager
 login_manager = LoginManager()
+login_manager.login_view = "auth.login"
 login_manager.init_app(app)
 login_manager.login_view = "auth.login"
 
