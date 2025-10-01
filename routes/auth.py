@@ -1,22 +1,24 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user, login_required
-from models.user import User
+from flask_login import login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo
+from models.user import User
+from models.issue import IssueReport
 from models import db
+
+auth_bp = Blueprint('auth', __name__)
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
-
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password', 
+    confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password', message='รหัสผ่านจะต้องตรงกัน')])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
@@ -24,9 +26,19 @@ class RegisterForm(FlaskForm):
     telephone = StringField('Telephone', validators=[DataRequired()])
     submit = SubmitField('Register')
 
-
-auth_bp = Blueprint('auth', __name__) 
-
+class ReportForm(FlaskForm):
+    category = SelectField('หัวข้อ', choices=[
+        ('', '-- เลือกหมวดหมู่ --'),
+        ('โครงสร้าง/สิ่งอำนวยความสะดวก', 'โครงสร้าง/สิ่งอำนวยความสะดวก'),
+        ('ความสะอาด', 'ความสะอาด'),
+        ('ความปลอดภัย', 'ความปลอดภัย'),
+        ('ไฟฟ้า', 'ไฟฟ้า'),
+        ('อื่นๆ', 'อื่นๆ')
+    ], validators=[DataRequired()])
+    location_note = StringField('หมายเหตุ', validators=[DataRequired()])
+    map_location = StringField('Google Maps')
+    details = TextAreaField('รายละเอียด', validators=[DataRequired()])
+    submit = SubmitField('ส่งรายงาน')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -39,7 +51,7 @@ def login():
             login_user(user)
             flash("เข้าสู่ระบบเรียบร้อยแล้ว", "success")
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('index'))
+            return redirect(next_page) if next_page else redirect(url_for('indexuser'))
         else:
             flash("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "error")
     return render_template('login.html', form=form)
@@ -81,3 +93,26 @@ def logout():
     logout_user()
     flash("ออกจากระบบเรียบร้อยแล้ว", "success")
     return redirect(url_for('auth.login'))
+
+
+@auth_bp.route('/report', methods=['GET', 'POST'])
+@login_required
+def report():
+    form = ReportForm()
+    if form.validate_on_submit():
+        try:
+            report = IssueReport(
+                category=form.category.data,
+                location_note=form.location_note.data,
+                map_location=form.map_location.data,
+                details=form.details.data,
+                user_id=current_user.id
+            )
+            db.session.add(report)
+            db.session.commit()
+            flash("ส่งรายงานเรียบร้อยแล้ว", "success")
+            return redirect(url_for('index'))
+        except Exception as e:
+            db.session.rollback()
+            flash("เกิดข้อผิดพลาดในการส่งรายงาน: " + str(e), "error")
+    return render_template('report.html', form=form)

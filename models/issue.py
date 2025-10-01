@@ -21,4 +21,14 @@ class Issue(db.Model):
     # Relationship กับ IssueImage และ IssueStatusHistory
     images = db.relationship('IssueImage', backref='issue', lazy=True)
     status_history = db.relationship('IssueStatusHistory', backref='issue', lazy=True)
-    
+ 
+class IssueReport(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(100), nullable=False)
+    location_note = db.Column(db.String(255), nullable=False)
+    map_location = db.Column(db.String(255), nullable=True)
+    details = db.Column(db.Text, nullable=False)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', backref='reports')   
