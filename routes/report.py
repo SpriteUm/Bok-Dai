@@ -7,6 +7,7 @@ from wtforms.fields import FloatField, DateField
 from models.issue import Issue
 from models import db
 
+# สร้างฟอร์มรายงาน
 class ReportForm(FlaskForm):
     category = SelectField('หัวข้อ', choices=[
         ('', '-- เลือกหมวดหมู่ --'),
@@ -16,16 +17,23 @@ class ReportForm(FlaskForm):
         ('ไฟฟ้า', 'ไฟฟ้า'),
         ('อื่นๆ', 'อื่นๆ')
     ], validators=[DataRequired()])
+    
     detail = TextAreaField('รายละเอียด', validators=[DataRequired()])
     date_reported = DateField('วันที่เกิดเหตุ', format='%Y-%m-%d', validators=[DataRequired()])
     location_text = StringField('สถานที่', validators=[DataRequired()])
+    
     urgency = SelectField('ความเร่งด่วน', choices=[
-        ('🔴', 'สูงสุด'), ('🟠', 'ปานกลาง'), ('🟢', 'ต่ำ')
+        ('🔴', 'สูงสุด'),
+        ('🟠', 'ปานกลาง'),
+        ('🟢', 'ต่ำ')
     ], validators=[DataRequired()])
+    
     lat = FloatField('Latitude')
     lng = FloatField('Longitude')
     submit = SubmitField('ส่งรายงาน')
 
+
+# สร้าง Blueprint
 report_bp = Blueprint('report', __name__)
 
 @report_bp.route('/report', methods=['GET', 'POST'])
@@ -46,7 +54,7 @@ def report():
             )
             db.session.add(issue)
             db.session.commit()
-            flash("ส่งรายงานเรียบร้อยแล้ว", "success")
+            flash("ส่งรายงานเรียบร้อยแล้ว ✅", "success")
             return redirect(url_for('indexuser'))
         except Exception as e:
             db.session.rollback()
