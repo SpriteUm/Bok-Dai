@@ -1,161 +1,44 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BOK DAI</title>
-  <style>
-    :root {
-      --bg-light: #f0f4f2;
-      --bg-mid: #c8d8cc;
-      --accent: #4a6f5a;
-      --text-dark: #2e3d32;
-      --button: #5c8a6e;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, var(--bg-light), var(--bg-mid));
-      color: var(--text-dark);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding-bottom: 60px;
-    }
-
-    .navbar {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 80px; /* ขยับออกจากขอบซ้าย-ขวา */
-      position: absolute;
-      top: 0;
-      z-index: 10;
-    }
-
-    .logo {
-      padding-left: 10px;
-    }
-
-    .logo img {
-      height: 40px;
-      width: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
-    }
-
-    .nav-center {
-      display: flex;
-      gap: 20px;
-    }
-
-    .nav-right {
-      display: flex;
-      gap: 10px;
-      margin-right: 10px; /* ขยับออกจากขอบขวา */
-    }
-
-    .navbar button {
-      background: transparent;
-      border: 2px solid var(--accent);
-      color: var(--accent);
-      padding: 8px 16px;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s ease;
-    }
-
-    .navbar button:hover {
-      background: var(--accent);
-      color: white;
-    }
-
-    .title {
-      margin-top: 160px;
-      font-size: 80px;
-      font-weight: bold;
-      color: var(--text-dark);
-      text-align: center;
-      letter-spacing: 2px;
-    }
-
-    .report-btn {
-      margin-top: 40px;
-      padding: 15px 40px;
-      font-size: 20px;
-      background-color: var(--button);
-      border: none;
-      border-radius: 25px;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s ease;
-    }
-
-    .report-btn:hover {
-      background-color: var(--accent);
-    }
-
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 60px;
-      background: transparent;
-      border-top: 1px solid var(--accent);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--accent);
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    @media (max-width: 768px) {
-      .navbar {
-        padding: 15px 30px;
-      }
-
-      .title {
-        font-size: 48px;
-      }
-
-      .report-btn {
-        font-size: 16px;
-        padding: 12px 30px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้าแรก - ระบบแจ้งปัญหา</title>
+    <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet" />
 </head>
-<body>
-  <div class="navbar">
-    <div class="logo">
-      <img src="logo.png" alt="BOK DAI Logo">
-    </div>
+<body class="bg-custom-green-lightest min-h-screen flex flex-col">
 
-    <div class="nav-center">
-      <button>หน้าหลัก</button>
-      <button>รายงาน</button>
-      <button>สถานะ</button>
-      <button>ประวัติการรายงาน</button>
-      <button>เกี่ยวกับเรา</button>
-    </div>
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-xl font-bold text-custom-green-darkest">
+                ระบบแจ้งปัญหา (Issue Report)
+            </div>
+            <div>
+                <a href="/register" class="text-custom-light-gray hover:text-custom-green-dark">ลงทะเบียนผู้ใช้งานใหม่</a>
+                <a href="/login" class="ml-4 px-4 py-2 rounded-lg bg-custom-green-dark text-white hover:bg-custom-green-darkest transition duration-300">เข้าสู่ระบบ</a>
+            </div>
+        </nav>
+    </header>
 
-    <div class="nav-right">
-      <button>เข้าสู่ระบบ</button>
-      <button>ลงทะเบียน</button>
-    </div>
-  </div>
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="text-center max-w-4xl">
+            <h1 class="text-5xl font-extrabold mb-4 text-custom-green-dull-green">
+                แจ้งปัญหาเพื่อชุมชนที่ดียิ่งขึ้น
+            </h1>
+            <p class="text-xl mb-8 text-custom-green-darkest">
+                ไม่ว่าจะเป็น ไฟฟ้าดับ, น้ำรั่ว, ถนนชำรุด หรือขยะล้น แจ้งปัญหาของคุณได้ง่ายๆ พร้อมติดตามสถานะแบบเรียลไทม์
+            </p>
+            
+            <a href="/report-issue" class="inline-block px-8 py-3 text-lg font-semibold rounded-lg bg-custom-green-medium text-white hover:bg-custom-green-dark transition duration-300 shadow-xl">
+                กรอกแบบฟอร์มแจ้งปัญหา
+            </a>
 
-  <div class="title">BOK DAI</div>
-  <button class="report-btn">รายงาน</button>
+            </div>
+    </main>
 
-  <div class="bottom-bar">
-    © 2025 BOK DAI. All rights reserved.
-  </div>
+    <footer class="bg-custom-green-darkest p-4 text-center text-custom-light-gray">
+        &copy; 2025 Issue Reporting System.
+    </footer>
+
 </body>
 </html>

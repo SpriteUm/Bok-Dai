@@ -1,222 +1,89 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BOK DAI</title>
-  <style>
-    :root {
-      --bg-light: #f0f4f2;
-      --bg-mid: #c8d8cc;
-      --accent: #4a6f5a;
-      --text-dark: #2e3d32;
-      --button: #5c8a6e;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, var(--bg-light), var(--bg-mid));
-      color: var(--text-dark);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding-bottom: 60px;
-    }
-
-    .navbar {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 80px; /* ขยับออกจากขอบซ้าย-ขวา */
-      position: absolute;
-      top: 0;
-      z-index: 10;
-    }
-
-    .logo {
-      padding-left: 10px;
-    }
-
-    .logo img {
-      height: 40px;
-      width: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
-    }
-
-    .nav-center {
-      display: flex;
-      gap: 20px;
-    }
-
-    .navbar button {
-      background: transparent;
-      border: 2px solid var(--accent);
-      color: var(--accent);
-      padding: 8px 16px;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s ease;
-    }
-
-    .navbar button:hover {
-      background: var(--accent);
-      color: white;
-    }
-
-    .profile {
-      position: relative;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-
-    .profile img {
-      height: 44px;
-      width: 44px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent);
-    }
-
-    .dropdown {
-      position: absolute;
-      top: 55px;
-      right: 0;
-      background-color: white;
-      border: 1px solid var(--accent);
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: none;
-      flex-direction: column;
-      min-width: 160px;
-      z-index: 20;
-    }
-
-    .dropdown a {
-      padding: 10px 15px;
-      text-decoration: none;
-      color: var(--text-dark);
-      font-size: 14px;
-      border-bottom: 1px solid #eee;
-      transition: background 0.2s ease;
-    }
-
-    .dropdown a:hover {
-      background-color: var(--bg-mid);
-    }
-
-    .title {
-      margin-top: 160px;
-      font-size: 80px;
-      font-weight: bold;
-      color: var(--text-dark);
-      text-align: center;
-      letter-spacing: 2px;
-    }
-
-    .report-btn {
-      margin-top: 40px;
-      padding: 15px 40px;
-      font-size: 20px;
-      background-color: var(--button);
-      border: none;
-      border-radius: 25px;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s ease;
-    }
-
-    .report-btn:hover {
-      background-color: var(--accent);
-    }
-
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 60px;
-      background: transparent;
-      border-top: 1px solid var(--accent);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--accent);
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    @media (max-width: 768px) {
-      .navbar {
-        padding: 15px 30px;
-      }
-
-      .title {
-        font-size: 48px;
-      }
-
-      .report-btn {
-        font-size: 16px;
-        padding: 12px 30px;
-      }
-
-      .profile img {
-        height: 36px;
-        width: 36px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้าหลักผู้ใช้งาน - ระบบแจ้งปัญหา</title>
+    <link href="/path/to/your/tailwind.css" rel="stylesheet">
 </head>
-<body>
-  <div class="navbar">
-    <div class="logo">
-      <img src="logo.png" alt="BOK DAI Logo">
-    </div>
+<body class="bg-custom-green-lightest min-h-screen">
 
-    <div class="nav-center">
-      <button>หน้าหลัก</button>
-      <button>รายงาน</button>
-      <button>สถานะ</button>
-      <button>ประวัติการรายงาน</button>
-      <button>เกี่ยวกับเรา</button>
-    </div>
+    <header class="bg-custom-green-dark shadow-xl">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-xl font-bold text-white">
+                Dashboard - <span class="text-custom-green-dull-green">สไปรท์ SPD</span>
+            </div>
+            <div>
+                <a href="/report-issue" class="px-4 py-2 rounded-lg bg-custom-green-medium text-white hover:bg-custom-green-dull-green transition duration-300">
+                    + แจ้งปัญหาใหม่
+                </a>
+                <a href="/logout" class="ml-4 text-custom-light-gray hover:text-white">ออกจากระบบ</a>
+            </div>
+        </nav>
+    </header>
 
-    <div class="profile" onclick="toggleDropdown()">
-      <img src="user-avatar.jpg" alt="User Profile">
-      <div class="dropdown" id="profileDropdown">
-        <a href="#">ดูโปรไฟล์</a>
-        <a href="#">ตั้งค่า</a>
-        <a href="#">ออกจากระบบ</a>
-      </div>
-    </div>
-  </div>
+    <main class="container mx-auto p-8">
 
-  <div class="title">BOK DAI</div>
-  <button class="report-btn">รายงาน</button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-custom-green-medium">
+                <p class="text-custom-light-gray text-sm font-semibold">ปัญหารอการแก้ไข</p>
+                <p class="text-3xl font-bold mt-1 text-custom-green-darkest">3 รายการ</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-yellow-500">
+                <p class="text-custom-light-gray text-sm font-semibold">กำลังดำเนินการ (🟡)</p>
+                <p class="text-3xl font-bold mt-1 text-custom-green-darkest">2 รายการ</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-custom-green-darkest">
+                <p class="text-custom-light-gray text-sm font-semibold">แก้ไขแล้ว (✅)</p>
+                <p class="text-3xl font-bold mt-1 text-custom-green-darkest">12 รายการ</p>
+            </div>
+        </div>
 
-  <div class="bottom-bar">
-    © 2025 BOK DAI. All rights reserved.
-  </div>
+        <hr class="border-custom-green-medium mb-8">
 
-  <script>
-    function toggleDropdown() {
-      const dropdown = document.getElementById("profileDropdown");
-      dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
-    }
+        <h2 class="text-3xl font-bold mb-4 text-custom-green-dark">รายการปัญหาของฉัน</h2>
+        
+        <div class="flex justify-between items-center mb-3 p-4 bg-custom-green-dull-green rounded-t-lg">
+            <p class="font-semibold text-custom-green-darkest w-1/4">หมวดหมู่</p>
+            <p class="font-semibold text-custom-green-darkest w-1/2">รายละเอียด</p>
+            <p class="font-semibold text-custom-green-darkest w-1/6 text-center">สถานะ</p>
+            <p class="font-semibold text-custom-green-darkest w-1/6 text-center">ความเร่งด่วน</p>
+            <p class="font-semibold text-custom-green-darkest w-1/6 text-center">ดู</p>
+        </div>
 
-    window.addEventListener("click", function(e) {
-      const profile = document.querySelector(".profile");
-      const dropdown = document.getElementById("profileDropdown");
-      if (!profile.contains(e.target)) {
-        dropdown.style.display = "none";
-      }
-    });
-  </script>
+        <div class="flex justify-between items-center p-4 bg-white border-b border-custom-green-medium/50 hover:bg-gray-50 transition duration-150">
+            <p class="text-custom-light-gray w-1/4">ไฟฟ้า</p>
+            <p class="text-custom-green-darkest w-1/2 truncate">ไฟถนนหน้าซอย 5 ดับมา 3 วันแล้วครับ...</p>
+            <p class="w-1/6 text-center">
+                <span class="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">🟡 กำลังดำเนินการ</span>
+            </p>
+            <p class="w-1/6 text-center text-2xl" title="เร่งด่วนสูง">
+                <span class="text-red-600">🔴</span>
+            </p>
+            <a href="/issue/123" class="w-1/6 text-center text-custom-green-dark hover:text-custom-green-darkest">รายละเอียด</a>
+        </div>
+        
+        <div class="flex justify-between items-center p-4 bg-white border-b border-custom-green-medium/50 hover:bg-gray-50 transition duration-150">
+            <p class="text-custom-light-gray w-1/4">น้ำ</p>
+            <p class="text-custom-green-darkest w-1/2 truncate">ท่อประปาแตก มีน้ำไหลบริเวณทางเท้า...</p>
+            <p class="w-1/6 text-center">
+                <span class="inline-block bg-green-100 text-custom-green-darkest text-xs font-semibold px-2.5 py-0.5 rounded-full">✅ แก้ไขแล้ว</span>
+            </p>
+            <p class="w-1/6 text-center text-2xl" title="เร่งด่วนปานกลาง">
+                <span class="text-orange-500">🟠</span>
+            </p>
+            <a href="/issue/124" class="w-1/6 text-center text-custom-green-dark hover:text-custom-green-darkest">รายละเอียด</a>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <a href="/my-issues" class="text-custom-green-dark hover:text-custom-green-darkest text-sm">ดูรายการปัญหาทั้งหมดของฉัน</a>
+        </div>
+
+    </main>
+    
+    <footer class="bg-custom-green-darkest mt-8 p-4 text-center text-custom-light-gray">
+        &copy; 2025 Issue Reporting System.
+    </footer>
+
 </body>
 </html>
