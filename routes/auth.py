@@ -25,7 +25,7 @@ class RegisterForm(FlaskForm):
     telephone = StringField('Telephone', validators=[DataRequired()])
     submit = SubmitField('Register')
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/login', methods=['GET', 'POST'], endpoint='login')
 def login():
     form = LoginForm()
     if form.validate_on_submit():

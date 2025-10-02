@@ -4,11 +4,14 @@ from flask_login import LoginManager
 from models import db
 from models.user import User
 from routes.report import report_bp
+from routes.auth import auth_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
 db.init_app(app)
 
 login_manager = LoginManager()
@@ -20,11 +23,12 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.route('/')
-def indexuser():
+def index():
     return render_template('index.html')
 
-# Register blueprint
+# Register blueprints
 app.register_blueprint(report_bp)
+app.register_blueprint(auth_bp, url_prefix="/auth")
 
 if __name__ == '__main__':
     with app.app_context():
