@@ -1,239 +1,148 @@
 <!doctype html>
 <html lang="th">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>รายงานปัญหา - ตัวอย่าง</title>
-  <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body
-  class="min-h-screen bg-gradient-to-br from-green-100 via-[#e6f7ec] to-green-50 flex items-start justify-center p-6">
+<body class="min-h-screen bg-gradient-to-br from-green-100 via-[#e6f7ec] to-green-50 flex items-start justify-center p-6">
   <div class="w-full max-w-3xl">
+
+    <!-- Flash message -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for category, message in messages %}
+            <div class="p-3 rounded-lg 
+                        {% if category == 'success' %} bg-green-100 text-green-800 border border-green-300
+                        {% elif category == 'error' %} bg-red-100 text-red-800 border border-red-300
+                        {% else %} bg-gray-100 text-gray-800 border border-gray-300 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
     <div class="rounded-2xl shadow-2xl overflow-hidden bg-white/80 backdrop-blur-md">
       <div class="grid md:grid-cols-2 gap-6 p-6">
         <!-- Form -->
-        <form id="reportForm" class="p-4 md:p-6" novalidate>
+        <form id="reportForm" method="POST" enctype="multipart/form-data"
+              action="{{ url_for('report.report') }}"
+              class="p-4 md:p-6" novalidate>
+          {{ form.hidden_tag() }}
           <h2 class="text-2xl font-bold text-green-800 mb-2">BOK DAI REPORT</h2>
           <p class="text-sm text-green-700/80 mb-4">โปรดระบุรายละเอียดให้ชัดเจน และแนบรูปภาพประกอบถ้ามี</p>
 
-          <!-- หัวข้อ -->
-          <label class="block mb-3">
-            <span class="text-sm font-medium text-gray-700">หัวข้อ</span>
-            <input id="title"
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
-              placeholder="เช่น โคมไฟทางเดินชำรุด อาคารวิศวกรรม" />
-            <div class="text-xs text-red-600 mt-1 hidden" id="errTitle">กรุณากรอกหัวข้อ</div>
-          </label>
-
           <!-- หมวดหมู่ -->
           <label class="block mb-3">
-            <span class="text-sm font-medium text-gray-700">หมวดหมู่</span>
-            <select id="category"
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300">
-              <option value="">-- เลือกหมวดหมู่ --</option>
-              <option value="infrastructure">โครงสร้าง/สิ่งอำนวยความสะดวก</option>
-              <option value="cleanliness">ความสะอาด</option>
-              <option value="safety">ความปลอดภัย</option>
-              <option value="transport">การจราจร/ที่จอดรถ</option>
-              <option value="other">อื่นๆ</option>
-            </select>
-            <div class="text-xs text-red-600 mt-1 hidden" id="errCategory">กรุณาเลือกหมวดหมู่</div>
+            {{ form.category.label(class="text-sm font-medium text-gray-700") }}
+            {{ form.category(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {% for error in form.category.errors %}
+              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
+            {% endfor %}
           </label>
 
-          <!-- ช่องอื่นๆ แสดงเฉพาะถ้าเลือก other -->
+          <!-- ช่องอื่นๆ -->
           <label id="otherWrapper" class="block mb-3 hidden">
             <span class="text-sm font-medium text-gray-700">โปรดระบุปัญหา</span>
-            <input id="otherText"
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+            <input name="otherText" id="otherText"
+              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                     focus:outline-none focus:ring-2 focus:ring-green-300"
               placeholder="พิมพ์รายละเอียดปัญหาที่ไม่อยู่ในหมวดหมู่" />
-            <div class="text-xs text-red-600 mt-1 hidden" id="errOther">กรุณาระบุปัญหา</div>
           </label>
 
-          <!-- สถานที่ + ปุ่ม GPS + Google Maps Link -->
-          <label class="block mb-4">
-            <span class="text-sm font-medium text-gray-700">สถานที่</span>
-            <div class="flex gap-2 mt-1">
-              <input id="location"
-                class="block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
-                placeholder="เช่น อาคารอำนวยการ ชั้น 2, ลานจอดรถ B" />
-              <button type="button" id="btnUseLocation" class="px-3 py-2 bg-green-600 text-white rounded-lg shadow-sm">
-                ตำแหน่งปัจจุบัน
-              </button>
-            </div>
-            <div class="text-xs text-red-600 mt-1 hidden" id="errLocation">กรุณากรอกสถานที่</div>
-            <span class="text-sm font-medium text-gray-700">Link Google Maps</span>
-            <input id="mapLinkInput"
-              class="mt-2 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
-              placeholder="https://www.google.com/maps?q=..." />
+          <!-- วันที่เกิดเหตุ -->
+          <label class="block mb-3">
+            {{ form.date_reported.label(class="text-sm font-medium text-gray-700") }}
+            {{ form.date_reported(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                                           focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {% for error in form.date_reported.errors %}
+              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
+            {% endfor %}
+          </label>
+
+          <!-- สถานที่ -->
+          <label class="block mb-3">
+            {{ form.location_text.label(class="text-sm font-medium text-gray-700") }}
+            {{ form.location_text(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                                           focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {% for error in form.location_text.errors %}
+              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
+            {% endfor %}
+          </label>
+
+          <!-- ความเร่งด่วน -->
+          <label class="block mb-3">
+            {{ form.urgency.label(class="text-sm font-medium text-gray-700") }}
+            {{ form.urgency(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {% for error in form.urgency.errors %}
+              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
+            {% endfor %}
           </label>
 
           <!-- รายละเอียด -->
-          <label class="block mb-4">
-            <span class="text-sm font-medium text-gray-700">รายละเอียด</span>
-            <textarea id="description" rows="5"
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
-              placeholder="อธิบายปัญหา สภาพ แสดงผลกระทบ และถ้ามี เวลาที่พบเหตุการณ์"></textarea>
-            <div class="text-xs text-red-600 mt-1 hidden" id="errDescription">กรุณาใส่รายละเอียด</div>
+          <label class="block mb-3">
+            {{ form.detail.label(class="text-sm font-medium text-gray-700") }}
+            {{ form.detail(rows="5", class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                                             focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {% for error in form.detail.errors %}
+              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
+            {% endfor %}
+          </label>
+
+          <!-- แนบรูป -->
+          <label class="block mb-3">
+            <span class="text-sm font-medium text-gray-700">แนบรูปภาพ</span>
+            <input type="file" name="images[]" multiple
+              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                     focus:outline-none focus:ring-2 focus:ring-green-300" />
           </label>
 
           <!-- ปุ่ม -->
-          <div class="flex items-center gap-3">
-            <button type="submit"
-              class="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold shadow">ส่งรายงาน</button>
-            <button type="button" id="btnReset"
+          <div class="flex items-center gap-3 mt-4">
+            {{ form.submit(class="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold shadow") }}
+            <button type="reset"
               class="px-4 py-2 rounded-lg border bg-white text-gray-700 shadow-sm">ล้างข้อมูล</button>
           </div>
-
-          <p class="text-xs text-gray-500 mt-3">หมายเหตุ: ไฟล์รูปภาพสูงสุด 5 ภาพ,
-            ขนาดแต่ละไฟล์ไม่เกินที่เซิร์ฟเวอร์กำหนด</p>
         </form>
 
-        <!-- Right: upload image + preview -->
+        <!-- Right: ช่วยบอกวิธี -->
         <div class="p-4 md:p-6 border-l hidden md:block">
-          <div class="flex flex-col items-center justify-center h-full">
-            <div class="w-full">
-              <div class="mb-4">
-                <span class="text-sm font-medium text-gray-700">แนบรูปภาพ</span>
-              </div>
-
-              <div id="dropzone"
-                class="relative rounded-lg border-2 border-dashed border-green-200 p-6 text-center cursor-pointer hover:border-green-300">
-                <input id="fileInput" type="file" accept="image/*" multiple class="hidden" />
-
-                <div class="flex flex-col items-center justify-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                      d="M7 16V8a4 4 0 014-4h2a4 4 0 014 4v8M7 16h10M7 16l-3 3m16-3l3 3" />
-                  </svg>
-                  <div class="text-sm text-gray-600">คลิกหรือลากเพื่อแนบรูป (สูงสุด 5 ภาพ)</div>
-                  <div class="text-xs text-gray-400">รองรับไฟล์ภาพเท่านั้น</div>
-                </div>
-              </div>
-
-              <div id="previews" class="mt-4 grid grid-cols-2 gap-3"></div>
-
-              <div class="mt-4 text-xs text-gray-500">หมายเหตุ: preview ใช้ URL ชั่วคราวในเบราว์เซอร์</div>
-            </div>
+          <div class="flex flex-col items-center justify-center h-full text-sm text-gray-600">
+            <p>📌 โปรดใส่รายละเอียดปัญหาอย่างครบถ้วน<br>
+               🖼️ สามารถแนบรูปภาพประกอบได้ (สูงสุด 5 ภาพ)<br>
+               📍 เลือกหมวดหมู่ที่ตรงกับปัญหามากที่สุด</p>
           </div>
         </div>
       </div>
 
       <div class="px-6 py-3 bg-green-50/60 border-t">
-        <div class="text-sm text-green-700">ระบบแจ้งปัญหาภายในมหาวิทยาลัย — ข้อมูลนี้จะถูกส่งไปยังทีมบริหารเพื่อตรวจสอบ
+        <div class="text-sm text-green-700">
+          ระบบแจ้งปัญหาภายในมหาวิทยาลัย — ข้อมูลนี้จะถูกส่งไปยังทีมบริหารเพื่อตรวจสอบ
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Variables
-    const MAX_FILES = 5;
-    let files = [];
+    // แสดงช่อง "อื่นๆ" ถ้าเลือก other
+    const category = document.getElementById("category");
+    const otherWrapper = document.getElementById("otherWrapper");
 
-    const fileInput = document.getElementById('fileInput');
-    const dropzone = document.getElementById('dropzone');
-    const previews = document.getElementById('previews');
-
-    const category = document.getElementById('category');
-    const otherWrapper = document.getElementById('otherWrapper');
-    const otherText = document.getElementById('otherText');
-
-    const form = document.getElementById('reportForm');
-    const title = document.getElementById('title');
-    const locationInput = document.getElementById('location');
-    const mapLinkInput = document.getElementById('mapLinkInput');
-    const description = document.getElementById('description');
-    const btnReset = document.getElementById('btnReset');
-
-    const errTitle = document.getElementById('errTitle');
-    const errCategory = document.getElementById('errCategory');
-    const errOther = document.getElementById('errOther');
-    const errLocation = document.getElementById('errLocation');
-    const errDescription = document.getElementById('errDescription');
-
-    // Dropzone
-    dropzone.addEventListener('click', () => fileInput.click());
-    ['dragenter', 'dragover'].forEach(e => dropzone.addEventListener(e, ev => { ev.preventDefault(); dropzone.classList.add('bg-green-50'); }));
-    ['dragleave', 'drop'].forEach(e => dropzone.addEventListener(e, ev => { ev.preventDefault(); dropzone.classList.remove('bg-green-50'); }));
-    dropzone.addEventListener('drop', ev => { handleFiles(Array.from(ev.dataTransfer.files || [])); });
-    fileInput.addEventListener('change', e => handleFiles(Array.from(e.target.files || [])));
-
-    function handleFiles(selected) {
-      const images = selected.filter(f => f.type.startsWith('image/')).slice(0, MAX_FILES);
-      files = files.concat(images).slice(0, MAX_FILES);
-      renderPreviews();
-    }
-
-    function renderPreviews() {
-      previews.innerHTML = '';
-      if (files.length === 0) {
-        previews.innerHTML = '<div class="col-span-2 text-center text-sm text-gray-400 py-6">ไม่มีรูปแนบ</div>';
-        return;
-      }
-      files.forEach((f, i) => {
-        const div = document.createElement('div'); div.className = 'relative rounded-lg overflow-hidden border bg-white';
-        const img = document.createElement('img'); img.src = URL.createObjectURL(f); img.alt = f.name; img.className = 'object-cover w-full h-32';
-        const p = document.createElement('div'); p.className = 'p-2 text-xs text-gray-600'; p.textContent = f.name;
-        const btn = document.createElement('button'); btn.className = 'absolute top-1 right-1 bg-white/80 rounded-full p-1 shadow-sm text-red-600';
-        btn.title = 'ลบ'; btn.textContent = '✕'; btn.addEventListener('click', () => { files.splice(i, 1); renderPreviews(); });
-        div.appendChild(img); div.appendChild(btn); div.appendChild(p); previews.appendChild(div);
+    if (category) {
+      category.addEventListener("change", () => {
+        if (category.value === "อื่นๆ") {
+          otherWrapper.classList.remove("hidden");
+        } else {
+          otherWrapper.classList.add("hidden");
+        }
       });
     }
-
-    // Category change
-    category.addEventListener('change', () => {
-      category.value === 'other' ? otherWrapper.classList.remove('hidden') : otherWrapper.classList.add('hidden');
-    });
-
-    // GPS
-    const btnUseLocation = document.getElementById('btnUseLocation');
-    btnUseLocation.addEventListener('click', () => {
-      if (!navigator.geolocation) { alert('เบราว์เซอร์ไม่รองรับ GPS'); return; }
-      navigator.geolocation.getCurrentPosition(pos => {
-        const { latitude, longitude } = pos.coords;
-        locationInput.value = `พิกัด: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-        mapLinkInput.value = `https://www.google.com/maps?q=${latitude},${longitude}`;
-      }, err => { alert('ไม่สามารถดึงพิกัดได้: ' + err.message); }, { enableHighAccuracy: true, timeout: 10000 });
-    });
-
-    // Reset
-    btnReset.addEventListener('click', () => {
-      form.reset();
-      files = [];
-      renderPreviews();
-      [errTitle, errCategory, errOther, errLocation, errDescription].forEach(el => el.classList.add('hidden'));
-    });
-
-    // Submit
-    form.addEventListener('submit', ev => {
-      ev.preventDefault();
-      let ok = true;
-      if (!title.value.trim()) { errTitle.classList.remove('hidden'); ok = false; } else errTitle.classList.add('hidden');
-      if (!category.value) { errCategory.classList.remove('hidden'); ok = false; } else errCategory.classList.add('hidden');
-      if (category.value === 'other' && !otherText.value.trim()) { errOther.classList.remove('hidden'); ok = false; } else errOther.classList.add('hidden');
-      if (!locationInput.value.trim()) { errLocation.classList.remove('hidden'); ok = false; } else errLocation.classList.add('hidden');
-      if (!description.value.trim()) { errDescription.classList.remove('hidden'); ok = false; } else errDescription.classList.add('hidden');
-      if (!ok) return;
-
-      const formData = new FormData();
-      formData.append('title', title.value.trim());
-      formData.append('category', category.value);
-      if (category.value === 'other') formData.append('otherText', otherText.value.trim());
-      formData.append('location', locationInput.value.trim());
-      formData.append('mapLink', mapLinkInput.value.trim());
-      formData.append('description', description.value.trim());
-      files.forEach(f => formData.append('images[]', f));
-
-      for (const pair of formData.entries()) console.log(pair[0], pair[1]);
-      alert('ส่งรายงานเรียบร้อย (ตัวอย่าง)');
-      btnReset.click();
-    });
-
-    renderPreviews();
   </script>
 </body>
 </html>

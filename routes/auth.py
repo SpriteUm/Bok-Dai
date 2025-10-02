@@ -1,32 +1,29 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user, login_required
-from models.user import User
+from flask_login import login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo
+from models.user import User
 from models import db
+
+auth_bp = Blueprint('auth', __name__)
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
-
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password', 
-                                     validators=[DataRequired(), EqualTo('password', message='รหัสผ่านจะต้องตรงกัน')])
+    confirm_password = PasswordField('Confirm Password',
+    validators=[DataRequired(), EqualTo('password', message='รหัสผ่านจะต้องตรงกัน')])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     telephone = StringField('Telephone', validators=[DataRequired()])
     submit = SubmitField('Register')
-
-
-auth_bp = Blueprint('auth', __name__) 
-
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -38,7 +35,7 @@ def login():
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('index'))
+            return redirect(next_page) if next_page else redirect(url_for('indexuser'))
         else:
             flash("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "error")
     return render_template('login.html', form=form)
@@ -73,10 +70,3 @@ def register():
             db.session.rollback()
             flash("เกิดข้อผิดพลาด: " + str(e), "error")
     return render_template('register.html', form=form)
-
-@auth_bp.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash("ออกจากระบบเรียบร้อยแล้ว", "success")
-    return redirect(url_for('auth.login'))
