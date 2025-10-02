@@ -22,7 +22,7 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      padding-bottom: 60px;
+      padding-bottom: 140px; /* เผื่อพื้นที่ให้ taskbar และ bottom-bar */
     }
 
     .navbar {
@@ -30,7 +30,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 80px; /* ขยับออกจากขอบซ้าย-ขวา */
+      padding: 20px 80px;
       position: absolute;
       top: 0;
       z-index: 10;
@@ -47,15 +47,10 @@
       filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
     }
 
-    .nav-center {
-      display: flex;
-      gap: 20px;
-    }
-
     .nav-right {
       display: flex;
       gap: 10px;
-      margin-right: 10px; /* ขยับออกจากขอบขวา */
+      margin-right: 10px;
     }
 
     .navbar button {
@@ -99,6 +94,35 @@
       background-color: var(--accent);
     }
 
+    .taskbar-fixed {
+      position: fixed;
+      bottom: 60px; /* อยู่เหนือ bottom-bar */
+      left: 0;
+      width: 100%;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      padding: 10px 0;
+      z-index: 9;
+    }
+
+    .taskbar-fixed button {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .taskbar-fixed button:hover {
+      background: var(--accent);
+      color: white;
+    }
+
     .bottom-bar {
       position: fixed;
       bottom: 0;
@@ -113,6 +137,7 @@
       color: var(--accent);
       font-size: 14px;
       font-weight: 500;
+      z-index: 8;
     }
 
     @media (max-width: 768px) {
@@ -128,6 +153,11 @@
         font-size: 16px;
         padding: 12px 30px;
       }
+
+      .taskbar-fixed {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 </head>
@@ -135,14 +165,6 @@
   <div class="navbar">
     <div class="logo">
       <img src="logo.png" alt="BOK DAI Logo">
-    </div>
-
-    <div class="nav-center">
-      <button>หน้าหลัก</button>
-      <button>รายงาน</button>
-      <button>สถานะ</button>
-      <button>ประวัติการรายงาน</button>
-      <button>เกี่ยวกับเรา</button>
     </div>
 
     <div class="nav-right">
@@ -153,6 +175,14 @@
 
   <div class="title">BOK DAI</div>
   <button class="report-btn">รายงาน</button>
+
+  <div class="taskbar-fixed">
+    <button>หน้าหลัก</button>
+    <button>รายงาน</button>
+    <button>สถานะ</button>
+    <button>ประวัติการรายงาน</button>
+    <button>เกี่ยวกับเรา</button>
+  </div>
 
   <div class="bottom-bar">
     © 2025 BOK DAI. All rights reserved.
