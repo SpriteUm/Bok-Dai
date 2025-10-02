@@ -1,17 +1,19 @@
 import os
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
-from flask_login import login_required
+from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, TextAreaField, SubmitField, DateField
 from wtforms.validators import DataRequired
-from werkzeug.utils import secure_filename
 from datetime import datetime
-from models.report_model import db, Report
+from models import db
+from models.issue import Issue
 
 report_bp = Blueprint('report', __name__, template_folder='../templates')
 
-UPLOAD_FOLDER = 'static/uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+def ensure_upload_folder():
+    folder = current_app.config.get('UPLOAD_FOLDER', 'static/uploads')
+    os.makedirs(folder, exist_ok=True)
+    return folder
 
 class ReportForm(FlaskForm):
     category = SelectField('หัวข้อ', choices=[
@@ -24,45 +26,40 @@ class ReportForm(FlaskForm):
     ], validators=[DataRequired()])
     other_text = StringField('อื่นๆ')
     detail = TextAreaField('รายละเอียด', validators=[DataRequired()])
-    date_reported = DateField('วันที่เกิดเหตุ', format='%Y-%m-%d', validators=[DataRequired()])
+    date_reported = DateField('วันที่เกิดเหตุ', format='%Y-%m-%d', validators=[DataRequired()], default=datetime.utcnow)
     location_text = StringField('สถานที่', validators=[DataRequired()])
     urgency = SelectField('ความเร่งด่วน', choices=[
         ('🔴', 'สูงสุด'), ('🟠', 'ปานกลาง'), ('🟢', 'ต่ำ')
     ], validators=[DataRequired()])
-    lat = StringField('ละติจูด')
-    lng = StringField('ลองจิจูด')
     submit = SubmitField('ส่งรายงาน')
 
-@report_bp.route('/', methods=['GET','POST'])
+@report_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def report():
     form = ReportForm()
     if form.validate_on_submit():
-        # เก็บรูป
-        filenames = []
-        files = request.files.getlist('images[]')
-        for f in files:
-            if f.filename:
-                fname = secure_filename(f.filename)
-                f.save(os.path.join(UPLOAD_FOLDER, fname))
-                filenames.append(fname)
+        try:
+            # (optional) handle uploads if needed
+            # upload_folder = ensure_upload_folder()
+            # files = request.files.getlist('images[]') ...
 
-        # บันทึกลง database
-        new_report = Report(
-            category=form.category.data,
-            other_text=form.other_text.data,
-            detail=form.detail.data,
-            date_reported=form.date_reported.data,
-            location_text=form.location_text.data,
-            urgency=form.urgency.data,
-            lat=float(form.lat.data) if form.lat.data else None,
-            lng=float(form.lng.data) if form.lng.data else None,
-            image_filenames=",".join(filenames)
-        )
-        db.session.add(new_report)
-        db.session.commit()
-
-        flash("ส่งรายงานเรียบร้อยแล้ว!", "success")
-        return redirect(url_for('report.report'))
-
+            issue = Issue(
+                user_id=current_user.id,
+                category=form.category.data,
+                detail=form.detail.data,
+                date_reported=form.date_reported.data or datetime.utcnow().date(),
+                location_text=form.location_text.data,
+                urgency=form.urgency.data,
+                status='รอดำเนินการ',   # หรือรับจากฟอร์มถ้ามี
+                lat=None,
+                lng=None
+            )
+            db.session.add(issue)
+            db.session.commit()
+            flash("ส่งรายงานเรียบร้อยแล้ว", "success")
+            return redirect(url_for('indexuser'))
+        except Exception:
+            current_app.logger.exception("Error saving Issue")
+            db.session.rollback()
+            flash("เกิดข้อผิดพลาดในการบันทึกรายงาน ดู log ใน terminal", "error")
     return render_template('report.html', form=form)

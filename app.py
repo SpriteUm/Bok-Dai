@@ -1,31 +1,54 @@
 from flask import Flask, render_template
-from flask_login import LoginManager, UserMixin, login_required
-from routes.report import report_bp
+from flask_login import LoginManager
+from models import db          # ต้องมี models/__init__.py ที่สร้าง SQLAlchemy() เป็น db
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key'
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'your-secret-key'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bokdai.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['WTF_CSRF_ENABLED'] = True
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "auth.login"
+    # init extensions
+    db.init_app(app)
 
-# ตัวอย่าง User class แบบง่าย
-class User(UserMixin):
-    def __init__(self, id):
-        self.id = id
+    login_manager = LoginManager()
+    login_manager.login_view = "auth.login"   # ย้ำ: endpoint ของ login อยู่ใน blueprint auth
+    login_manager.init_app(app)
 
-# ตัวอย่าง user loader
-@login_manager.user_loader
-def load_user(user_id):
-    return User(user_id)
+    # import models/user here if you have real User model
+    try:
+        from models.user import User as UserModel
+    except Exception:
+        UserModel = None
 
-@app.route('/')
-@login_required
-def indexuser():
-    return render_template('index.html')
+    @login_manager.user_loader
+    def load_user(user_id):
+        if UserModel:
+            return UserModel.query.get(int(user_id))
+        return None
 
-# Register blueprint
-app.register_blueprint(report_bp)
+    # import blueprints AFTER db.init_app to avoid circular imports
+    from routes.auth import auth_bp
+    from routes.report import report_bp
 
-if __name__ == '__main__':
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(report_bp, url_prefix="/report")
+
+    # simple routes
+    @app.route("/")
+    def index():
+        return render_template("index.html")
+
+    @app.route("/indexuser")
+    def indexuser():
+        return render_template("indexuser.html")
+
+    return app
+
+app = create_app()
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
