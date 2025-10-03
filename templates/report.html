@@ -8,9 +8,10 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
-
 <body class="min-h-screen bg-gradient-to-br from-green-100 via-[#e6f7ec] to-green-50 flex items-start justify-center p-6">
   <div class="w-full max-w-3xl">
+    
+
     <div class="rounded-2xl shadow-2xl overflow-hidden bg-white/80 backdrop-blur-md">
       <div class="grid md:grid-cols-2 gap-6 p-6">
         <form id="reportForm" method="POST" enctype="multipart/form-data"
@@ -23,7 +24,8 @@
           <!-- หมวดหมู่ -->
           <label class="block mb-3">
             {{ form.category.label(class="text-sm font-medium text-gray-700") }}
-            {{ form.category(id="category", class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {{ form.category(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-green-300") }}
             {% for error in form.category.errors %}
               <div class="text-xs text-red-600 mt-1">{{ error }}</div>
             {% endfor %}
@@ -33,7 +35,8 @@
           <label id="otherWrapper" class="block mb-3 hidden">
             <span class="text-sm font-medium text-gray-700">โปรดระบุปัญหา</span>
             <input name="otherText" id="otherText"
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                     focus:outline-none focus:ring-2 focus:ring-green-300"
               placeholder="พิมพ์รายละเอียดปัญหาที่ไม่อยู่ในหมวดหมู่" />
           </label>
 
@@ -86,7 +89,8 @@
           <label class="block mb-3">
             <span class="text-sm font-medium text-gray-700">แนบรูปภาพ</span>
             <input type="file" name="images[]" multiple
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
+              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
+                     focus:outline-none focus:ring-2 focus:ring-green-300" />
           </label>
 
           <!-- ปุ่ม -->
@@ -99,4 +103,35 @@
         <!-- Right: ช่วยบอกวิธี -->
         <div class="p-4 md:p-6 border-l hidden md:block">
           <div class="flex flex-col items-center justify-center h-full text-sm text-gray-600">
-            <p>
+            <p>📌 โปรดใส่รายละเอียดปัญหาอย่างครบถ้วน<br>
+               🖼️ สามารถแนบรูปภาพประกอบได้ (สูงสุด 5 ภาพ)<br>
+               📍 เลือกหมวดหมู่ที่ตรงกับปัญหามากที่สุด</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-3 bg-green-50/60 border-t">
+        <div class="text-sm text-green-700">
+          ระบบแจ้งปัญหาภายในมหาวิทยาลัย — ข้อมูลนี้จะถูกส่งไปยังทีมบริหารเพื่อตรวจสอบ
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // แสดงช่อง "อื่นๆ" ถ้าเลือก other
+    const category = document.getElementById("category");
+    const otherWrapper = document.getElementById("otherWrapper");
+
+    if (category) {
+      category.addEventListener("change", () => {
+        if (category.value === "อื่นๆ") {
+          otherWrapper.classList.remove("hidden");
+        } else {
+          otherWrapper.classList.add("hidden");
+        }
+      });
+    }
+  </script>
+</body>
+</html>
