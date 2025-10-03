@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>รายงานปัญหา - BOK DAI</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-green-100 via-[#e6f7ec] to-green-50 flex items-start justify-center p-6">
   <div class="w-full max-w-3xl">
-    
-
     <div class="rounded-2xl shadow-2xl overflow-hidden bg-white/80 backdrop-blur-md">
       <div class="grid md:grid-cols-2 gap-6 p-6">
-        <!-- Form -->
         <form id="reportForm" method="POST" enctype="multipart/form-data"
               action="{{ url_for('report.report') }}"
               class="p-4 md:p-6" novalidate>
@@ -24,8 +23,7 @@
           <!-- หมวดหมู่ -->
           <label class="block mb-3">
             {{ form.category.label(class="text-sm font-medium text-gray-700") }}
-            {{ form.category(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
-                                      focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {{ form.category(id="category", class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
             {% for error in form.category.errors %}
               <div class="text-xs text-red-600 mt-1">{{ error }}</div>
             {% endfor %}
@@ -35,16 +33,14 @@
           <label id="otherWrapper" class="block mb-3 hidden">
             <span class="text-sm font-medium text-gray-700">โปรดระบุปัญหา</span>
             <input name="otherText" id="otherText"
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
-                     focus:outline-none focus:ring-2 focus:ring-green-300"
+              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
               placeholder="พิมพ์รายละเอียดปัญหาที่ไม่อยู่ในหมวดหมู่" />
           </label>
 
           <!-- วันที่เกิดเหตุ -->
           <label class="block mb-3">
             {{ form.date_reported.label(class="text-sm font-medium text-gray-700") }}
-            {{ form.date_reported(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
-                                           focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {{ form.date_reported(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
             {% for error in form.date_reported.errors %}
               <div class="text-xs text-red-600 mt-1">{{ error }}</div>
             {% endfor %}
@@ -53,18 +49,25 @@
           <!-- สถานที่ -->
           <label class="block mb-3">
             {{ form.location_text.label(class="text-sm font-medium text-gray-700") }}
-            {{ form.location_text(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
-                                           focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {{ form.location_text(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
             {% for error in form.location_text.errors %}
               <div class="text-xs text-red-600 mt-1">{{ error }}</div>
             {% endfor %}
           </label>
 
+          <!-- แผนที่ -->
+          <label class="block mb-3">
+            <span class="text-sm font-medium text-gray-700">ตำแหน่งที่พบปัญหา</span>
+            <div id="map" class="w-full h-64 rounded-lg shadow-md mb-2"></div>
+            <small class="text-xs text-gray-500">คลิกบนแผนที่เพื่อเลือกตำแหน่ง</small>
+          </label>
+          <input type="hidden" id="lat" name="lat" value="{{ form.lat.data }}">
+          <input type="hidden" id="lng" name="lng" value="{{ form.lng.data }}">
+
           <!-- ความเร่งด่วน -->
           <label class="block mb-3">
             {{ form.urgency.label(class="text-sm font-medium text-gray-700") }}
-            {{ form.urgency(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
-                                      focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {{ form.urgency(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
             {% for error in form.urgency.errors %}
               <div class="text-xs text-red-600 mt-1">{{ error }}</div>
             {% endfor %}
@@ -73,8 +76,7 @@
           <!-- รายละเอียด -->
           <label class="block mb-3">
             {{ form.detail.label(class="text-sm font-medium text-gray-700") }}
-            {{ form.detail(rows="5", class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
-                                             focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {{ form.detail(rows="5", class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
             {% for error in form.detail.errors %}
               <div class="text-xs text-red-600 mt-1">{{ error }}</div>
             {% endfor %}
@@ -84,50 +86,17 @@
           <label class="block mb-3">
             <span class="text-sm font-medium text-gray-700">แนบรูปภาพ</span>
             <input type="file" name="images[]" multiple
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm
-                     focus:outline-none focus:ring-2 focus:ring-green-300" />
+              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
           </label>
 
           <!-- ปุ่ม -->
           <div class="flex items-center gap-3 mt-4">
             {{ form.submit(class="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold shadow") }}
-            <button type="reset"
-              class="px-4 py-2 rounded-lg border bg-white text-gray-700 shadow-sm">ล้างข้อมูล</button>
+            <button type="reset" class="px-4 py-2 rounded-lg border bg-white text-gray-700 shadow-sm">ล้างข้อมูล</button>
           </div>
         </form>
 
         <!-- Right: ช่วยบอกวิธี -->
         <div class="p-4 md:p-6 border-l hidden md:block">
           <div class="flex flex-col items-center justify-center h-full text-sm text-gray-600">
-            <p>📌 โปรดใส่รายละเอียดปัญหาอย่างครบถ้วน<br>
-               🖼️ สามารถแนบรูปภาพประกอบได้ (สูงสุด 5 ภาพ)<br>
-               📍 เลือกหมวดหมู่ที่ตรงกับปัญหามากที่สุด</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="px-6 py-3 bg-green-50/60 border-t">
-        <div class="text-sm text-green-700">
-          ระบบแจ้งปัญหาภายในมหาวิทยาลัย — ข้อมูลนี้จะถูกส่งไปยังทีมบริหารเพื่อตรวจสอบ
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // แสดงช่อง "อื่นๆ" ถ้าเลือก other
-    const category = document.getElementById("category");
-    const otherWrapper = document.getElementById("otherWrapper");
-
-    if (category) {
-      category.addEventListener("change", () => {
-        if (category.value === "อื่นๆ") {
-          otherWrapper.classList.remove("hidden");
-        } else {
-          otherWrapper.classList.add("hidden");
-        }
-      });
-    }
-  </script>
-</body>
-</html>
+            <p>

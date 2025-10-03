@@ -5,14 +5,10 @@ from models import db
 from models.user import User
 from routes.report import report_bp
 
-app = Flask(__name__)
-app.config["SECRET_KEY"] = "x234y5z"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
-
-# register blueprint
-app.register_blueprint(auth_bp, url_prefix="/auth")
-
-# init db
+app = Flask(__name__)  # ✅ ใช้ __name__ แทน name
+app.config['SECRET_KEY'] = 'your-secret-key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 login_manager = LoginManager()
@@ -23,16 +19,13 @@ login_manager.login_view = "auth.login"
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-@app.route("/")
-def index():
-<<<<<<<<< Temporary merge branch 1
-    return render_template("indexuser.html")  # เปลี่ยนชื่อไฟล์ให้ตรง
-=========
-    return render_template("")
->>>>>>>>> Temporary merge branch 2
+@app.route('/')
+def indexuser():
+    return render_template('index.html')
 
-if __name__ == "__main__":
+app.register_blueprint(report_bp)
+
+if __name__ == '__main__':  # ✅ ใช้ __name__ == '__main__'
     with app.app_context():
-        db.create_all()   # สร้างตารางใน app.db
+        db.create_all()
     app.run(debug=True)
-
