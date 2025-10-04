@@ -3,54 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bokdai - ระบบรายงานปัญหาสาธารณะ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <title>หน้าหลักผู้ใช้งาน - ระบบแจ้งปัญหา</title>
     <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet"/>
 </head>
-<body class="bg-white min-h-screen font-kanit">
+<body class="bg-custom-green-lightest min-h-screen">
 
-    <header class="bg-[#5C7F5C] text-bokdai-dark p-3 flex justify-between items-center shadow-md">
-        <div class="text-lg font-bold font-kanit text-white">Bokdai</div>
-        <div>
-            <a href="{{ url_for('auth.login') }}" class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium">เข้าสู่ระบบ</a>
-            <a href="{{ url_for('auth.register') }}" class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium hover:bg-green">ลงทะเบียน</a>
-        </div>
+    <header class="bg-custom-green-dark shadow-xl">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-xl font-bold text-white">
+                Dashboard - <span class="text-custom-green-dull-green">สไปรท์ SPD</span>
+            </div>
+            <div>
+                <a href="/report-issue" class="px-4 py-2 rounded-lg bg-custom-green-medium text-white hover:bg-custom-green-dull-green transition duration-300">
+                    + แจ้งปัญหาใหม่
+                </a>
+                <a href="/logout" class="ml-4 text-custom-light-gray hover:text-white">ออกจากระบบ</a>
+            </div>
+        </nav>
     </header>
 
-    <main class="flex flex-col items-center justify-center p-8">
-        <h1 class="text-6xl mb-2 drop-shadow-lg ">Bokdai</h1>
-        <p class="text-xl mb-10 text-bokdai-light">“ระบบรายงานปัญหาสาธารณะ”</p>
+    <main class="container mx-auto p-8">
 
-        <div class="flex flex-col md:flex-row gap-4 mb-12">
-            <a href="#" class="w-full md:w-auto">
-                <button class="bg-[#5C7F5C] text-white py-3 px-10 rounded-full transition duration-300 w-full md:w-auto text-lg hover:bg-[#4a6b4a] shadow-lg hover:shadow-xl">
-                    แจ้งปัญหาทันที
-                </button>
-            </a>
-            <a href="#" class="w-full md:w-auto">
-                <button class="bg-[#5C7F5C] text-white py-3 px-10 rounded-full transition duration-300 w-full md:w-auto text-lg hover:bg-[#4a6b4a] shadow-lg hover:shadow-xl">
-                    ดูสถิติปัญหารวม
-                </button>
-            </a>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-custom-green-medium">
+                <p class="text-custom-light-gray text-sm font-semibold">ปัญหารอการแก้ไข</p>
+                <p class="text-3xl font-bold mt-1 text-custom-green-darkest">3 รายการ</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-yellow-500">
+                <p class="text-custom-light-gray text-sm font-semibold">กำลังดำเนินการ (🟡)</p>
+                <p class="text-3xl font-bold mt-1 text-custom-green-darkest">2 รายการ</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-custom-green-darkest">
+                <p class="text-custom-light-gray text-sm font-semibold">แก้ไขแล้ว (✅)</p>
+                <p class="text-3xl font-bold mt-1 text-custom-green-darkest">12 รายการ</p>
+            </div>
         </div>
 
-        <section class="w-full max-w-3xl">
-            <h2 class="text-2xl font-semibold mb-8 text-center">สถิติการแจ้งปัญหา</h2>
-            <div class="flex flex-col md:flex-row justify-center items-center gap-6">
-                <div class="bg-bokdai-dark border-4 border-red-500 p-6 rounded-3xl w-60 text-center shadow-lg">
-                    <p class="text-lg mb-2">ปัญหาทั้งหมด</p>
-                    <p class="text-5xl font-bold text-red-500">234</p>
-                </div>
-                <div class="bg-bokdai-dark border-4 border-yellow-500 p-6 rounded-3xl w-60 text-center shadow-lg">
-                    <p class="text-lg mb-2">กำลังดำเนินการ</p>
-                    <p class="text-5xl font-bold text-yellow-500">23</p>
-                </div>
-                <div class="bg-bokdai-dark border-4 border-green-500 p-6 rounded-3xl w-60 text-center shadow-lg">
-                    <p class="text-lg mb-2">แก้ไขแล้ว</p>
-                    <p class="text-5xl font-bold text-green-500">3</p>
-                </div>
-            </div>
-        </section>
+        <hr class="border-custom-green-medium mb-8">
+
+        <h2 class="text-3xl font-bold mb-4 text-custom-green-dark">รายการปัญหาของฉัน</h2>
+        
+        <div class="flex justify-between items-center mb-3 p-4 bg-custom-green-dull-green rounded-t-lg">
+            <p class="font-semibold text-custom-green-darkest w-1/4">หมวดหมู่</p>
+            <p class="font-semibold text-custom-green-darkest w-1/2">รายละเอียด</p>
+            <p class="font-semibold text-custom-green-darkest w-1/6 text-center">สถานะ</p>
+            <p class="font-semibold text-custom-green-darkest w-1/6 text-center">ความเร่งด่วน</p>
+            <p class="font-semibold text-custom-green-darkest w-1/6 text-center">ดู</p>
+        </div>
+
+        <div class="flex justify-between items-center p-4 bg-white border-b border-custom-green-medium/50 hover:bg-gray-50 transition duration-150">
+            <p class="text-custom-light-gray w-1/4">ไฟฟ้า</p>
+            <p class="text-custom-green-darkest w-1/2 truncate">ไฟถนนหน้าซอย 5 ดับมา 3 วันแล้วครับ...</p>
+            <p class="w-1/6 text-center">
+                <span class="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">🟡 กำลังดำเนินการ</span>
+            </p>
+            <p class="w-1/6 text-center text-2xl" title="เร่งด่วนสูง">
+                <span class="text-red-600">🔴</span>
+            </p>
+            <a href="/issue/123" class="w-1/6 text-center text-custom-green-dark hover:text-custom-green-darkest">รายละเอียด</a>
+        </div>
+        
+        <div class="flex justify-between items-center p-4 bg-white border-b border-custom-green-medium/50 hover:bg-gray-50 transition duration-150">
+            <p class="text-custom-light-gray w-1/4">น้ำ</p>
+            <p class="text-custom-green-darkest w-1/2 truncate">ท่อประปาแตก มีน้ำไหลบริเวณทางเท้า...</p>
+            <p class="w-1/6 text-center">
+                <span class="inline-block bg-green-100 text-custom-green-darkest text-xs font-semibold px-2.5 py-0.5 rounded-full">✅ แก้ไขแล้ว</span>
+            </p>
+            <p class="w-1/6 text-center text-2xl" title="เร่งด่วนปานกลาง">
+                <span class="text-orange-500">🟠</span>
+            </p>
+            <a href="/issue/124" class="w-1/6 text-center text-custom-green-dark hover:text-custom-green-darkest">รายละเอียด</a>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <a href="/my-issues" class="text-custom-green-dark hover:text-custom-green-darkest text-sm">ดูรายการปัญหาทั้งหมดของฉัน</a>
+        </div>
+
     </main>
+    
+    <footer class="bg-custom-green-darkest mt-8 p-4 text-center text-custom-light-gray">
+        &copy; 2025 Issue Reporting System.
+    </footer>
+
 </body>
 </html>
