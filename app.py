@@ -26,10 +26,6 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
-@app.route('/user')
-def indexuser():
-    return render_template('indexuser.html')
-
 # Register blueprints
 app.register_blueprint(report_bp)
 app.register_blueprint(auth_bp, url_prefix="/auth")
