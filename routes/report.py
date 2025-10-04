@@ -7,20 +7,20 @@ from wtforms.validators import DataRequired
 from datetime import datetime
 from models import db
 from models.issue import Issue
-from werkzeug.utils import secure_filename
+from models.issue_image import IssueImage  # ✅ เพิ่มส่วนนี้เข้ามา
 
+# สร้าง Blueprint
 report_bp = Blueprint('report', __name__, template_folder='../templates')
 
-ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'gif'}
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXT
-
+# ฟังก์ชันตรวจสอบ/สร้างโฟลเดอร์อัปโหลด
 def ensure_upload_folder():
     folder = current_app.config.get('UPLOAD_FOLDER', 'static/uploads')
     os.makedirs(folder, exist_ok=True)
     return folder
 
+
+# ฟอร์มสำหรับรายงานปัญหา
 class ReportForm(FlaskForm):
     category = SelectField('หัวข้อ', choices=[
         ('', '-- เลือกหมวดหมู่ --'),
@@ -39,13 +39,15 @@ class ReportForm(FlaskForm):
     ], validators=[DataRequired()])
     submit = SubmitField('ส่งรายงาน')
 
+
+# เส้นทางของหน้า report
 @report_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def report():
     form = ReportForm()
     if form.validate_on_submit():
         try:
-            # สร้าง Issue ก่อน
+            # ✅ สร้าง record ของ Issue
             issue = Issue(
                 user_id=current_user.id,
                 category=form.category.data,
@@ -58,26 +60,33 @@ def report():
                 lng=None
             )
             db.session.add(issue)
-            db.session.flush()  # ให้ issue.id มีค่าโดยยังไม่ commit
+            db.session.flush()  # ✅ flush เพื่อให้ issue.id ใช้งานได้ก่อน commit
 
-            # ประมวลผลไฟล์ที่แนบ (ชื่อฟิลด์ใน form: images[])
+            # ✅ จัดการอัปโหลดรูปภาพ (ถ้ามี)
             upload_folder = ensure_upload_folder()
-            files = request.files.getlist('images[]')
-            for f in files:
-                if f and f.filename and allowed_file(f.filename):
-                    filename = secure_filename(f.filename)
-                    dest = os.path.join(upload_folder, filename)
-                    f.save(dest)
-                    # สร้าง IssueImage record
-                    from models.issue_image import IssueImage
-                    img = IssueImage(issue_id=issue.id, filename=filename)
-                    db.session.add(img)
+            files = request.files.getlist('images[]')  # ต้องมี input ชื่อ images[] ใน HTML
+            for file in files:
+                if file and file.filename != '':
+                    filename = file.filename
+                    save_path = os.path.join(upload_folder, filename)
+                    file.save(save_path)
 
+                    # ✅ บันทึก path ลงในตาราง IssueImage
+                    issue_image = IssueImage(
+                        issue_id=issue.id,
+                        file_path=save_path
+                    )
+                    db.session.add(issue_image)
+
+            # ✅ commit ทุกอย่างลง DB
             db.session.commit()
-            flash("ส่งรายงานเรียบร้อยแล้ว", "success")
+
+            flash("ส่งรายงานและบันทึกรูปภาพเรียบร้อยแล้ว", "success")
             return redirect(url_for('indexuser'))
+
         except Exception:
-            current_app.logger.exception("Error saving Issue with images")
+            current_app.logger.exception("Error saving Issue or images")
             db.session.rollback()
             flash("เกิดข้อผิดพลาดในการบันทึกรายงาน ดู log ใน terminal", "error")
+
     return render_template('report.html', form=form)

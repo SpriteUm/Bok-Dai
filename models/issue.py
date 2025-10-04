@@ -19,6 +19,6 @@ class Issue(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationship กับ IssueImage และ IssueStatusHistory
-    images = db.relationship('IssueImage', backref='issue', lazy=True)
+    images = db.relationship('Issue_Image', backref='issue', lazy=True)
     status_history = db.relationship('IssueStatusHistory', backref='issue', lazy=True)
  
