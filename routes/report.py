@@ -7,8 +7,14 @@ from wtforms.validators import DataRequired
 from datetime import datetime
 from models import db
 from models.issue import Issue
+from werkzeug.utils import secure_filename
 
 report_bp = Blueprint('report', __name__, template_folder='../templates')
+
+ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXT
 
 def ensure_upload_folder():
     folder = current_app.config.get('UPLOAD_FOLDER', 'static/uploads')
@@ -39,10 +45,7 @@ def report():
     form = ReportForm()
     if form.validate_on_submit():
         try:
-            # (optional) handle uploads if needed
-            # upload_folder = ensure_upload_folder()
-            # files = request.files.getlist('images[]') ...
-
+            # สร้าง Issue ก่อน
             issue = Issue(
                 user_id=current_user.id,
                 category=form.category.data,
@@ -50,16 +53,31 @@ def report():
                 date_reported=form.date_reported.data or datetime.utcnow().date(),
                 location_text=form.location_text.data,
                 urgency=form.urgency.data,
-                status='รอดำเนินการ',   # หรือรับจากฟอร์มถ้ามี
+                status='รอดำเนินการ',
                 lat=None,
                 lng=None
             )
             db.session.add(issue)
+            db.session.flush()  # ให้ issue.id มีค่าโดยยังไม่ commit
+
+            # ประมวลผลไฟล์ที่แนบ (ชื่อฟิลด์ใน form: images[])
+            upload_folder = ensure_upload_folder()
+            files = request.files.getlist('images[]')
+            for f in files:
+                if f and f.filename and allowed_file(f.filename):
+                    filename = secure_filename(f.filename)
+                    dest = os.path.join(upload_folder, filename)
+                    f.save(dest)
+                    # สร้าง IssueImage record
+                    from models.issue_image import IssueImage
+                    img = IssueImage(issue_id=issue.id, filename=filename)
+                    db.session.add(img)
+
             db.session.commit()
             flash("ส่งรายงานเรียบร้อยแล้ว", "success")
             return redirect(url_for('indexuser'))
         except Exception:
-            current_app.logger.exception("Error saving Issue")
+            current_app.logger.exception("Error saving Issue with images")
             db.session.rollback()
             flash("เกิดข้อผิดพลาดในการบันทึกรายงาน ดู log ใน terminal", "error")
     return render_template('report.html', form=form)
