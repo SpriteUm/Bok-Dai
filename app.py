@@ -15,17 +15,25 @@ login_manager = LoginManager()
 login_manager.login_view = "auth.login"   # ย้ำ: endpoint ของ login อยู่ใน blueprint auth
 login_manager.init_app(app)
 
+# Register blueprint
+app.register_blueprint(report_bp)
+app.register_blueprint(auth_bp, url_prefix='/auth')
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.route('/')
-def indexuser():
+def index():
     return render_template('index.html')
 
-# Register blueprint
-app.register_blueprint(report_bp)
-app.register_blueprint(auth_bp, url_prefix='/auth')
+@app.route('/indexuser')
+def indexuser():
+    return render_template('indexuser.html')
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboardr.html')
 
 
 if __name__ == "__main__":

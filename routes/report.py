@@ -33,7 +33,7 @@ class ReportForm(FlaskForm):
     ], validators=[DataRequired()])
     submit = SubmitField('ส่งรายงาน')
 
-@report_bp.route('/', methods=['GET', 'POST'])
+@report_bp.route('/report', methods=['GET', 'POST'])
 @login_required
 def report():
     form = ReportForm()
