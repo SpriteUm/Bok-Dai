@@ -21,4 +21,3 @@ class Issue(db.Model):
     # Relationship กับ IssueImage และ IssueStatusHistory
     images = db.relationship('IssueImage', backref='issue', lazy=True)
     status_history = db.relationship('IssueStatusHistory', backref='issue', lazy=True)
- 

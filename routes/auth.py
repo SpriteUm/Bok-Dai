@@ -25,7 +25,7 @@ class RegisterForm(FlaskForm):
     telephone = StringField('Telephone', validators=[DataRequired()])
     submit = SubmitField('Register')
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/login', methods=['GET', 'POST'], endpoint='login')
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -34,7 +34,6 @@ def login():
         ).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
-            flash("เข้าสู่ระบบเรียบร้อยแล้ว", "success")
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('indexuser'))
         else:

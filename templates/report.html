@@ -25,7 +25,7 @@
 
     <div class="rounded-2xl shadow-2xl overflow-hidden bg-white/80 backdrop-blur-md">
       <div class="grid md:grid-cols-2 gap-6 p-6">
-        <!-- Form -->
+        <!-- 🧾 ฟอร์มรายงานปัญหา -->
         <form id="reportForm" method="POST" enctype="multipart/form-data"
               action="{{ url_for('report.report') }}"
               class="p-4 md:p-6" novalidate>
@@ -36,7 +36,7 @@
           <!-- หมวดหมู่ -->
           <label class="block mb-3">
             {{ form.category.label(class="text-sm font-medium text-gray-700") }}
-            {{ form.category(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
+            {{ form.category(id="category", class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
             {% for error in form.category.errors %}
               <div class="text-xs text-red-600 mt-1">{{ error }}</div>
             {% endfor %}
@@ -45,9 +45,7 @@
           <!-- ช่องอื่นๆ -->
           <label id="otherWrapper" class="block mb-3 hidden">
             <span class="text-sm font-medium text-gray-700">โปรดระบุปัญหา</span>
-            <input name="other_text" id="otherText"
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
-              placeholder="พิมพ์รายละเอียดปัญหาที่ไม่อยู่ในหมวดหมู่" />
+            {{ form.other_text(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300", placeholder="พิมพ์รายละเอียดปัญหาที่ไม่อยู่ในหมวดหมู่") }}
           </label>
 
           <!-- วันที่เกิดเหตุ -->
@@ -86,14 +84,16 @@
             {% endfor %}
           </label>
 
-          <!-- แนบรูป -->
+          <!-- 📸 แนบรูปภาพ -->
           <label class="block mb-3">
             <span class="text-sm font-medium text-gray-700">แนบรูปภาพ</span>
-            <input type="file" name="images[]" multiple
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
+            <input type="file" name="images[]" id="images" multiple
+                   accept="image/*"
+                   class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
+            <p class="text-xs text-gray-500 mt-1">รองรับ JPG, PNG, สูงสุด 5 รูป</p>
           </label>
 
-          <!-- GPS / Google Maps -->
+          <!-- พิกัด (Latitude / Longitude) -->
           <label class="block mb-3">
             <span class="text-sm font-medium text-gray-700">พิกัด (Google Maps / Leaflet)</span>
             <div class="flex gap-2 mt-2">
@@ -114,7 +114,7 @@
           </div>
         </form>
 
-        <!-- Right: ช่วยบอกวิธี -->
+        <!-- 🧭 ข้อมูลช่วยเหลือ -->
         <div class="p-4 md:p-6 border-l hidden md:block">
           <div class="flex flex-col items-center justify-center h-full text-sm text-gray-600">
             <p>📌 โปรดใส่รายละเอียดปัญหาอย่างครบถ้วน<br>
@@ -132,9 +132,9 @@
     </div>
   </div>
 
-  <!-- JS -->
+  <!-- 📍 JS -->
   <script>
-    // แสดงช่อง "อื่นๆ" ถ้าเลือก other
+    // แสดงช่อง "อื่นๆ" ถ้าเลือกหมวดหมู่ "อื่นๆ"
     const category = document.getElementById("category");
     const otherWrapper = document.getElementById("otherWrapper");
     if (category) {
@@ -144,15 +144,20 @@
       });
     }
 
-    // ปุ่ม GPS
+    // ปุ่มดึงพิกัดจาก GPS
     const btnUseLocation = document.getElementById("btnUseLocation");
-    btnUseLocation.addEventListener("click", () => {
-      if (!navigator.geolocation) { alert("เบราว์เซอร์ไม่รองรับ GPS"); return; }
-      navigator.geolocation.getCurrentPosition(pos => {
-        document.getElementById("lat").value = pos.coords.latitude;
-        document.getElementById("lng").value = pos.coords.longitude;
-      }, err => alert("ไม่สามารถดึงพิกัดได้: " + err.message));
-    });
+    if (btnUseLocation) {
+      btnUseLocation.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          alert("เบราว์เซอร์ไม่รองรับ GPS");
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(pos => {
+          document.getElementById("lat").value = pos.coords.latitude;
+          document.getElementById("lng").value = pos.coords.longitude;
+        }, err => alert("ไม่สามารถดึงพิกัดได้: " + err.message));
+      });
+    }
   </script>
 </body>
 </html>
