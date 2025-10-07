@@ -35,15 +35,21 @@ class ReportForm(FlaskForm):
     lng = HiddenField('lng')
     submit = SubmitField('ส่งรายงาน')
 
+
 @report_bp.route('/report', methods=['GET', 'POST'])
 @login_required
 def report():
     form = ReportForm()
     if form.validate_on_submit():
         try:
+            # ✅ เพิ่มส่วนนี้ เพื่อดึงค่าพิกัดจากฟอร์ม (มาจาก Leaflet.js)
+            lat_value = form.lat.data or request.form.get("lat")
+            lng_value = form.lng.data or request.form.get("lng")
+
             # (optional) handle uploads if needed
             # upload_folder = ensure_upload_folder()
             # files = request.files.getlist('images[]') ...
+
             issue = Issue(
                 user_id=current_user.id,
                 category=form.category.data,
@@ -52,9 +58,11 @@ def report():
                 location_text=form.location_text.data,
                 urgency=form.urgency.data,
                 status='รอดำเนินการ',   # หรือรับจากฟอร์มถ้ามี
-                lat=None,
-                lng=None
+                # ✅ เพิ่มบรรทัดนี้ เพื่อบันทึกค่าพิกัดจริง
+                lat=float(lat_value) if lat_value else None,
+                lng=float(lng_value) if lng_value else None
             )
+
             db.session.add(issue)
             db.session.commit()
             flash("ส่งรายงานเรียบร้อยแล้ว", "success")

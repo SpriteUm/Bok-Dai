@@ -135,3 +135,32 @@
   </script>
 </body>
 </html>
+  <script>
+    // Leaflet Map Integration
+    document.addEventListener("DOMContentLoaded", () => {
+      const map = L.map("map").setView([13.736717, 100.523186], 13); // เริ่มที่กรุงเทพฯ
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      let marker;
+      const latInput = document.getElementById("lat");
+      const lngInput = document.getElementById("lng");
+
+      // ถ้ามีค่า lat/lng เดิม (จาก form data) ให้แสดง marker
+      if (latInput.value && lngInput.value) {
+        marker = L.marker([latInput.value, lngInput.value]).addTo(map);
+        map.setView([latInput.value, lngInput.value], 16);
+      }
+
+      // คลิกแผนที่เพื่อเลือกตำแหน่งใหม่
+      map.on("click", function (e) {
+        const { lat, lng } = e.latlng;
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lng]).addTo(map);
+        latInput.value = lat.toFixed(6);
+        lngInput.value = lng.toFixed(6);
+      });
+    });
+  </script>
