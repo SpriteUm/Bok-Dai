@@ -5,39 +5,27 @@ import os
 
 
 def create_app():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'your-secret-key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bokdai.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['WTF_CSRF_ENABLED'] = True
+    app = Flask(name)
+    app.config["SECRET_KEY"] = "your-secret-key"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///bokdai.db"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["WTF_CSRF_ENABLED"] = True
+    app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-    # init extensions
     db.init_app(app)
 
     login_manager = LoginManager()
-    login_manager.login_view = "auth.login"   # ย้ำ: endpoint ของ login อยู่ใน blueprint auth
+    login_manager.login_view = "auth.login"
     login_manager.init_app(app)
 
-    # import models/user here if you have real User model
-    try:
-        from models.user import User as UserModel
-    except Exception:
-        UserModel = None
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        if UserModel:
-            return UserModel.query.get(int(user_id))
-        return None
-
-    # import blueprints AFTER db.init_app to avoid circular imports
+    # import blueprints AFTER db.init_app to reduce circular imports
     from routes.auth import auth_bp
     from routes.report import report_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(report_bp, url_prefix="/report")
 
-    # simple routes
     @app.route("/")
     def index():
         return render_template("index.html")
@@ -46,15 +34,33 @@ def create_app():
     def indexuser():
         return render_template("indexuser.html")
 
+    # ให้ import โมเดลทั้งหมดที่ต้องการ ให้ SQLAlchemy ลงทะเบียน mapper ก่อน create_all()
+    with app.app_context():
+        import models.user
+        import models.issue
+        import models.issue_image
+        # try both possible filenames for history module (tolerate naming)
+        try:
+            import models.issue_status_history
+        except ImportError:
+            try:
+                import models.issueStatusHistory
+            except ImportError:
+                app.logger.warning("IssueStatusHistory model not found; skipping import")
+
+        db.create_all()
+
+    # user_loader ต้องเรียกหลัง import models.user
+    from models.user import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
     return app
+
 
 app = create_app()
 
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
+if name == "main":
     app.run(debug=True)
-
-@app.route("/")
-def index():
-    return render_template("register.html")
