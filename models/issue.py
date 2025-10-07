@@ -15,7 +15,8 @@ class Issue(db.Model):
     location_link = db.Column(db.String(300))              # ลิงก์ Google Maps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+    lat = db.Column(db.Float)                                   # Latitude
+    lon = db.Column(db.Float)                                   # Longitude
     status = db.Column(
         db.Enum('รอดำเนินการ', 'กำลังดำเนินการ', 'แก้ไขแล้ว', name='issue_status'),
         default='รอดำเนินการ',
