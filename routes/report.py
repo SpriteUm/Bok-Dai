@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, TextAreaField, SubmitField, DateField
+from wtforms import StringField, SelectField, TextAreaField, SubmitField, DateField, HiddenField
 from wtforms.validators import DataRequired
 from datetime import datetime
 from models import db
@@ -31,9 +31,11 @@ class ReportForm(FlaskForm):
     urgency = SelectField('ความเร่งด่วน', choices=[
         ('🔴', 'สูงสุด'), ('🟠', 'ปานกลาง'), ('🟢', 'ต่ำ')
     ], validators=[DataRequired()])
+    lat = HiddenField('lat')
+    lng = HiddenField('lng')
     submit = SubmitField('ส่งรายงาน')
 
-@report_bp.route('/', methods=['GET', 'POST'])
+@report_bp.route('/report', methods=['GET', 'POST'])
 @login_required
 def report():
     form = ReportForm()
@@ -42,7 +44,6 @@ def report():
             # (optional) handle uploads if needed
             # upload_folder = ensure_upload_folder()
             # files = request.files.getlist('images[]') ...
-
             issue = Issue(
                 user_id=current_user.id,
                 category=form.category.data,
