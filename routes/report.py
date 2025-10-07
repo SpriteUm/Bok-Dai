@@ -97,3 +97,18 @@ def report():
                     saved_files.append(name)
 
             db.session.commit()
+
+            flash("✅ ส่งรายงานเรียบร้อยแล้ว", "success")
+            return redirect(url_for('indexuser'))
+
+        except Exception as e:
+            current_app.logger.exception("❌ Error saving Issue:")
+            db.session.rollback()
+            flash(f"เกิดข้อผิดพลาดในการบันทึก: {e}", "error")
+
+    elif request.method == 'POST':
+        # ถ้า validate ไม่ผ่าน ให้แจ้งผู้ใช้
+        flash("⚠️ โปรดกรอกข้อมูลให้ครบทุกช่องที่จำเป็น", "error")
+        current_app.logger.warning(f"Form errors: {form.errors}")
+
+    return render_template('report.html', form=form)
