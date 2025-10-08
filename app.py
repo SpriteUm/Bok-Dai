@@ -4,6 +4,7 @@ from models import db
 from models.user import User
 from routes.report import report_bp
 from routes.auth import auth_bp
+from routes.indexuser import indexuser_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -20,6 +21,7 @@ login_manager.init_app(app)
 # Register blueprint
 app.register_blueprint(report_bp)
 app.register_blueprint(auth_bp, url_prefix='/auth')
+app.register_blueprint(indexuser_bp, url_prefix='/induser')
 
 @login_manager.user_loader
 def load_user(user_id):
