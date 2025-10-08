@@ -20,31 +20,22 @@ login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.init_app(app)
 
+# Register blueprint
+app.register_blueprint(report_bp)
+app.register_blueprint(auth_bp, url_prefix='/auth')
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 # ------------------ ROUTES ------------------
 @app.route('/')
-def user():
-    return render_template('user.html')  # ✅ หน้าแรกเปิด dashboard
+def indexuser():
+    return render_template('index.html')
 
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
-
-@app.route('/login')
-def login():
-    return render_template('login.html')
-
-@app.route('/register')
-def register():
-    return render_template('register.html')
-
-# ------------------ BLUEPRINT ------------------
+# Register blueprint
 app.register_blueprint(report_bp)
 app.register_blueprint(auth_bp, url_prefix='/auth')
-app.register_blueprint(dashboard_bp)
 
 # ------------------ MAIN ------------------
 if __name__ == "__main__":
