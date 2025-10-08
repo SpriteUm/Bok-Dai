@@ -13,6 +13,8 @@ db.init_app(app)
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"   # ย้ำ: endpoint ของ login อยู่ใน blueprint auth
+login_manager.login_message = "กรุณาเข้าสู่ระบบก่อนเพื่อเข้าถึงหน้านี้"
+login_manager.login_message_category = "error"
 login_manager.init_app(app)
 
 # Register blueprint
@@ -26,14 +28,6 @@ def load_user(user_id):
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/indexuser')
-def indexuser():
-    return render_template('indexuser.html')
-
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboardr.html')
 
 
 if __name__ == "__main__":
