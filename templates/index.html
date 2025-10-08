@@ -14,32 +14,44 @@
     />
   </head>
   <body class="bg-custom-green-lightest min-h-screen font-kanit">
-  <header class="bg-[#5C7F5C] shadow-xl">
+    <header class="bg-[#5C7F5C] shadow-xl">
       <nav
         class="container mx-auto px-4 py-4 flex justify-between items-center"
       >
+        <div class="text-xl font-bold text-white">Bokdai logo</div>
 
-        <div class="text-xl font-bold text-white">
-          Bokdai logo
-        </div>
-
-        <div>
+        <div class="flex items-center gap-4">
+          {% if current_user.is_authenticated %}
+          <span class="text-white font-medium"
+            >สวัสดี, {{ current_user.username }}</span
+          >
+          <a
+            href="{{ url_for('auth.logout') }}"
+            class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 rounded-full text-sm font-medium"
+          >
+            ออกจากระบบ
+          </a>
+          {% else %}
           <a
             href="{{ url_for('auth.login') }}"
-            class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium"
+            class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 rounded-full text-sm font-medium"
           >
             เข้าสู่ระบบ
           </a>
-          <a href="{{ url_for('auth.register') }}" class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium"
-            >
-            ลงทะเบียน
-            </a
+          <a
+            href="{{ url_for('auth.register') }}"
+            class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 rounded-full text-sm font-medium"
           >
+            ลงทะเบียน
+          </a>
+          {% endif %}
         </div>
       </nav>
     </header>
     <main class="flex flex-col items-center justify-center p-8">
-      <h1 class="text-custom-green-darkest text-6xl mb-2 drop-shadow-lg">Bokdai</h1>
+      <h1 class="text-custom-green-darkest text-6xl mb-2 drop-shadow-lg">
+        Bokdai
+      </h1>
       <p class="text-xl mb-10 text-bokdai-light">“ระบบรายงานปัญหาสาธารณะ”</p>
 
       <div class="flex flex-col md:flex-row gap-4 mb-12">
@@ -63,16 +75,24 @@
         <h2 class="text-2xl font-semibold mb-8 text-center">
           สถิติการแจ้งปัญหา
         </h2>
-        <div class="flex flex-col md:flex-row justify-center items-center gap-6">
-          <div class="bg-bokdai-dark border-4 border-red-500 p-6 rounded-3xl w-60 text-center shadow-lg">
+        <div
+          class="flex flex-col md:flex-row justify-center items-center gap-6"
+        >
+          <div
+            class="bg-bokdai-dark border-4 border-red-500 p-6 rounded-3xl w-60 text-center shadow-lg"
+          >
             <p class="text-lg mb-2">ปัญหาทั้งหมด</p>
             <p class="text-5xl font-bold text-red-500">234</p>
           </div>
-          <div class="bg-bokdai-dark border-4 border-yellow-500 p-6 rounded-3xl w-60 text-center shadow-lg">
+          <div
+            class="bg-bokdai-dark border-4 border-yellow-500 p-6 rounded-3xl w-60 text-center shadow-lg"
+          >
             <p class="text-lg mb-2">กำลังดำเนินการ</p>
             <p class="text-5xl font-bold text-yellow-500">23</p>
           </div>
-          <div class="bg-bokdai-dark border-4 border-green-500 p-6 rounded-3xl w-60 text-center shadow-lg">
+          <div
+            class="bg-bokdai-dark border-4 border-green-500 p-6 rounded-3xl w-60 text-center shadow-lg"
+          >
             <p class="text-lg mb-2">แก้ไขแล้ว</p>
             <p class="text-5xl font-bold text-green-500">3</p>
           </div>
