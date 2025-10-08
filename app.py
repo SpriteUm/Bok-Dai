@@ -17,44 +17,23 @@ def create_app():
     # เริ่มต้น SQLAlchemy
     db.init_app(app)
 
-    # เริ่มต้น LoginManager
-    login_manager = LoginManager()
-    login_manager.login_view = "auth.login"
-    login_manager.init_app(app)
-
-    # Register user loader สำหรับ Flask-Login
-    from models.user import User
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"   # ย้ำ: endpoint ของ login อยู่ใน blueprint auth
+login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # Register Blueprints
-    from routes.auth import auth_bp
-    from routes.report import report_bp
+@app.route('/')
+def indexuser():
+    return render_template('index.html')
 
-    app.register_blueprint(auth_bp, url_prefix="/auth")
-    app.register_blueprint(report_bp, url_prefix="/report")
+# Register blueprint
+app.register_blueprint(report_bp)
+app.register_blueprint(auth_bp, url_prefix='/auth')
 
-    # Simple Admin Routes
-    @app.route("/home")
-    def indexadmin():
-        return render_template("indexadmin.html")
 
-    @app.route("/admin")
-    def reportadmin():
-        return render_template("reportadmin.html")
-
-    @app.route("/")
-    def issueadmin():
-        return render_template("issueadmin.html")
-
-    return app
-
-# สร้างแอป
-app = create_app()
-
-# รันแอป
 if __name__ == "__main__":
     with app.app_context():
         # Import models เพื่อให้ SQLAlchemy ลงทะเบียน mapper
