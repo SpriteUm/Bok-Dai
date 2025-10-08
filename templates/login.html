@@ -14,7 +14,7 @@
         {{ form.csrf_token }}
         {% with messages = get_flashed_messages() %}
           {% if messages %}
-            <div class="mb-4">
+            <div class="mb-4 flex justify-center">
               {% for message in messages %}
                 <span class="text-red-500 text-sm">{{ message }}</span>
               {% endfor %}

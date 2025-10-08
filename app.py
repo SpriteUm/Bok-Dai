@@ -4,6 +4,7 @@ from models import db
 from models.user import User
 from routes.report import report_bp
 from routes.auth import auth_bp
+from routes.indexuser import indexuser_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -13,11 +14,14 @@ db.init_app(app)
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"   # ย้ำ: endpoint ของ login อยู่ใน blueprint auth
+login_manager.login_message = "กรุณาเข้าสู่ระบบก่อนเพื่อเข้าถึงหน้านี้"
+login_manager.login_message_category = "error"
 login_manager.init_app(app)
 
 # Register blueprint
 app.register_blueprint(report_bp)
 app.register_blueprint(auth_bp, url_prefix='/auth')
+app.register_blueprint(indexuser_bp, url_prefix='/induser')
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -27,13 +31,14 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
-@app.route('/indexadmin')
+@app.route('/indexuser')
 def indexuser():
-    return render_template('indexadmin.html')
+    return render_template('indexuser.html')
 
-@app.route('/1')
+@app.route('/dashboard')
 def dashboard():
-    return render_template('updateadmin.html')
+    return render_template('dashboardr.html')
+
 
 if __name__ == "__main__":
     with app.app_context():
