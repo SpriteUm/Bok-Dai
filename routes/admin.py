@@ -1,10 +1,12 @@
 # 1. Standard library imports
 from datetime import datetime, date
 from functools import wraps
+import json # <-- เพิ่มการ import json
 
 # 2. Third-party imports
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
 from flask_login import login_required, current_user
+from sqlalchemy import func # <-- เพิ่มการ import func
 
 # 3. Local application imports
 from models import db
@@ -38,16 +40,23 @@ def dashboard():
     issues_pending = Issue.query.filter_by(status='รอดำเนินการ').count()
     issues_in_progress = Issue.query.filter_by(status='กำลังดำเนินการ').count()
     issues_completed = Issue.query.filter_by(status='แก้ไขแล้ว').count()
-    
-    # คำนวณหาปัญหาวันนี้
     today_start = datetime.combine(date.today(), datetime.min.time())
     issues_today = Issue.query.filter(Issue.created_at >= today_start).count()
-    
-    # หาก urgency เก็บเป็น '🔴', '🟠', '🟢'
     issues_urgent = Issue.query.filter_by(urgency='🔴').count()
     
     # --- ดึงข้อมูลสำหรับตาราง "ปัญหาล่าสุด" ---
     recent_issues = Issue.query.order_by(Issue.created_at.desc()).limit(5).all()
+
+    # --- ++ เพิ่มส่วนนี้: เตรียมข้อมูลสำหรับกราฟ ++ ---
+    chart_data_query = db.session.query(
+        Issue.category, 
+        func.count(Issue.id)
+    ).group_by(Issue.category).order_by(func.count(Issue.id).desc()).limit(5).all()
+    
+    chart_labels = [row[0] for row in chart_data_query]
+    chart_values = [row[1] for row in chart_data_query]
+    
+    chart_data = { "labels": chart_labels, "values": chart_values }
 
     return render_template('admin.html',
                            total_issues=total_issues,
@@ -56,7 +65,9 @@ def dashboard():
                            issues_completed=issues_completed,
                            issues_today=issues_today,
                            issues_urgent=issues_urgent,
-                           recent_issues=recent_issues)
+                           recent_issues=recent_issues,
+                           chart_data=json.dumps(chart_data) # <-- ส่งข้อมูลกราฟไปด้วย
+                          )
 
 # --- Issue Management Routes ---
 @admin_bp.route('/issues')
@@ -64,43 +75,29 @@ def dashboard():
 def manage_issues():
     """แสดงรายการปัญหา/รายงานทั้งหมด"""
     issues = Issue.query.order_by(Issue.created_at.desc()).all()
-    # **NOTE:** หน้านี้อาจจะเป็น report.html หรือ reportadmin.html ขึ้นอยู่กับไฟล์ของคุณ
     return render_template('report.html', issues=issues)
 
 
-# --- ROUTE สำหรับ "หน้า" แก้ไขรายละเอียด ---
 @admin_bp.route('/issue/update/<int:issue_id>', methods=['GET', 'POST'])
 @admin_required
 def update_issue_page(issue_id):
-    """
-    จัดการ "หน้า" สำหรับแก้ไขรายละเอียดของ Issue
-    - GET: แสดงฟอร์มพร้อมข้อมูลเดิม
-    - POST: รับข้อมูลจากฟอร์มใหญ่ (ที่อาจมีหลาย field) แล้วบันทึก
-    """
+    """จัดการ "หน้า" สำหรับแก้ไขรายละเอียดของ Issue"""
     issue = Issue.query.get_or_404(issue_id)
 
     if request.method == 'POST':
-        # ส่วนนี้จะทำงานเมื่อกดบันทึกจากฟอร์มในหน้า updateadmin.html
-        # คุณสามารถเพิ่มการรับค่า field อื่นๆ ได้ที่นี่
+        # สามารถเพิ่มการรับข้อมูล field อื่นๆ จากฟอร์มใหญ่ได้ที่นี่
         issue.detail = request.form.get('detail', issue.detail)
-        # ...เพิ่ม field อื่นๆ ตามต้องการ...
-
         db.session.commit()
         flash(f'อัปเดตรายละเอียดของ Issue #{issue.id} เรียบร้อยแล้ว', 'success')
         return redirect(url_for('admin.update_issue_page', issue_id=issue.id))
 
-    # สำหรับ GET request, แสดงหน้าฟอร์มแก้ไข
     return render_template('updateadmin.html', issue=issue)
 
 
-# --- ROUTE สำหรับ "ฟอร์ม" อัปเดตสถานะ ---
 @admin_bp.route('/issue/update_status/<int:issue_id>', methods=['POST'])
 @admin_required
 def update_issue_status(issue_id):
-    """
-    จัดการ "ฟอร์ม" อัปเดตสถานะโดยเฉพาะ (จากหน้า detail)
-    บันทึกสถานะใหม่, สร้างประวัติ (Timeline), แล้วกลับไปหน้าเดิม
-    """
+    """จัดการ "ฟอร์ม" อัปเดตสถานะโดยเฉพาะ (จากหน้า detail)"""
     issue = Issue.query.get_or_404(issue_id)
     new_status = request.form.get('status')
     notes = request.form.get('notes', '').strip()
@@ -108,32 +105,26 @@ def update_issue_status(issue_id):
     if not new_status or new_status not in Issue.ALLOWED_STATUSES:
         flash('สถานะที่ส่งมาไม่ถูกต้อง', 'error')
     else:
-        # อัปเดตสถานะของ Issue หลัก
         issue.status = new_status
         issue.updated_at = datetime.utcnow()
-
-        # สร้างประวัติการเปลี่ยนแปลง (Timeline)
         history_log = IssueStatusHistory(
-            issue_id=issue.id,
-            status=new_status,
-            notes=notes,
+            issue_id=issue.id, status=new_status, notes=notes,
             changed_by_id=current_user.id
         )
         db.session.add(history_log)
         db.session.commit()
         flash(f'สถานะของรายงาน #{issue.id} ถูกอัปเดตเป็น "{new_status}" แล้ว', 'success')
 
-    # ไม่ว่าจะสำเร็จหรือพลาด ก็ให้กลับไปที่หน้ารายละเอียดเดิม
     return redirect(url_for('admin.update_issue_page', issue_id=issue.id))
 
-# --- User Management Routes (ส่วนนี้สมบูรณ์ดีแล้ว ไม่ได้แก้ไข) ---
+# --- User Management Routes ---
 @admin_bp.route('/users')
 @admin_required
 def manage_users():
     users = User.query.filter(User.id != current_user.id).all()
-    return render_template('indexuser.html', users=users) # ตรวจสอบชื่อไฟล์ template .html ของคุณ
+    return render_template('indexuser.html', users=users)
 
-# ... (โค้ด toggle_admin_status และ delete_user เหมือนเดิม) ...
+
 @admin_bp.route('/user/toggle_admin/<int:user_id>', methods=['POST'])
 @admin_required
 def toggle_admin_status(user_id):
