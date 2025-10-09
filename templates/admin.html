@@ -69,7 +69,7 @@
                 <div class="bg-white border border-[#8FAF8F] rounded-lg shadow p-4" style="flex:1 1 60%; min-width:300px;">
                     <h3 class="text-sm font-medium mb-2">ปัญหาแยกตามหมวดหมู่ (5 อันดับแรก)</h3>
                     <div class="relative" style="min-height:250px;">
-                        <canvas id="issueChart" data-chart="{{ chart_data|safe }}"></canvas>
+                        <canvas id="issueChart" data-chart="{{ chart_data|tojson }}"></canvas>
                     </div>
                 </div>
                 <div class="bg-white border border-[#8FAF8F] rounded-lg shadow p-4" style="flex:1 1 35%; min-width:220px;">

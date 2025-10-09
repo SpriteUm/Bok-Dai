@@ -1,12 +1,12 @@
 # 1. Standard library imports
 from datetime import datetime, date
 from functools import wraps
-import json # <-- เพิ่มการ import json
+import json
 
 # 2. Third-party imports
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
 from flask_login import login_required, current_user
-from sqlalchemy import func # <-- เพิ่มการ import func
+from sqlalchemy import func
 
 # 3. Local application imports
 from models import db
@@ -47,7 +47,7 @@ def dashboard():
     # --- ดึงข้อมูลสำหรับตาราง "ปัญหาล่าสุด" ---
     recent_issues = Issue.query.order_by(Issue.created_at.desc()).limit(5).all()
 
-    # --- ++ เพิ่มส่วนนี้: เตรียมข้อมูลสำหรับกราฟ ++ ---
+    # --- เตรียมข้อมูลสำหรับกราฟ ---
     chart_data_query = db.session.query(
         Issue.category, 
         func.count(Issue.id)
@@ -58,6 +58,7 @@ def dashboard():
     
     chart_data = { "labels": chart_labels, "values": chart_values }
 
+    # **** FIX: จัดย่อหน้าของ return render_template ให้ถูกต้อง ****
     return render_template('admin.html',
                            total_issues=total_issues,
                            issues_pending=issues_pending,
@@ -66,7 +67,7 @@ def dashboard():
                            issues_today=issues_today,
                            issues_urgent=issues_urgent,
                            recent_issues=recent_issues,
-                           chart_data=json.dumps(chart_data) # <-- ส่งข้อมูลกราฟไปด้วย
+                           chart_data=chart_data
                           )
 
 # --- Issue Management Routes ---
@@ -85,7 +86,6 @@ def update_issue_page(issue_id):
     issue = Issue.query.get_or_404(issue_id)
 
     if request.method == 'POST':
-        # สามารถเพิ่มการรับข้อมูล field อื่นๆ จากฟอร์มใหญ่ได้ที่นี่
         issue.detail = request.form.get('detail', issue.detail)
         db.session.commit()
         flash(f'อัปเดตรายละเอียดของ Issue #{issue.id} เรียบร้อยแล้ว', 'success')
