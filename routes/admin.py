@@ -6,7 +6,7 @@ import json
 # 2. Third-party imports
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
 from flask_login import login_required, current_user
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 # 3. Local application imports
 from models import db
@@ -24,7 +24,7 @@ def admin_required(f):
     @login_required
     def decorated_function(*args, **kwargs):
         if not current_user.is_admin:
-            abort(403)  # Forbidden
+            abort(403)
         return f(*args, **kwargs)
     return decorated_function
 
@@ -35,7 +35,6 @@ def admin_required(f):
 def dashboard():
     """แสดงหน้าแดชบอร์ดหลักของ Admin พร้อมข้อมูลสรุปทั้งหมด"""
     
-    # --- ดึงข้อมูลสำหรับ Summary Cards ---
     total_issues = Issue.query.count()
     issues_pending = Issue.query.filter_by(status='รอดำเนินการ').count()
     issues_in_progress = Issue.query.filter_by(status='กำลังดำเนินการ').count()
@@ -43,11 +42,8 @@ def dashboard():
     today_start = datetime.combine(date.today(), datetime.min.time())
     issues_today = Issue.query.filter(Issue.created_at >= today_start).count()
     issues_urgent = Issue.query.filter_by(urgency='🔴').count()
-    
-    # --- ดึงข้อมูลสำหรับตาราง "ปัญหาล่าสุด" ---
     recent_issues = Issue.query.order_by(Issue.created_at.desc()).limit(5).all()
 
-    # --- เตรียมข้อมูลสำหรับกราฟ ---
     chart_data_query = db.session.query(
         Issue.category, 
         func.count(Issue.id)
@@ -58,7 +54,6 @@ def dashboard():
     
     chart_data = { "labels": chart_labels, "values": chart_values }
 
-    # **** FIX: จัดย่อหน้าของ return render_template ให้ถูกต้อง ****
     return render_template('admin.html',
                            total_issues=total_issues,
                            issues_pending=issues_pending,
@@ -74,34 +69,90 @@ def dashboard():
 @admin_bp.route('/issues')
 @admin_required
 def manage_issues():
-    """แสดงรายการปัญหา/รายงานทั้งหมด"""
-    issues = Issue.query.order_by(Issue.created_at.desc()).all()
-    return render_template('report.html', issues=issues)
+    """แสดงรายการปัญหาทั้งหมด พร้อมระบบค้นหา, กรอง, จัดเรียง และแบ่งหน้า"""
+    
+    # --- 1. รับค่าจาก URL (GET parameters) ---
+    page = request.args.get('page', 1, type=int)
+    search_term = request.args.get('search', '')
+    filter_status = request.args.get('status', '')
+    filter_urgency = request.args.get('urgency', '')
+    start_date_str = request.args.get('start_date', '')
+    end_date_str = request.args.get('end_date', '')
+    sort_by = request.args.get('sort_by', 'created_at')
+    sort_order = request.args.get('sort_order', 'desc')
 
+    # --- 2. สร้าง Query เริ่มต้น ---
+    query = Issue.query.join(User)
 
+    # --- 3. เพิ่มเงื่อนไขการกรอง (Filter) ---
+    if search_term:
+        search_like = f'%{search_term}%'
+        query = query.filter(
+            or_(
+                Issue.detail.ilike(search_like),
+                Issue.category.ilike(search_like),
+                User.username.ilike(search_like)
+            )
+        )
+    if filter_status:
+        query = query.filter(Issue.status == filter_status)
+    if filter_urgency:
+        query = query.filter(Issue.urgency == filter_urgency)
+    if start_date_str:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        query = query.filter(Issue.date_reported >= start_date)
+    if end_date_str:
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+        query = query.filter(Issue.date_reported <= end_date)
+
+    # --- 4. เพิ่มเงื่อนไขการจัดเรียง (Sort) ---
+    sort_column_map = {
+        'category': Issue.category,
+        'date_reported': Issue.date_reported,
+        'status': Issue.status
+    }
+    sort_column = sort_column_map.get(sort_by, Issue.created_at)
+    if sort_order == 'asc':
+        query = query.order_by(sort_column.asc())
+    else:
+        query = query.order_by(sort_column.desc())
+
+    # --- 5. ดึงข้อมูลแบบแบ่งหน้า (Paginate) ---
+    pagination = query.paginate(page=page, per_page=15, error_out=False)
+    issues = pagination.items
+
+    # --- 6. ส่งข้อมูลกลับไปที่ Template ---
+    return render_template('reportadmin.html', 
+                           issues=issues,
+                           pagination=pagination,
+                           issue_statuses=Issue.ALLOWED_STATUSES,
+                           search_term=search_term,
+                           filter_status=filter_status,
+                           filter_urgency=filter_urgency,
+                           start_date=start_date_str,
+                           end_date=end_date_str,
+                           sort_by=sort_by,
+                           sort_order=sort_order
+                          )
+
+# ... (โค้ดส่วนที่เหลือของไฟล์เหมือนเดิม) ...
 @admin_bp.route('/issue/update/<int:issue_id>', methods=['GET', 'POST'])
 @admin_required
 def update_issue_page(issue_id):
-    """จัดการ "หน้า" สำหรับแก้ไขรายละเอียดของ Issue"""
     issue = Issue.query.get_or_404(issue_id)
-
     if request.method == 'POST':
         issue.detail = request.form.get('detail', issue.detail)
         db.session.commit()
         flash(f'อัปเดตรายละเอียดของ Issue #{issue.id} เรียบร้อยแล้ว', 'success')
         return redirect(url_for('admin.update_issue_page', issue_id=issue.id))
-
     return render_template('updateadmin.html', issue=issue)
-
 
 @admin_bp.route('/issue/update_status/<int:issue_id>', methods=['POST'])
 @admin_required
 def update_issue_status(issue_id):
-    """จัดการ "ฟอร์ม" อัปเดตสถานะโดยเฉพาะ (จากหน้า detail)"""
     issue = Issue.query.get_or_404(issue_id)
     new_status = request.form.get('status')
     notes = request.form.get('notes', '').strip()
-
     if not new_status or new_status not in Issue.ALLOWED_STATUSES:
         flash('สถานะที่ส่งมาไม่ถูกต้อง', 'error')
     else:
@@ -114,52 +165,10 @@ def update_issue_status(issue_id):
         db.session.add(history_log)
         db.session.commit()
         flash(f'สถานะของรายงาน #{issue.id} ถูกอัปเดตเป็น "{new_status}" แล้ว', 'success')
-
     return redirect(url_for('admin.update_issue_page', issue_id=issue.id))
 
-# --- User Management Routes ---
 @admin_bp.route('/users')
 @admin_required
 def manage_users():
     users = User.query.filter(User.id != current_user.id).all()
     return render_template('indexuser.html', users=users)
-
-
-@admin_bp.route('/user/toggle_admin/<int:user_id>', methods=['POST'])
-@admin_required
-def toggle_admin_status(user_id):
-    user_to_toggle = User.query.get_or_404(user_id)
-    if user_to_toggle.id == current_user.id:
-        flash('ไม่สามารถเปลี่ยนสถานะ Admin ของตัวเองได้', 'warning')
-        return redirect(url_for('admin.manage_users'))
-    if user_to_toggle.is_admin:
-        admin_count = User.query.filter_by(is_admin=True).count()
-        if admin_count <= 1:
-            flash('ไม่สามารถลบสิทธิ์ Admin คนสุดท้ายของระบบได้', 'error')
-            return redirect(url_for('admin.manage_users'))
-    user_to_toggle.is_admin = not user_to_toggle.is_admin
-    db.session.commit()
-    status_text = 'เป็น Admin' if user_to_toggle.is_admin else 'เป็นผู้ใช้ทั่วไป'
-    flash(f'สถานะของ {user_to_toggle.username} ถูกเปลี่ยนเป็น {status_text} แล้ว', 'success')
-    return redirect(url_for('admin.manage_users'))
-
-@admin_bp.route('/user/delete/<int:user_id>', methods=['POST'])
-@admin_required
-def delete_user(user_id):
-    user_to_delete = User.query.get_or_404(user_id)
-    if user_to_delete.id == current_user.id:
-        flash('ไม่สามารถลบบัญชีของตัวเองได้', 'warning')
-        return redirect(url_for('admin.manage_users'))
-    if user_to_delete.is_admin:
-        admin_count = User.query.filter_by(is_admin=True).count()
-        if admin_count <= 1:
-            flash('ไม่สามารถลบ Admin คนสุดท้ายของระบบได้', 'error')
-            return redirect(url_for('admin.manage_users'))
-    try:
-        db.session.delete(user_to_delete)
-        db.session.commit()
-        flash(f'ผู้ใช้ {user_to_delete.username} ถูกลบเรียบร้อยแล้ว', 'success')
-    except Exception as e:
-        db.session.rollback()
-        flash(f'เกิดข้อผิดพลาดในการลบผู้ใช้: {str(e)}', 'error')
-    return redirect(url_for('admin.manage_users'))
