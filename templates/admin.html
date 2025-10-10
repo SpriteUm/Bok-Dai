@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard | BOK DAI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; }
+        .urgency-dot { font-size: 1.25rem; line-height: 1; vertical-align: middle; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    </style>
+</head>
+<body class="bg-[#E6E8E5] text-[#2F4F2F] min-h-screen">
+    <div class="min-h-screen flex">
+
+        <aside class="w-60 bg-[#5C7F5C] text-white flex flex-col">
+            <div class="px-4 py-4 border-b border-[#8FAF8F]">
+                <h1 class="text-lg font-bold">BOK DAI</h1>
+                <p class="text-xs text-[#C2D3C2]">ระบบผู้ดูแล</p>
+            </div>
+            <nav class="flex-1 px-4 py-4 space-y-2 text-sm">
+                <a href="{{ url_for('admin.dashboard') }}" class="block px-2 py-1 rounded bg-[#C2D3C2] text-[#2F4F2F] font-medium">หน้าหลัก</a>
+                <a href="{{ url_for('admin.manage_issues') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">จัดการปัญหาทั้งหมด</a>
+                <a href="{{ url_for('admin.manage_users') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">จัดการผู้ใช้</a>
+                <a href="{{ url_for('auth.logout') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">ออกจากระบบ</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-6 flex flex-col gap-6">
+
+            <header>
+                <h2 class="text-xl font-semibold">ภาพรวมสถานะ</h2>
+                <p class="text-xs text-[#8FAF8F]">ระบบจัดการปัญหาในพื้นที่</p>
+            </header>
+
+            <section>
+                <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-xs font-medium">รายงานทั้งหมด</h3>
+                        <p class="text-xl font-bold text-[#5C7F5C]">{{ total_issues or 0 }}</p>
+                    </div>
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-xs font-medium">รอดำเนินการ</h3>
+                        <p class="text-xl font-bold text-yellow-500">{{ issues_pending or 0 }}</p>
+                    </div>
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-xs font-medium">กำลังดำเนินการ</h3>
+                        <p class="text-xl font-bold text-orange-500">{{ issues_in_progress or 0 }}</p>
+                    </div>
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-xs font-medium">แก้ไขแล้ว</h3>
+                        <p class="text-xl font-bold text-green-600">{{ issues_completed or 0 }}</p>
+                    </div>
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-xs font-medium">ปัญหาใหม่วันนี้</h3>
+                        <p class="text-xl font-bold text-[#5C7F5C]">{{ issues_today or 0 }}</p>
+                    </div>
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-xs font-medium">เร่งด่วนมาก (🔴)</h3>
+                        <p class="text-xl font-bold text-red-600">{{ issues_urgent or 0 }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="flex flex-wrap gap-4">
+                <div class="bg-white border border-[#8FAF8F] rounded-lg shadow p-4" style="flex:1 1 60%; min-width:300px;">
+                    <div class="relative" style="min-height:250px;">
+                        <canvas id="issueChart" data-chart='{{ chart_data|tojson }}'></canvas>
+                    </div>
+                </div>
+                <div class="bg-white border border-[#8FAF8F] rounded-lg shadow p-4" style="flex:1 1 35%; min-width:220px;">
+                    <h3 class="text-sm font-medium mb-2">การแจ้งเตือน</h3>
+                    <ul class="list-disc pl-5 text-sm space-y-1">
+                        <li>(Coming Soon)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h3 class="text-sm font-medium mb-2">ปัญหาล่าสุด (5 รายการ)</h3>
+                <div class="bg-white border border-[#8FAF8F] rounded-lg shadow overflow-x-auto">
+                    <table class="min-w-full text-xs">
+                        <thead class="bg-[#C2D3C2] text-[#2F4F2F]">
+                            <tr>
+                                <th class="px-3 py-2 text-left">หมวดหมู่</th>
+                                <th class="px-3 py-2 text-left">รายละเอียด</th>
+                                <th class="px-3 py-2 text-left">วันที่แจ้ง</th>
+                                <th class="px-3 py-2 text-left">ความเร่งด่วน</th>
+                                <th class="px-3 py-2 text-left">สถานะ</th>
+                                <th class="px-3 py-2 text-left">พื้นที่</th>
+                                <th class="px-3 py-2 text-left">แผนที่</th>
+                                <th class="px-3 py-2 text-left">อัพเดต</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#E6E8E5]">
+                            {% for issue in recent_issues %}
+                            <tr>
+                                <td class="px-3 py-2">{{ issue.category }}</td>
+                                <td class="px-3 py-2">{{ issue.detail[:50] }}{% if issue.detail|length > 50 %}...{% endif %}</td>
+                                <td class="px-3 py-2">{{ issue.date_reported.strftime('%Y-%m-%d') }}</td>
+                                <td class="px-3 py-2 text-center">
+                                    {% if issue.urgency == '🔴' %}<span class="urgency-dot">🔴</span><span class="sr-only">เร่งด่วนมาก</span>
+                                    {% elif issue.urgency == '🟠' %}<span class="urgency-dot">🟠</span><span class="sr-only">ปานกลาง</span>
+                                    {% elif issue.urgency == '🟢' %}<span class="urgency-dot">🟢</span><span class="sr-only">ไม่เร่งด่วน</span>
+                                    {% else %}<span class="text-xs text-gray-700">{{ issue.urgency }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-3 py-2 text-center">
+                                    {% if issue.status == 'กำลังดำเนินการ' %}<span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full">กำลังดำเนินการ</span>
+                                    {% elif issue.status == 'แก้ไขแล้ว' %}<span class="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full">แก้ไขแล้ว</span>
+                                    {% else %}<span class="inline-block bg-gray-100 text-gray-700 text-xs px-2.5 py-0.5 rounded-full">{{ issue.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-3 py-2">{{ issue.location_text }}</td>
+                                <td class="px-3 py-2">
+                                    {% if issue.location_link %}
+                                        <a href="{{ issue.location_link }}" target="_blank" rel="noopener noreferrer" class="inline-block px-3 py-1 text-xs font-medium rounded border border-[#26403a] text-[#1b6b44] bg-[#dff3e8] hover:bg-[#bfe6cf] transition">ดูแผนที่</a>
+                                    {% else %}
+                                        <button class="inline-block px-3 py-1 text-xs font-medium rounded border border-gray-300 text-gray-600 bg-gray-100 cursor-not-allowed" disabled>ไม่มีลิงก์</button>
+                                    {% endif %}
+                                </td>
+                                <td class="px-3 py-2">
+                                    <a href="{{ url_for('admin.update_issue_page', issue_id=issue.id) }}" class="inline-block px-3 py-1 bg-[#2f8f5f] text-white rounded text-xs hover:bg-[#26784e] transition">อัพเดต</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center text-gray-500 py-4">ยังไม่มีปัญหาล่าสุด</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('issueChart');
+            if (canvas) {
+                const chartDataString = canvas.dataset.chart;
+                if (chartDataString) {
+                    try {
+                        const chartData = JSON.parse(chartDataString);
+                        if (chartData.labels && chartData.labels.length > 0) {
+                            
+                            Chart.register(ChartDataLabels);
+                            Chart.defaults.font.family = "'Kanit', sans-serif";
+                            
+                            // ++ FIX: ปรับสีตัวอักษรเริ่มต้นให้เข้ากับธีม ++
+                            Chart.defaults.color = '#2F4F2F';
+
+                            const ctx = canvas.getContext('2d');
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: chartData.labels,
+                                    datasets: [{
+                                        data: chartData.values,
+                                        maxBarThickness: 50,
+                                        borderRadius: 6,
+                                        
+                                        // ++ FIX: ปรับชุดสีให้เข้ากับธีม ++
+                                        backgroundColor: [
+                                            'rgba(92, 127, 92, 0.6)',
+                                            'rgba(143, 175, 143, 0.6)',
+                                            'rgba(194, 211, 194, 0.6)',
+                                            'rgba(161, 181, 161, 0.6)',
+                                            'rgba(212, 224, 212, 0.6)'
+                                        ],
+                                        borderColor: [
+                                            'rgba(92, 127, 92, 1)',
+                                            'rgba(143, 175, 143, 1)',
+                                            'rgba(194, 211, 194, 1)',
+                                            'rgba(161, 181, 161, 1)',
+                                            'rgba(212, 224, 212, 1)'
+                                        ],
+                                        borderWidth: 1.5,
+                                        hoverBackgroundColor: 'rgba(47, 79, 47, 0.7)',
+
+                                        barPercentage: 0.7
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'ปัญหาแยกตามหมวดหมู่ (5 อันดับแรก)',
+                                            font: { size: 16 },
+                                            padding: { bottom: 20 }
+                                        },
+                                        legend: {
+                                            display: false
+                                        },
+                                        tooltip: {
+                                            // ++ FIX: ปรับสไตล์ Tooltip ให้เข้ากับธีม ++
+                                            backgroundColor: '#2F4F2F',
+                                            titleColor: '#E6E8E5',
+                                            bodyColor: '#C2D3C2',
+                                            padding: 10,
+                                            cornerRadius: 4,
+                                            callbacks: {
+                                                label: function(context) {
+                                                    let label = context.dataset.label || '';
+                                                    if (label) { label += ': '; }
+                                                    if (context.parsed.y !== null) {
+                                                        label += context.parsed.y + ' รายการ';
+                                                    }
+                                                    return label;
+                                                }
+                                            }
+                                        },
+                                        datalabels: {
+                                            anchor: 'end',
+                                            align: 'top',
+                                            color: '#2F4F2F',
+                                            font: {
+                                                weight: 'bold',
+                                                size: 12
+                                            },
+                                            formatter: function(value, context) {
+                                                return value > 0 ? value : '';
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'จำนวน (รายการ)'
+                                            },
+                                            grid: {
+                                                display: true, // เปิดเส้นตารางบางๆ
+                                                color: 'rgba(143, 175, 143, 0.2)'
+                                            },
+                                            grace: '10%'
+                                        },
+                                        x: {
+                                            grid: {
+                                                display: false
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse chart data:", e);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -3,12 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>รายงานปัญหา - ตัวอย่าง</title>
-  <link href="{{ url_for('static', filename='dist/output.css') }}"rel="stylesheet"/>
-  
+  <title>รายงานปัญหา - BOK DAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
+
 <body class="min-h-screen bg-gradient-to-br from-green-100 via-[#e6f7ec] to-green-50 flex items-start justify-center p-6">
-  <div class="w-full max-w-3xl">
+  <div class="w-full max-w-4xl">
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -26,102 +30,92 @@
 
     <div class="rounded-2xl shadow-2xl overflow-hidden bg-white/80 backdrop-blur-md">
       <div class="grid md:grid-cols-2 gap-6 p-6">
-        <!-- Form -->
+
+        <!-- ฟอร์มรายงาน -->
         <form id="reportForm" method="POST" enctype="multipart/form-data"
               action="{{ url_for('report.report') }}"
               class="p-4 md:p-6" novalidate>
           {{ form.hidden_tag() }}
           <h2 class="text-2xl font-bold text-green-800 mb-2">BOK DAI REPORT</h2>
-          <p class="text-sm text-green-700/80 mb-4">โปรดระบุรายละเอียดให้ชัดเจน และแนบรูปภาพประกอบถ้ามี</p>
+          <p class="text-sm text-green-700/80 mb-4">โปรดระบุรายละเอียดให้ชัดเจน</p>
 
           <!-- หมวดหมู่ -->
           <label class="block mb-3">
             {{ form.category.label(class="text-sm font-medium text-gray-700") }}
-            {{ form.category(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
-            {% for error in form.category.errors %}
-              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
-            {% endfor %}
+            {{ form.category(id="category", class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
           </label>
 
-          <!-- ช่องอื่นๆ -->
+          <!-- อื่นๆ -->
           <label id="otherWrapper" class="block mb-3 hidden">
             <span class="text-sm font-medium text-gray-700">โปรดระบุปัญหา</span>
-            <input name="other_text" id="otherText"
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300"
-              placeholder="พิมพ์รายละเอียดปัญหาที่ไม่อยู่ในหมวดหมู่" />
+            {{ form.other_text(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300", placeholder="พิมพ์รายละเอียดปัญหาที่ไม่อยู่ในหมวดหมู่") }}
           </label>
 
           <!-- วันที่เกิดเหตุ -->
           <label class="block mb-3">
             {{ form.date_reported.label(class="text-sm font-medium text-gray-700") }}
             {{ form.date_reported(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
-            {% for error in form.date_reported.errors %}
-              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
-            {% endfor %}
           </label>
 
           <!-- สถานที่ -->
           <label class="block mb-3">
             {{ form.location_text.label(class="text-sm font-medium text-gray-700") }}
             {{ form.location_text(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
-            {% for error in form.location_text.errors %}
-              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
-            {% endfor %}
           </label>
 
           <!-- ความเร่งด่วน -->
           <label class="block mb-3">
             {{ form.urgency.label(class="text-sm font-medium text-gray-700") }}
             {{ form.urgency(class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
-            {% for error in form.urgency.errors %}
-              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
-            {% endfor %}
           </label>
 
           <!-- รายละเอียด -->
           <label class="block mb-3">
             {{ form.detail.label(class="text-sm font-medium text-gray-700") }}
             {{ form.detail(rows="5", class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300") }}
-            {% for error in form.detail.errors %}
-              <div class="text-xs text-red-600 mt-1">{{ error }}</div>
-            {% endfor %}
           </label>
 
-          <!-- แนบรูป -->
-          <label class="block mb-3">
-            <span class="text-sm font-medium text-gray-700">แนบรูปภาพ</span>
-            <input type="file" name="images[]" multiple
-              class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
-          </label>
-
-          <!-- GPS / Google Maps -->
-          <label class="block mb-3">
-            <span class="text-sm font-medium text-gray-700">พิกัด (Google Maps / Leaflet)</span>
-            <div class="flex gap-2 mt-2">
-              <input type="text" name="lat" id="lat" placeholder="Latitude"
-                     class="rounded-lg border px-3 py-2 w-1/2">
-              <input type="text" name="lng" id="lng" placeholder="Longitude"
-                     class="rounded-lg border px-3 py-2 w-1/2">
-              <button type="button" id="btnUseLocation"
-                      class="px-3 py-2 bg-green-600 text-white rounded-lg">ตำแหน่งปัจจุบัน</button>
-            </div>
-          </label>
+          <!-- Hidden input สำหรับ Google Maps link -->
+          <input type="hidden" id="location_link" name="location_link" value="">
 
           <!-- ปุ่ม -->
           <div class="flex items-center gap-3 mt-4">
             {{ form.submit(class="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold shadow") }}
-            <button type="reset"
-              class="px-4 py-2 rounded-lg border bg-white text-gray-700 shadow-sm">ล้างข้อมูล</button>
+            <button type="reset" class="px-4 py-2 rounded-lg border bg-white text-gray-700 shadow-sm">
+              ล้างข้อมูล
+            </button>
           </div>
         </form>
 
-        <!-- Right: ช่วยบอกวิธี -->
-        <div class="p-4 md:p-6 border-l hidden md:block">
-          <div class="flex flex-col items-center justify-center h-full text-sm text-gray-600">
-            <p>📌 โปรดใส่รายละเอียดปัญหาอย่างครบถ้วน<br>
-               🖼️ สามารถแนบรูปภาพประกอบได้ (สูงสุด 5 ภาพ)<br>
-               📍 เลือกหมวดหมู่ที่ตรงกับปัญหามากที่สุด</p>
+        <!-- ภาพ & แผนที่ -->
+        <div class="p-4 md:p-6 border-l">
+          <!-- แนบรูป -->
+          <label class="block mb-4">
+            <span class="text-sm font-medium text-gray-700">แนบรูปภาพ</span>
+            <input type="file" name="images[]" id="images" multiple accept="image/*"
+                   class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
+            <p class="text-xs text-gray-500 mt-1">รองรับ JPG, PNG, สูงสุด 5 รูป</p>
+          </label>
+
+          <!-- ปุ่มตำแหน่ง -->
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-gray-700">พิกัดของคุณ</span>
+            <button type="button" id="btnUseLocation"
+                    class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">ตำแหน่งปัจจุบัน</button>
           </div>
+
+          <!-- ลิงก์ Google Maps -->
+          <div id="mapLinkContainer" class="mb-3 hidden">
+            <a id="mapLink" href="#" target="_blank"
+               class="text-green-700 underline text-sm break-all">เปิดใน Google Maps</a>
+          </div>
+
+          <!-- Leaflet Map -->
+          <div id="map" class="rounded-lg border mt-2" style="height: 300px;"></div>
+
+          <p class="text-xs text-gray-500 mt-2">
+            📍 คลิกบนแผนที่เพื่อเปลี่ยนตำแหน่ง หรือใช้ปุ่มด้านบนเพื่อระบุตำแหน่งปัจจุบัน
+          </p>
         </div>
       </div>
 
@@ -145,14 +139,45 @@
       });
     }
 
-    // ปุ่ม GPS
-    const btnUseLocation = document.getElementById("btnUseLocation");
-    btnUseLocation.addEventListener("click", () => {
-      if (!navigator.geolocation) { alert("เบราว์เซอร์ไม่รองรับ GPS"); return; }
-      navigator.geolocation.getCurrentPosition(pos => {
-        document.getElementById("lat").value = pos.coords.latitude;
-        document.getElementById("lng").value = pos.coords.longitude;
-      }, err => alert("ไม่สามารถดึงพิกัดได้: " + err.message));
+    // Leaflet Map setup
+    let map = L.map('map').setView([13.736717,100.523186],15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      maxZoom:19, attribution:'&copy; OpenStreetMap'
+    }).addTo(map);
+
+    let marker;
+    const mapLinkContainer = document.getElementById("mapLinkContainer");
+    const mapLink = document.getElementById("mapLink");
+    const locationLinkInput = document.getElementById("location_link");
+
+    // คลิกบนแผนที่
+    map.on('click', function(e){
+      const {lat,lng} = e.latlng;
+      if(marker) map.removeLayer(marker);
+      marker = L.marker([lat,lng]).addTo(map);
+      const googleLink = `https://www.google.com/maps?q=${lat},${lng}`;
+      mapLink.href = googleLink;
+      mapLink.textContent = googleLink;
+      mapLinkContainer.classList.remove("hidden");
+      locationLinkInput.value = googleLink; // เก็บ hidden input
+    });
+
+    // ปุ่มตำแหน่งปัจจุบัน
+    document.getElementById("btnUseLocation").addEventListener("click",()=>{
+      if(!navigator.geolocation){
+        alert("เบราว์เซอร์ไม่รองรับ GPS"); return;
+      }
+      navigator.geolocation.getCurrentPosition(pos=>{
+        const {latitude,longitude} = pos.coords;
+        map.setView([latitude,longitude],17);
+        if(marker) map.removeLayer(marker);
+        marker = L.marker([latitude,longitude]).addTo(map);
+        const googleLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        mapLink.href = googleLink;
+        mapLink.textContent = googleLink;
+        mapLinkContainer.classList.remove("hidden");
+        locationLinkInput.value = googleLink;
+      },err=>alert("ไม่สามารถดึงพิกัดได้: "+err.message));
     });
   </script>
 </body>
