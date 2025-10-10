@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify
 from models.issue import Issue
 
-dashboard_bp = Blueprint('dashboard', __name__)
+indexuser_bp = Blueprint('indexuser', __name__)
 
-@dashboard_bp.route('/api/issues', methods=['GET'])
+@indexuser_bp.route('/api/issues', methods=['GET'])
 def get_issues():
     issues = Issue.query.all()
 
