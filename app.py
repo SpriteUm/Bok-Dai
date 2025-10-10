@@ -34,29 +34,6 @@ def create_app():
     def indexuser():
         return render_template("indexuser.html")
 
-    # ให้ import โมเดลทั้งหมดที่ต้องการ ให้ SQLAlchemy ลงทะเบียน mapper ก่อน create_all()
-    with app.app_context():
-        import models.user
-        import models.issue
-      
-        # try both possible filenames for history module (tolerate naming)
-        try:
-            import models.issue_status_history
-        except ImportError:
-            try:
-                import models.issueStatusHistory
-            except ImportError:
-                app.logger.warning("IssueStatusHistory model not found; skipping import")
-
-        db.create_all()
-
-    # user_loader ต้องเรียกหลัง import models.user
-    from models.user import User
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
-
     return app
 
 
