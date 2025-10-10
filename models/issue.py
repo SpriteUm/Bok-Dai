@@ -1,4 +1,4 @@
-rom models import db
+from models import db
 from datetime import datetime
 
 class Issue(db.Model):
