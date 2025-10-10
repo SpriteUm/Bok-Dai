@@ -38,7 +38,7 @@ def create_app():
     with app.app_context():
         import models.user
         import models.issue
-        import models.issue_image
+      
         # try both possible filenames for history module (tolerate naming)
         try:
             import models.issue_status_history
