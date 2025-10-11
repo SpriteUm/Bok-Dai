@@ -18,6 +18,27 @@ def create_app():
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
+    # register a user_loader so flask-login can load the current_user
+    # import here to avoid circular imports at module import time
+    from models.user import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        try:
+            # user_id may be a string, convert to int for query
+            return User.query.get(int(user_id))
+        except Exception:
+            return None
+
+    # Flask-Login: provide a user_loader so `current_user` can be loaded
+    from models.user import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        try:
+            return User.query.get(int(user_id))
+        except Exception:
+            return None
 
     # import blueprints AFTER db.init_app to reduce circular imports
     from routes.auth import auth_bp
