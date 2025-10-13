@@ -85,7 +85,8 @@ def report():
 
             db.session.commit()
             flash("✅ ส่งรายงานเรียบร้อยแล้ว", "success")
-            return redirect(url_for('indexuser'))
+            # แก้ไข redirect ไปหน้า index แทน indexuser
+            return redirect(url_for('index'))
 
         except Exception as e:
             current_app.logger.exception("❌ Error saving Issue:")
