@@ -34,8 +34,7 @@ def login():
         ).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('indexuser'))
+            return redirect(url_for('induser.indexuser'))  
         else:
             flash("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "error")
     return render_template('login.html', form=form)
@@ -70,3 +69,9 @@ def register():
             db.session.rollback()
             flash("เกิดข้อผิดพลาด: " + str(e), "error")
     return render_template('register.html', form=form)
+
+@auth_bp.route('/logout')
+@login_required # ต้องล็อกอินก่อนถึงจะออกได้
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
