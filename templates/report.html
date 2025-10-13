@@ -33,7 +33,7 @@
 
         <!-- ฟอร์มรายงาน -->
         <form id="reportForm" method="POST" enctype="multipart/form-data"
-              action="{{ url_for('report.report') }}"
+              action="{{ url_for('report') }}"
               class="p-4 md:p-6" novalidate>
           {{ form.hidden_tag() }}
           <h2 class="text-2xl font-bold text-green-800 mb-2">BOK DAI REPORT</h2>
@@ -76,7 +76,7 @@
           </label>
 
           <!-- Hidden input สำหรับ Google Maps link -->
-          <input type="hidden" id="location_link" name="location_link" value="">
+          {{ form.location_link(id="location_link", type="hidden") }}
 
           <!-- ปุ่ม -->
           <div class="flex items-center gap-3 mt-4">
