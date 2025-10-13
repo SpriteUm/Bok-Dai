@@ -96,4 +96,4 @@ def report():
         flash("⚠️ โปรดกรอกข้อมูลให้ครบทุกช่องที่จำเป็น", "error")
         current_app.logger.warning(f"Form errors: {form.errors}")
 
-    return render_template('report.html', form=form
+    return render_template('report.html', form=form)

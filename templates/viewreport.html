@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>รายละเอียดรายงาน</title>
+</head>
+<body>
+    <h1>รายละเอียดรายงาน</h1>
+
+    <p><strong>หมวดหมู่:</strong> {{ issue.category }}</p>
+    <p><strong>รายละเอียด:</strong> {{ issue.detail }}</p>
+    <p><strong>วันที่เกิดเหตุ:</strong> {{ issue.date_reported.strftime('%Y-%m-%d') }}</p>
+    <p><strong>สถานที่:</strong> {{ issue.location_text }}</p>
+    <p><strong>ความเร่งด่วน:</strong> {{ issue.urgency }}</p>
+    <p><strong>Latitude:</strong> {{ issue.lat }}</p>
+    <p><strong>Longitude:</strong> {{ issue.lng }}</p>
+
+    <p>
+        <a href="{{ url_for('report.list_reports') }}">⬅ กลับไปหน้ารายการรายงาน</a>
+    </p>
+</body>
+</html>
