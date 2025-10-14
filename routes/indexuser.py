@@ -3,7 +3,7 @@ from models.issue import Issue
 from flask_login import login_required
 
 
-indexuser_bp = Blueprint('induser', __name__)
+indexuser_bp = Blueprint('indexuser', __name__)
 
 @indexuser_bp.route('/indexuser')
 @login_required

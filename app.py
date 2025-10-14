@@ -46,7 +46,7 @@ def create_app():
     # --- Register Blueprints ---
     app.register_blueprint(report_bp, url_prefix='/report')
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(indexuser_bp, url_prefix='/induser')
+    app.register_blueprint(indexuser_bp, url_prefix='/indexuser')
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
     # --- Routes ---

@@ -34,7 +34,7 @@ class RegisterForm(FlaskForm):
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('induser.indexuser'))
+        return redirect(url_for('indexuser.indexuser'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter(
@@ -43,7 +43,7 @@ def login():
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
             next_page = request.args.get('next')
-            return redirect(next_page or url_for('induser.indexuser'))
+            return redirect(next_page or url_for('indexuser.indexuser'))
         else:
             flash("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "error")
     return render_template('login.html', form=form)
