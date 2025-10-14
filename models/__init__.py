@@ -10,3 +10,9 @@ from .user import User
 from .issue import Issue
 from .issue_image import IssueImage
 from .issueStatusHistory import IssueStatusHistory
+
+# import model หลังจากสร้าง db
+from .user import User
+from .issue import Issue
+from .issueimage import IssueImage
+from .issueStatusHistory import IssueStatusHistory
