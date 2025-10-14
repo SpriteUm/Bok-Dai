@@ -1,5 +1,3 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
-from flask_login import login_required, current_user
 from models import db
 from datetime import datetime
 
@@ -24,7 +22,7 @@ class Issue(db.Model):
     date_reported = db.Column(db.Date, nullable=False)
 
     # ข้อความระบุสถานที่
-    location_text = db.Column(db.String(200))
+    location_link = db.Column(db.String(200))
 
     # ความเร่งด่วน (ใช้ emoji เพื่อแสดงระดับ)
     urgency = db.Column(
