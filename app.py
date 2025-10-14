@@ -5,8 +5,6 @@ from models.user import User
 from routes.report import report_bp
 from routes.auth import auth_bp
 from routes.indexuser import indexuser_bp
->>>>>>>>> Temporary merge branch 2
-
 
 def create_app():
     app = Flask(__name__)
@@ -69,7 +67,7 @@ def create_app():
 
 
 app = create_app()
-=========
+
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"   # ย้ำ: endpoint ของ login อยู่ใน blueprint auth
 login_manager.login_message = "กรุณาเข้าสู่ระบบก่อนเพื่อเข้าถึงหน้านี้"
@@ -88,8 +86,6 @@ def load_user(user_id):
 @app.route('/')
 def index():
     return render_template('index.html')
-
->>>>>>>>> Temporary merge branch 2
 
 if __name__ == "__main__":
     app = create_app()
