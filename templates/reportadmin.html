@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <title>จัดการปัญหาทั้งหมด | BOK DAI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; }
+        .urgency-dot { font-size: 1.25rem; line-height: 1; vertical-align: middle; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .sort-arrow { display: inline-block; margin-left: 5px; color: #8FAF8F; }
+    </style>
+</head>
+<body class="bg-[#E6E8E5] text-[#2F4F2F] min-h-screen">
+    <div class="min-h-screen flex">
+        <aside class="w-60 bg-[#5C7F5C] text-white flex flex-col">
+            <div class="px-4 py-4 border-b border-[#8FAF8F]">
+                <h1 class="text-lg font-bold">BOK DAI</h1>
+                <p class="text-xs text-[#C2D3C2]">ระบบผู้ดูแล</p>
+            </div>
+            <nav class="flex-1 px-4 py-4 space-y-2 text-sm">
+                <a href="{{ url_for('admin.dashboard') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">หน้าหลัก</a>
+                <a href="{{ url_for('admin.manage_issues') }}" class="block px-2 py-1 rounded bg-[#C2D3C2] text-[#2F4F2F] font-medium">จัดการปัญหาทั้งหมด</a>
+                <a href="{{ url_for('admin.manage_users') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">จัดการผู้ใช้</a>
+                <a href="{{ url_for('auth.logout') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">ออกจากระบบ</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-6 flex flex-col gap-6">
+            <header>
+                <h2 class="text-xl font-semibold">จัดการปัญหาทั้งหมด</h2>
+                <p class="text-xs text-[#8FAF8F]">ค้นหา, กรอง และจัดการทุกปัญหาในระบบ</p>
+            </header>
+
+            <section class="bg-white p-4 rounded-lg shadow">
+                <form method="GET" action="{{ url_for('admin.manage_issues') }}" class="text-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label for="search" class="block font-medium mb-1">ค้นหา:</label>
+                            <input type="text" name="search" id="search" value="{{ search_term or '' }}" placeholder="รายละเอียด, หมวดหมู่, ผู้แจ้ง..." class="w-full border-gray-300 rounded-md shadow-sm">
+                        </div>
+                        <div>
+                            <label for="status" class="block font-medium mb-1">สถานะ:</label>
+                            <select name="status" id="status" class="w-full border-gray-300 rounded-md shadow-sm">
+                                <option value="">-- ทุกสถานะ --</option>
+                                {% for s in issue_statuses %}<option value="{{ s }}" {% if s == filter_status %}selected{% endif %}>{{ s }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="start_date" class="block font-medium mb-1">วันที่แจ้ง (เริ่มต้น):</label>
+                            <input type="date" name="start_date" id="start_date" value="{{ start_date or '' }}" class="w-full border-gray-300 rounded-md shadow-sm">
+                        </div>
+                        <div>
+                            <label for="end_date" class="block font-medium mb-1">วันที่แจ้ง (สิ้นสุด):</label>
+                            <input type="date" name="end_date" id="end_date" value="{{ end_date or '' }}" class="w-full border-gray-300 rounded-md shadow-sm">
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end gap-3">
+                        <a href="{{ url_for('admin.manage_issues') }}" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300">ล้างค่า</a>
+                        <button type="submit" class="px-4 py-2 bg-[#5C7F5C] text-white rounded-md hover:bg-[#4a684a]">ค้นหา/กรอง</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="bg-white border border-[#8FAF8F] rounded-lg shadow overflow-x-auto">
+                <table class="min-w-full text-xs">
+                    <thead class="bg-[#C2D3C2] text-[#2F4F2F]">
+                        <tr>
+                            {% set sort_args = request.args.to_dict() %}
+                            {% set _ = sort_args.update({'sort_by': 'category', 'sort_order': 'asc' if sort_by == 'category' and sort_order == 'desc' else 'desc'}) %}
+                            <th class="px-3 py-2 text-left">
+                                <a href="{{ url_for('admin.manage_issues', **sort_args) }}">
+                                    หมวดหมู่ <span class="sort-arrow">{% if sort_by == 'category' %}{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}</span>
+                                </a>
+                            </th>
+                            <th class="px-3 py-2 text-left">รายละเอียด</th>
+                            <th class="px-3 py-2 text-left">ผู้แจ้ง</th>
+                            {% set _ = sort_args.update({'sort_by': 'date_reported', 'sort_order': 'asc' if sort_by == 'date_reported' and sort_order == 'desc' else 'desc'}) %}
+                            <th class="px-3 py-2 text-left">
+                                <a href="{{ url_for('admin.manage_issues', **sort_args) }}">
+                                    วันที่แจ้ง <span class="sort-arrow">{% if sort_by == 'date_reported' %}{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}</span>
+                                </a>
+                            </th>
+                            <th class="px-3 py-2 text-left">ความเร่งด่วน</th>
+                            {% set _ = sort_args.update({'sort_by': 'status', 'sort_order': 'asc' if sort_by == 'status' and sort_order == 'desc' else 'desc'}) %}
+                            <th class="px-3 py-2 text-left">
+                                <a href="{{ url_for('admin.manage_issues', **sort_args) }}">
+                                    สถานะ <span class="sort-arrow">{% if sort_by == 'status' %}{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}</span>
+                                </a>
+                            </th>
+                            <th class="px-3 py-2 text-left">อัพเดต</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#E6E8E5]">
+                        {% for issue in issues %}
+                        <tr>
+                            <td class="px-3 py-2">{{ issue.category }}</td>
+                            <td class="px-3 py-2">{{ issue.detail[:70] }}{% if issue.detail|length > 70 %}...{% endif %}</td>
+                            <td class="px-3 py-2">{{ issue.user.username }}</td>
+                            <td class="px-3 py-2">{{ issue.date_reported.strftime('%Y-%m-%d') }}</td>
+                            <td class="px-3 py-2 text-center">
+                                {% if issue.urgency == '🔴' %}<span class="urgency-dot">🔴</span><span class="sr-only">เร่งด่วนมาก</span>
+                                {% elif issue.urgency == '🟠' %}<span class="urgency-dot">🟠</span><span class="sr-only">ปานกลาง</span>
+                                {% elif issue.urgency == '🟢' %}<span class="urgency-dot">🟢</span><span class="sr-only">ไม่เร่งด่วน</span>
+                                {% else %}<span class="text-xs">{{ issue.urgency }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-3 py-2 text-center">
+                                {% if issue.status == 'กำลังดำเนินการ' %}<span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full">กำลังดำเนินการ</span>
+                                {% elif issue.status == 'แก้ไขแล้ว' %}<span class="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full">แก้ไขแล้ว</span>
+                                {% else %}<span class="inline-block bg-gray-100 text-gray-700 text-xs px-2.5 py-0.5 rounded-full">{{ issue.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-3 py-2">
+                                <a href="{{ url_for('admin.update_issue_page', issue_id=issue.id) }}" class="inline-block px-3 py-1 bg-[#2f8f5f] text-white rounded text-xs hover:bg-[#26784e] transition">อัพเดต</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-gray-500 py-6">ไม่พบข้อมูลที่ตรงกับเงื่อนไขของคุณ</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            
+            <nav class="flex justify-between items-center text-sm">
+                <div>
+                    แสดงผล {{ pagination.items|length }} จากทั้งหมด {{ pagination.total }} รายการ (หน้า {{ pagination.page }}/{{ pagination.pages }})
+                </div>
+                <div class="flex items-center gap-2">
+                    {% if pagination.has_prev %}
+                        {% set page_args = request.args.to_dict() %}
+                        {% set _ = page_args.update({'page': pagination.prev_num}) %}
+                        <a href="{{ url_for('admin.manage_issues', **page_args) }}" class="px-3 py-1 bg-white border rounded-md hover:bg-gray-100">ก่อนหน้า</a>
+                    {% endif %}
+
+                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num != pagination.page %}
+                                {% set page_args = request.args.to_dict() %}
+                                {% set _ = page_args.update({'page': page_num}) %}
+                                <a href="{{ url_for('admin.manage_issues', **page_args) }}" class="px-3 py-1 bg-white border rounded-md hover:bg-gray-100">{{ page_num }}</a>
+                            {% else %}
+                                <strong class="px-3 py-1 bg-[#5C7F5C] text-white border rounded-md">{{ page_num }}</strong>
+                            {% endif %}
+                        {% else %}
+                            <span class="px-3 py-1">...</span>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                        {% set page_args = request.args.to_dict() %}
+                        {% set _ = page_args.update({'page': pagination.next_num}) %}
+                        <a href="{{ url_for('admin.manage_issues', **page_args) }}" class="px-3 py-1 bg-white border rounded-md hover:bg-gray-100">ถัดไป</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </main>
+    </div>
+</body>
+</html>

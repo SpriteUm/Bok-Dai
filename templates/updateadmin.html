@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <title>รายละเอียดปัญหา #{{ issue.id }} | BOK DAI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#E6E8E5] text-[#2F4F2F]">
+    <div class="min-h-screen flex">
+        <aside class="w-60 bg-[#5C7F5C] text-white flex flex-col">
+            <div class="px-4 py-4 border-b border-[#8FAF8F]">
+                <h1 class="text-lg font-bold">BOK DAI</h1>
+                <p class="text-xs text-[#C2D3C2]">ระบบผู้ดูแล</p>
+            </div>
+            <nav class="flex-1 px-4 py-4 space-y-2 text-sm">
+                <a href="{{ url_for('admin.dashboard') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">หน้าหลัก</a>
+                <a href="{{ url_for('admin.manage_issues') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">จัดการปัญหาทั้งหมด</a>
+                <a href="{{ url_for('admin.manage_users') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">จัดการผู้ใช้</a>
+                <a href="{{ url_for('auth.logout') }}" class="block px-2 py-1 rounded hover:bg-[#8FAF8F]">ออกจากระบบ</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-6">
+            <header class="mb-6">
+                <h2 class="text-2xl font-semibold">รายละเอียดปัญหา #{{ issue.id }}</h2>
+                <p class="text-xs text-[#8FAF8F]">{{ issue.category }} — แจ้งเมื่อ {{ issue.created_at.strftime('%Y-%m-%d') }}</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-lg font-medium mb-2">ข้อมูลเบื้องต้น</h3>
+                        <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                            <dt class="font-medium">ผู้แจ้ง</dt><dd>{{ issue.user.username }}</dd>
+                            <dt class="font-medium">หมวดหมู่</dt><dd>{{ issue.category }}</dd>
+                            <dt class="font-medium">ความเร่งด่วน</dt><dd>{{ issue.urgency }}</dd>
+                            <dt class="font-medium">สถานที่</dt><dd>{{ issue.location_text }}</dd>
+                            <dt class="font-medium">รายละเอียด</dt>
+                            <dd class="col-span-2">{{ issue.detail }}</dd>
+                        </dl>
+                    </div>
+
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-lg font-medium mb-2">รูปภาพประกอบ</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                            {% if issue.images %}
+                                {% for image in issue.images %}
+                                    <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="ภาพประกอบ" class="rounded-md w-full h-auto object-cover">
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-sm text-gray-500 col-span-full">ไม่มีรูปภาพประกอบ</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-lg font-medium mb-3">อัปเดตสถานะ</h3>
+                        <form method="POST" action="{{ url_for('admin.update_issue_status', issue_id=issue.id) }}">
+                            <div class="mb-4">
+                                <label for="status" class="block text-sm font-medium mb-1">เปลี่ยนสถานะเป็น</label>
+                                <select id="status" name="status" class="w-full border rounded p-2 text-sm">
+                                    {% for s in issue.ALLOWED_STATUSES %}
+                                    <option value="{{ s }}" {% if s == issue.status %}selected{% endif %}>
+                                        {{ s }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="notes" class="block text-sm font-medium mb-1">หมายเหตุ (ถ้ามี)</label>
+                                <textarea id="notes" name="notes" rows="3" class="w-full border rounded p-2 text-sm" placeholder="เช่น: เจ้าหน้าที่รับเรื่องแล้ว"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-[#5C7F5C] text-white py-2 rounded-lg hover:bg-[#4e6e4e] transition">
+                                บันทึกการอัปเดต
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
+                        <h3 class="text-lg font-medium mb-3">ประวัติการเปลี่ยนสถานะ</h3>
+                        <ul class="space-y-4">
+                            {% for entry in issue.status_history | sort(attribute='timestamp', reverse=True) %}
+                                <li class="text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="font-medium text-[#5C7F5C]">{{ entry.status }}</span>
+                                        <span class="text-xs text-gray-500">{{ entry.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                                    </div>
+                                    <p class="text-xs text-gray-400">โดย: {{ entry.changer.username }}</p>
+                                    {% if entry.notes %}
+                                    <p class="mt-1 text-gray-600 text-sm bg-gray-50 p-2 rounded">"{{ entry.notes }}"</p>
+                                    {% endif %}
+                                </li>
+                            {% else %}
+                                <li class="text-sm text-gray-500">ยังไม่มีประวัติการอัปเดต</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
