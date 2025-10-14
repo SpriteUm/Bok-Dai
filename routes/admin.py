@@ -1,5 +1,5 @@
 # 1. Standard library imports
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from functools import wraps
 import json
 
@@ -35,6 +35,7 @@ def admin_required(f):
 def dashboard():
     """แสดงหน้าแดชบอร์ดหลักของ Admin พร้อมข้อมูลสรุปทั้งหมด"""
     
+    # --- ดึงข้อมูลสำหรับ Summary Cards ---
     total_issues = Issue.query.count()
     issues_pending = Issue.query.filter_by(status='รอดำเนินการ').count()
     issues_in_progress = Issue.query.filter_by(status='กำลังดำเนินการ').count()
@@ -42,8 +43,11 @@ def dashboard():
     today_start = datetime.combine(date.today(), datetime.min.time())
     issues_today = Issue.query.filter(Issue.created_at >= today_start).count()
     issues_urgent = Issue.query.filter_by(urgency='🔴').count()
+    
+    # --- ดึงข้อมูลสำหรับตาราง "ปัญหาล่าสุด" ---
     recent_issues = Issue.query.order_by(Issue.created_at.desc()).limit(5).all()
 
+    # --- เตรียมข้อมูลสำหรับกราฟ ---
     chart_data_query = db.session.query(
         Issue.category, 
         func.count(Issue.id)
@@ -51,8 +55,30 @@ def dashboard():
     
     chart_labels = [row[0] for row in chart_data_query]
     chart_values = [row[1] for row in chart_data_query]
-    
     chart_data = { "labels": chart_labels, "values": chart_values }
+
+    # --- ดึงข้อมูลสำหรับแผนที่ Hotspots ---
+    hotspot_issues = Issue.query.filter(
+        Issue.location_link.isnot(None), 
+        Issue.location_link != ''
+    ).order_by(Issue.created_at.desc()).limit(30).all()
+    
+    hotspot_data = []
+    for issue in hotspot_issues:
+        try:
+            if '@' in issue.location_link:
+                coords_part = issue.location_link.split('@')[1].split(',')[0:2]
+                lat = float(coords_part[0])
+                lng = float(coords_part[1])
+                hotspot_data.append({
+                    'lat': lat,
+                    'lng': lng,
+                    'category': issue.category,
+                    'urgency': issue.urgency,
+                    'issue_id': issue.id
+                })
+        except (IndexError, ValueError):
+            continue
 
     return render_template('admin.html',
                            total_issues=total_issues,
@@ -62,7 +88,8 @@ def dashboard():
                            issues_today=issues_today,
                            issues_urgent=issues_urgent,
                            recent_issues=recent_issues,
-                           chart_data=chart_data
+                           chart_data=chart_data,
+                           hotspot_data=json.dumps(hotspot_data)
                           )
 
 # --- Issue Management Routes ---
@@ -71,7 +98,6 @@ def dashboard():
 def manage_issues():
     """แสดงรายการปัญหาทั้งหมด พร้อมระบบค้นหา, กรอง, จัดเรียง และแบ่งหน้า"""
     
-    # --- 1. รับค่าจาก URL (GET parameters) ---
     page = request.args.get('page', 1, type=int)
     search_term = request.args.get('search', '')
     filter_status = request.args.get('status', '')
@@ -81,10 +107,8 @@ def manage_issues():
     sort_by = request.args.get('sort_by', 'created_at')
     sort_order = request.args.get('sort_order', 'desc')
 
-    # --- 2. สร้าง Query เริ่มต้น ---
     query = Issue.query.join(User)
 
-    # --- 3. เพิ่มเงื่อนไขการกรอง (Filter) ---
     if search_term:
         search_like = f'%{search_term}%'
         query = query.filter(
@@ -105,7 +129,6 @@ def manage_issues():
         end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
         query = query.filter(Issue.date_reported <= end_date)
 
-    # --- 4. เพิ่มเงื่อนไขการจัดเรียง (Sort) ---
     sort_column_map = {
         'category': Issue.category,
         'date_reported': Issue.date_reported,
@@ -117,11 +140,9 @@ def manage_issues():
     else:
         query = query.order_by(sort_column.desc())
 
-    # --- 5. ดึงข้อมูลแบบแบ่งหน้า (Paginate) ---
     pagination = query.paginate(page=page, per_page=15, error_out=False)
     issues = pagination.items
 
-    # --- 6. ส่งข้อมูลกลับไปที่ Template ---
     return render_template('reportadmin.html', 
                            issues=issues,
                            pagination=pagination,
@@ -135,7 +156,7 @@ def manage_issues():
                            sort_order=sort_order
                           )
 
-# ... (โค้ดส่วนที่เหลือของไฟล์เหมือนเดิม) ...
+# --- (โค้ดส่วนที่เหลือเหมือนเดิม) ---
 @admin_bp.route('/issue/update/<int:issue_id>', methods=['GET', 'POST'])
 @admin_required
 def update_issue_page(issue_id):
