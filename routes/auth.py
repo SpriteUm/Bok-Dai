@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField
-from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from models.user import User
 from models import db
 
@@ -16,7 +16,13 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(),
+        EqualTo('confirm_password', message='รหัสผ่านจะต้องตรงกัน'),
+        ])
+    # เพิ่ม custom validation สำหรับความยาวรหัสผ่าน
+    def validate_password(self, field):
+        if len(field.data) < 8:
+            raise ValidationError('รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร')
     confirm_password = PasswordField('Confirm Password',
     validators=[DataRequired(), EqualTo('password', message='รหัสผ่านจะต้องตรงกัน')])
     first_name = StringField('First Name', validators=[DataRequired()])
@@ -25,8 +31,10 @@ class RegisterForm(FlaskForm):
     telephone = StringField('Telephone', validators=[DataRequired()])
     submit = SubmitField('Register')
 
-@auth_bp.route('/login', methods=['GET', 'POST'], endpoint='login')
+@auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('induser.indexuser'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter(
@@ -34,7 +42,8 @@ def login():
         ).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
-            return redirect(url_for('induser.indexuser'))  
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('induser.indexuser'))
         else:
             flash("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "error")
     return render_template('login.html', form=form)
@@ -64,6 +73,7 @@ def register():
             )
             db.session.add(user)
             db.session.commit()
+            flash('สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ', 'success')
             return redirect(url_for('auth.login'))
         except Exception as e:
             db.session.rollback()
@@ -74,4 +84,5 @@ def register():
 @login_required # ต้องล็อกอินก่อนถึงจะออกได้
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    flash('ออกจากระบบเรียบร้อยแล้ว', 'success')
+    return render_template('index.html')

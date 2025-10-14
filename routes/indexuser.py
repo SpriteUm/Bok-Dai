@@ -1,10 +1,13 @@
 from flask import Blueprint, jsonify, render_template
 from models.issue import Issue
+from flask_login import login_required
 
-indexuser_bp = Blueprint('indexuser', __name__)
+
+indexuser_bp = Blueprint('induser', __name__)
 
 @indexuser_bp.route('/indexuser')
-def indexuser_page():
+@login_required
+def indexuser():
     return render_template('indexuser.html')
 
 @indexuser_bp.route('/api/issues', methods=['GET'])
