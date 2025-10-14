@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>รายละเอียดปัญหา</title>
+  <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet" />
+</head>
+<body class="font-kanit bg-gray-100 min-h-screen">
+  <header class="bg-[#5C7F5C] text-white p-4">
+    <div class="container mx-auto">
+      <h1 class="text-xl font-bold">รายละเอียดปัญหา #{{ issue.id }}</h1>
+    </div>
+  </header>
+
+  <main class="container mx-auto p-6">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <p><strong>หมวดหมู่:</strong> {{ issue.category or '-' }}</p>
+
+      <p class="mt-2"><strong>รายละเอียด:</strong><br/> {{ issue.detail or '-' }}</p>
+
+      <p class="mt-2"><strong>สถานะ:</strong> {{ issue.status or '-' }}</p>
+
+      <p class="mt-2"><strong>ความเร่งด่วน:</strong>
+        {% if issue.urgency in ['🔴','red'] %}🔴{% elif issue.urgency in ['🟠','orange'] %}🟠{% elif issue.urgency in ['🟢','green'] %}🟢{% else %} - {% endif %}
+      </p>
+
+      <p class="mt-2">
+        <strong>วันที่รายงาน:</strong>
+        {% if issue.date_reported %}
+          {{ issue.date_reported }}
+        {% elif issue.created_at is string %}
+          {{ issue.created_at }}
+        {% elif issue.created_at %}
+          {{ issue.created_at.strftime('%Y-%m-%d') }}
+        {% else %}
+          -
+        {% endif %}
+      </p>
+
+      {% if images %}
+        <div class="mt-4">
+          <strong>รูปภาพที่แนบ:</strong>
+          <div class="grid grid-cols-2 gap-4 mt-2">
+            {% for src in images %}
+              <img src="{{ src }}" alt="image" class="w-full h-40 object-cover rounded" />
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="mt-6">
+        <a href="{{ url_for('indexuser.indexuser') }}" class="inline-block px-4 py-2 bg-gray-200 rounded">กลับ</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

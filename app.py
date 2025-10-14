@@ -4,12 +4,12 @@ from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from models import db
 from models.user import User
+from models.issue import Issue
 
 from routes.report import report_bp
 from routes.auth import auth_bp
 from routes.indexuser import indexuser_bp
 from routes.admin import admin_bp
-
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
@@ -39,7 +39,7 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         try:
-            return User.query.get(int(user_id))
+            return db.session.get(User, int(user_id))
         except Exception:
             return None
 
@@ -52,10 +52,15 @@ def create_app():
     # --- Routes ---
     @app.route('/')
     def index():
-        return render_template('index.html')
+        total_issues = Issue.query.count()
+        in_progress_issues = Issue.query.filter_by(status='กำลังดำเนินการ').count()
+        resolved_issues = Issue.query.filter_by(status='แก้ไขแล้ว').count()
+        return render_template('index.html',
+                               total_issues=total_issues,
+                               in_progress_issues=in_progress_issues,
+                               resolved_issues=resolved_issues)
 
     return app
-
 
 # --- Run App ---
 if __name__ == "__main__":

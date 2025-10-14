@@ -5,10 +5,10 @@
     <title>Admin Dashboard | BOK DAI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -105,7 +105,21 @@
                             <tr>
                                 <td class="px-3 py-2">{{ issue.category }}</td>
                                 <td class="px-3 py-2">{{ issue.detail[:50] }}{% if issue.detail|length > 50 %}...{% endif %}</td>
-                                <td class="px-3 py-2">{{ issue.date_reported.strftime('%Y-%m-%d') }}</td>
+                                <td class="px-3 py-2">
+                                  {% if issue.date_reported %}
+                                    {{ issue.date_reported }}
+                                  {% elif issue.created_at is string %}
+                                    {{ issue.created_at }}
+                                  {% elif issue.created_at %}
+                                    {% if issue.created_at is string %}
+                                      {{ issue.created_at }}
+                                    {% else %}
+                                      {{ issue.created_at.strftime('%Y-%m-%d') }}
+                                    {% endif %}
+                                  {% else %}
+                                    -
+                                  {% endif %}
+                                </td>
                                 <td class="px-3 py-2 text-left">
                                     {% if issue.urgency == '🔴' %}<span class="urgency-dot">🔴</span><span class="sr-only">เร่งด่วนมาก</span>
                                     {% elif issue.urgency == '🟠' %}<span class="urgency-dot">🟠</span><span class="sr-only">ปานกลาง</span>
@@ -146,7 +160,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            // --- 1. โค้ดสำหรับสร้างกราฟ ---
+            // --- 1. Chart rendering ---
             const canvas = document.getElementById('issueChart');
             if (canvas) {
                 const chartDataString = canvas.dataset.chart;
@@ -224,7 +238,7 @@
                 }
             }
 
-            // --- 2. โค้ดสำหรับสร้างแผนที่ ---
+            // --- 2. Hotspot map ---
             const mapElement = document.getElementById('hotspotMap');
             const hotspotDataString = '{{ hotspot_data|safe }}'; 
 

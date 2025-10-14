@@ -1,63 +1,48 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>หน้าหลักผู้ใช้งาน - ระบบแจ้งปัญหา</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>หน้าหลักผู้ใช้งาน</title>
   <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet" />
 </head>
-
-<body class="bg-custom-green-lightest min-h-screen font-kanit">
+<body class="font-kanit bg-custom-green-lightest min-h-screen">
   <header class="bg-[#5C7F5C] shadow-xl">
     <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
       <div class="text-xl font-bold text-white">
         {% if current_user.is_authenticated %}
-        <span class="text-white font-bold">ชื่อของคุณ {{ current_user.username }}</span>
+          ชื่อของคุณ {{ current_user.username }}
+        {% else %}
+          Bokdai
+        {% endif %}
       </div>
-      {% endif %}
       <div>
-        <a href="{{ url_for('index') }}"
-          class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium">สถิติปัญหาทั้งหมด</a>
-        <a href="{{ url_for('report.report') }}"
-          class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium">แจ้งปัญหาใหม่</a>
-        <a href="{{ url_for('auth.logout') }}"
-          class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium">ออกจากระบบ</a>
+        <a href="{{ url_for('index') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">หน้าหลัก</a>
+        <a href="{{ url_for('report.report') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">แจ้งปัญหาใหม่</a>
+        <a href="{{ url_for('auth.logout') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">ออกจากระบบ</a>
       </div>
     </nav>
   </header>
 
   <main class="container mx-auto p-8">
-    <!-- Summary Section -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-red-500">
+      <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-red-500 text-center">
         <p class="text-black text-sm">ปัญหารอการแก้ไข</p>
-        <p id="pending-count" class="text-3xl font-bold mt-1 text-red-500">
-          0 รายการ
-        </p>
+        <p class="text-3xl font-bold mt-1 text-red-500">{{ total_issues or 0 }} รายการ</p>
       </div>
-      <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-yellow-500">
+      <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-yellow-500 text-center">
         <p class="text-black text-sm">กำลังดำเนินการ</p>
-        <p id="inprogress-count" class="text-3xl font-bold mt-1 text-yellow-500">
-          0 รายการ
-        </p>
+        <p class="text-3xl font-bold mt-1 text-yellow-500">{{ in_progress_issues or 0 }} รายการ</p>
       </div>
-      <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+      <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500 text-center">
         <p class="text-black text-sm">แก้ไขแล้ว</p>
-        <p id="resolved-count" class="text-3xl font-bold mt-1 text-green-500">
-          0 รายการ
-        </p>
+        <p class="text-3xl font-bold mt-1 text-green-500">{{ resolved_issues or 0 }} รายการ</p>
       </div>
     </div>
 
     <hr class="border-custom-green-medium mb-8" />
+    <h2 class="text-3xl font-bold mb-4 text-custom-green-dark">รายการปัญหาของฉัน</h2>
 
-    <h2 class="text-3xl font-bold mb-4 text-custom-green-dark">
-      รายการปัญหาของฉัน
-    </h2>
-
-    <!-- Table Header -->
     <div class="flex justify-between items-center mb-3 p-4 bg-custom-green-dull-green rounded-t-lg">
       <p class="text-custom-green-darkest w-1/4">หมวดหมู่</p>
       <p class="text-custom-green-darkest w-1/2">รายละเอียด</p>
@@ -66,70 +51,40 @@
       <p class="text-custom-green-darkest w-1/6 text-center">ดู</p>
     </div>
 
-    <!-- Issue List -->
-    <div id="issue-list"></div>
-
-    <div class="mt-8 text-center">
-      <a href="/my-issues" class="text-[#1B5E20] hover:text-green-darkest text-sm">ดูรายการปัญหาทั้งหมดของฉัน</a>
+    <div id="issue-list">
+      {% if recent_issues %}
+        {% for issue in recent_issues %}
+          <div class="flex justify-between items-center p-4 bg-white border-b hover:bg-gray-50 transition duration-150">
+            <p class="w-1/4">{{ issue.category }}</p>
+            <p class="w-1/2 truncate">{{ issue.detail }}</p>
+            <p class="w-1/6 text-center">
+              {% if issue.status == 'แก้ไขแล้ว' %}
+                <span class="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full">แก้ไขแล้ว</span>
+              {% elif issue.status == 'กำลังดำเนินการ' %}
+                <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full">กำลังดำเนินการ</span>
+              {% else %}
+                <span class="inline-block bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full">รอดำเนินการ</span>
+              {% endif %}
+            </p>
+            <p class="w-1/6 text-center text-2xl">
+              {% if issue.urgency in ['🔴','red','🔴'] %}
+                🔴
+              {% elif issue.urgency in ['🟠','orange'] %}
+                🟠
+              {% elif issue.urgency in ['🟢','green'] %}
+                🟢
+              {% else %}
+                <!-- fallback -->
+                🟢
+              {% endif %}
+            </p>
+            <a href="{{ url_for('indexuser.view_issue', issue_id=issue.id) }}" class="w-1/6 text-center text-green-700 hover:text-green-900">ดู</a>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="p-4 bg-white rounded text-center">ยังไม่มีรายการ</div>
+      {% endif %}
     </div>
   </main>
-
-  <!-- Script to fetch and render issues -->
-  <script>
-    fetch("/api/issues")
-      .then((res) => res.json())
-      .then((data) => {
-        const summary = data.summary;
-        const issues = data.my_issues;
-
-        // Summary counts
-        document.getElementById(
-          "pending-count"
-        ).textContent = `${summary.pending} รายการ`;
-        document.getElementById(
-          "inprogress-count"
-        ).textContent = `${summary.in_progress} รายการ`;
-        document.getElementById(
-          "resolved-count"
-        ).textContent = `${summary.resolved} รายการ`;
-
-        // Issue list
-        const listContainer = document.getElementById("issue-list");
-        listContainer.innerHTML = "";
-        issues.forEach((issue) => {
-          const urgencyIcon =
-            issue.urgency === "red"
-              ? '<span class="text-red-600">🔴</span>'
-              : issue.urgency === "orange"
-                ? '<span class="text-orange-500">🟠</span>'
-                : issue.urgency === "green"
-                  ? '<span class="text-green-500">🟢</span>'
-                  : '<span class="text-gray-500">⚪️</span>';
-
-          const statusClass =
-            issue.status === "แก้ไขแล้ว"
-              ? "bg-green-100 text-green-800"
-              : issue.status === "กำลังดำเนินการ"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-red-100 text-red-800";
-
-          listContainer.innerHTML += `
-              <div class="flex justify-between items-center p-4 bg-white border-b hover:bg-gray-50 transition duration-150">
-                <p class="w-1/4">${issue.category}</p>
-                <p class="w-1/2 truncate">${issue.detail}</p>
-                <p class="w-1/6 text-center">
-                  <span class="inline-block ${statusClass} text-xs px-2.5 py-0.5 rounded-full">${issue.status}</span>
-                </p>
-                <p class="w-1/6 text-center text-2xl">${urgencyIcon}</p>
-                <a href="/issue/${issue.id}" class="w-1/6 text-center text-green-700 hover:text-green-900">${issue.view}</a>
-              </div>
-            `;
-        });
-      })
-      .catch((err) => {
-        console.error("โหลดข้อมูลไม่สำเร็จ:", err);
-      });
-  </script>
 </body>
-
 </html>
