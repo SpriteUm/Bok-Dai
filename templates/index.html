@@ -4,78 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bokdai - ระบบรายงานปัญหาสาธารณะ</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="{{ url_for('static', filename='dist/output.css') }}"
-      rel="stylesheet"
-    />
-  </head>
-  <body class="bg-custom-green-lightest min-h-screen font-kanit">
-  <header class="bg-[#5C7F5C] shadow-xl">
-      <nav
-        class="container mx-auto px-4 py-4 flex justify-between items-center"
-      >
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style> body { font-family: 'Kanit', sans-serif; } </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-[#5C7F5C] shadow-lg">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
 
-        <div class="text-xl font-bold text-white">
-          Bokdai logo
-        </div>
+            <div class="text-xl font-bold text-white">
+                {% if current_user.is_authenticated %}
+                    สวัสดี, {{ current_user.username }}
+                {% else %}
+                    Bokdai
+                {% endif %}
+            </div>
 
-        <div>
-          <a
-            href="{{ url_for('auth.login') }}"
-            class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium"
-          >
-            เข้าสู่ระบบ
-          </a>
-          <a href="{{ url_for('auth.register') }}" class="inline-block border bg-white hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium"
-            >
-            ลงทะเบียน
-            </a
-          >
-        </div>
+            <div>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('indexuser.indexuser') }}" class="inline-block border bg-white hover:bg-gray-200 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium">
+                        หน้าของฉัน
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="inline-block border bg-gray-200 hover:bg-gray-300 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium">
+                        ออกจากระบบ
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="inline-block border bg-white hover:bg-gray-200 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium">
+                        เข้าสู่ระบบ
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="inline-block border bg-white hover:bg-gray-200 transition duration-300 px-4 py-1 mx-1 rounded-full text-sm font-medium">
+                        ลงทะเบียน
+                    </a>
+                {% endif %}
+            </div>
+        </nav>
     </header>
 
     <main class="flex flex-col items-center justify-center p-8">
-        <h1 class="text-6xl mb-2 drop-shadow-lg ">Bokdai</h1>
-        <p class="text-xl mb-10 text-bokdai-light">“ระบบรายงานปัญหาสาธารณะ”</p>
+        <h1 class="text-5xl md:text-6xl mb-2 drop-shadow-lg text-gray-800">Bokdai</h1>
+        <p class="text-lg md:text-xl mb-10 text-gray-600">“ระบบรายงานปัญหาสาธารณะ”</p>
 
-      <div class="flex flex-col md:flex-row gap-4 mb-12 w-full max-w-md">
-        <a
-          href="#"
-          class="bg-[#5C7F5C] text-white py-3 px-10 rounded-full text-lg text-center hover:bg-[#4a6b4a] shadow-lg hover:shadow-xl transition duration-300"
-        >
-          แจ้งปัญหาทันที
-        </a>
-        <a
-          href="/report"
-          class="bg-[#5C7F5C] text-white py-3 px-10 rounded-full text-lg text-center hover:bg-[#4a6b4a] shadow-lg hover:shadow-xl transition duration-300"
-        >
-          ดูสถิติปัญหารวม
-        </a>
-      </div>
-
-      <section class="w-full max-w-3xl">
-        <h2 class="text-2xl font-semibold mb-8 text-center">
-          สถิติการแจ้งปัญหา
-        </h2>
-        <div class="flex flex-col md:flex-row justify-center items-center gap-6">
-          <div class="bg-bokdai-dark border-4 border-red-500 p-6 rounded-3xl w-60 text-center shadow-lg">
-            <p class="text-lg mb-2">ปัญหาทั้งหมด</p>
-            <p class="text-5xl font-bold text-red-500">234</p>
-          </div>
-          <div class="bg-bokdai-dark border-4 border-yellow-500 p-6 rounded-3xl w-60 text-center shadow-lg">
-            <p class="text-lg mb-2">กำลังดำเนินการ</p>
-            <p class="text-5xl font-bold text-yellow-500">23</p>
-          </div>
-          <div class="bg-bokdai-dark border-4 border-green-500 p-6 rounded-3xl w-60 text-center shadow-lg">
-            <p class="text-lg mb-2">แก้ไขแล้ว</p>
-            <p class="text-5xl font-bold text-green-500">3</p>
-          </div>
+        <div class="flex flex-col md:flex-row gap-4 mb-12 w-full max-w-md">
+            <a href="{{ url_for('report.report') }}" class="flex-1 bg-[#5C7F5C] text-white py-3 px-10 rounded-full text-lg text-center hover:bg-[#4a6b4a] shadow-lg hover:shadow-xl transition duration-300">
+                แจ้งปัญหาทันที
+            </a>
+            <a href="{{ url_for('indexuser.indexuser') }}" class="flex-1 bg-gray-200 text-gray-800 py-3 px-10 rounded-full text-lg text-center hover:bg-gray-300 shadow-lg hover:shadow-xl transition duration-300">
+                ดูสถิติส่วนตัว
+            </a>
         </div>
-      </section>
+
+        <section class="w-full max-w-3xl">
+            <h2 class="text-2xl font-semibold mb-8 text-center text-gray-800">
+                สถิติการแจ้งปัญหาทั้งหมด
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <div class="bg-white border-t-4 border-red-500 p-6 rounded-2xl w-full text-center shadow-lg">
+                    <p class="text-lg mb-2 text-gray-700">ปัญหาทั้งหมด</p>
+                    <p class="text-5xl font-bold text-red-500">{{ total_issues or 0 }}</p>
+                </div>
+                <div class="bg-white border-t-4 border-yellow-500 p-6 rounded-2xl w-full text-center shadow-lg">
+                    <p class="text-lg mb-2 text-gray-700">กำลังดำเนินการ</p>
+                    <p class="text-5xl font-bold text-yellow-500">{{ in_progress_issues or 0 }}</p>
+                </div>
+                <div class="bg-white border-t-4 border-green-500 p-6 rounded-2xl w-full text-center shadow-lg">
+                    <p class="text-lg mb-2 text-gray-700">แก้ไขแล้ว</p>
+                    <p class="text-5xl font-bold text-green-500">{{ resolved_issues or 0 }}</p>
+                </div>
+
+            </div>
+        </section>
     </main>
 </body>
 </html>

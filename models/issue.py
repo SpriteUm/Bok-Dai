@@ -1,62 +1,72 @@
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask_login import login_required, current_user
 from models import db
-from datetime import datetime
+from datetime import date
 
-class Issue(db.Model):
-    __tablename__ = 'issues'
+# สร้าง Blueprint สำหรับ issue
+issue_bp = Blueprint('issue', __name__, url_prefix='/issues')
 
-    # สถานะที่อนุญาตให้ใช้ในระบบ
-    ALLOWED_STATUSES = ['รอดำเนินการ', 'กำลังดำเนินการ', 'แก้ไขแล้ว']
+# --- หน้าแสดงรายการปัญหา ---
+@issue_bp.route('/')
+@login_required
+def list_issues():
+    issues = Issue.query.filter_by(user_id=current_user.id).order_by(Issue.created_at.desc()).all()
+    return render_template('issues.html', issues=issues)
 
-    id = db.Column(db.Integer, primary_key=True)
+# --- API สำหรับดึงข้อมูลปัญหา (ใช้ใน indexissue.html) ---
+@issue_bp.route('/api')
+@login_required
+def issues_api():
+    my_issues = Issue.query.filter_by(user_id=current_user.id).all()
 
-    # ผู้ใช้ที่แจ้งปัญหา
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    summary = {
+        "pending": Issue.query.filter_by(user_id=current_user.id, status="รอดำเนินการ").count(),
+        "in_progress": Issue.query.filter_by(user_id=current_user.id, status="กำลังดำเนินการ").count(),
+        "resolved": Issue.query.filter_by(user_id=current_user.id, status="แก้ไขแล้ว").count(),
+    }
 
-    # หมวดหมู่ของปัญหา เช่น ไฟฟ้า, น้ำ, อินเทอร์เน็ต
-    category = db.Column(db.String(100), nullable=False)
+    issues_data = [
+        {
+            "id": i.id,
+            "category": i.category,
+            "detail": i.detail,
+            "status": i.status,
+            "urgency": i.urgency,   # 🔴 🟠 🟢
+            "view": "ดูรายละเอียด"
+        }
+        for i in my_issues
+    ]
 
-    # รายละเอียดของปัญหา
-    detail = db.Column(db.Text, nullable=False)
+    return jsonify({"summary": summary, "my_issues": issues_data})
 
-    # วันที่แจ้งปัญหา
-    date_reported = db.Column(db.Date, nullable=False)
+# --- ฟอร์มเพิ่มปัญหาใหม่ ---
+@issue_bp.route('/new', methods=['GET', 'POST'])
+@login_required
+def new_issue():
+    if request.method == 'POST':
+        category = request.form.get('category')
+        detail = request.form.get('detail')
+        location_text = request.form.get('location_text')
+        location_link = request.form.get('location_link')
+        urgency = request.form.get('urgency')
 
-    # ข้อความระบุสถานที่
-    location_text = db.Column(db.String(200))
+        if not category or not detail or not urgency:
+            flash("กรุณากรอกข้อมูลให้ครบถ้วน", "error")
+            return redirect(url_for('issue.new_issue'))
 
-    # ความเร่งด่วน (ใช้ emoji เพื่อแสดงระดับ)
-    urgency = db.Column(
-        db.Enum('🔴', '🟠', '🟢', name='urgency_levels'),
-        nullable=False
-    )
+        new_issue = Issue(
+            user_id=current_user.id,
+            category=category,
+            detail=detail,
+            date_reported=date.today(),
+            location_text=location_text,
+            location_link=location_link,
+            urgency=urgency
+        )
+        db.session.add(new_issue)
+        db.session.commit()
 
-    # สถานะของปัญหา (อิงจาก ALLOWED_STATUSES)
-    status = db.Column(
-        db.Enum(*ALLOWED_STATUSES, name='issue_status'),
-        default=ALLOWED_STATUSES[0],
-        nullable=False
-    )
+        flash("บันทึกปัญหาเรียบร้อยแล้ว ✅", "success")
+        return redirect(url_for('issue.list_issues'))
 
-    # เวลาที่สร้างและอัปเดต
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # --- Relationships ---
-    # รูปภาพที่แนบกับปัญหา
-    images = db.relationship(
-        'IssueImage',
-        backref='issue',
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
-
-    # ประวัติการเปลี่ยนสถานะ
-    status_history = db.relationship(
-        'IssueStatusHistory',
-        backref='issue',
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
-
-    def __repr__(self):
-        return f'<Issue {self.id}>'
+    return render_template('issue_form.html')
