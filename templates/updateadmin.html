@@ -5,6 +5,8 @@
     <title>รายละเอียดปัญหา #{{ issue.id }} | BOK DAI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Kanit', sans-serif; } </style>
 </head>
 <body class="bg-[#E6E8E5] text-[#2F4F2F]">
     <div class="min-h-screen flex">
@@ -24,35 +26,42 @@
         <main class="flex-1 p-6">
             <header class="mb-6">
                 <h2 class="text-2xl font-semibold">รายละเอียดปัญหา #{{ issue.id }}</h2>
-                <p class="text-xs text-[#8FAF8F]">{{ issue.category }} — แจ้งเมื่อ {{ issue.created_at.strftime('%Y-%m-%d') }}</p>
+                <p class="text-xs text-gray-500">{{ issue.category }} — แจ้งเมื่อ {{ issue.created_at.strftime('%Y-%m-%d') }}</p>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 space-y-6">
                     <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
                         <h3 class="text-lg font-medium mb-2">ข้อมูลเบื้องต้น</h3>
-                        <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                            <dt class="font-medium">ผู้แจ้ง</dt><dd>{{ issue.user.username }}</dd>
-                            <dt class="font-medium">หมวดหมู่</dt><dd>{{ issue.category }}</dd>
-                            <dt class="font-medium">ความเร่งด่วน</dt><dd>{{ issue.urgency }}</dd>
-                            <dt class="font-medium">สถานที่</dt><dd>{{ issue.location_text }}</dd>
-                            <dt class="font-medium">รายละเอียด</dt>
-                            <dd class="col-span-2">{{ issue.detail }}</dd>
+                        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                            <dt class="font-medium">ผู้แจ้ง:</dt><dd>{{ issue.user.username }}</dd>
+                            <dt class="font-medium">หมวดหมู่:</dt><dd>{{ issue.category }}</dd>
+                            <dt class="font-medium">ความเร่งด่วน:</dt><dd>{{ issue.urgency }}</dd>
+                            <dt class="font-medium">สถานที่:</dt><dd>{{ issue.location_text }}</dd>
+                            <dt class="font-medium col-span-full">รายละเอียด:</dt>
+                            <dd class="col-span-full bg-gray-50 p-2 rounded">{{ issue.detail }}</dd>
                         </dl>
                     </div>
 
                     <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
                         <h3 class="text-lg font-medium mb-2">รูปภาพประกอบ</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                             {% if issue.images %}
                                 {% for image in issue.images %}
-                                    <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="ภาพประกอบ" class="rounded-md w-full h-auto object-cover">
+                                    <div>
+                                        <a href="{{ url_for('static', filename='uploads/' + image.filename) }}" target="_blank">
+                                            <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" 
+                                                 alt="ภาพประกอบปัญหา" 
+                                                 class="rounded-md w-full h-48 object-cover border hover:opacity-80 transition-opacity cursor-pointer">
+                                        </a>
+                                    </div>
                                 {% endfor %}
                             {% else %}
                                 <p class="text-sm text-gray-500 col-span-full">ไม่มีรูปภาพประกอบ</p>
                             {% endif %}
                         </div>
                     </div>
+
                 </div>
 
                 <div class="space-y-6">
@@ -63,9 +72,7 @@
                                 <label for="status" class="block text-sm font-medium mb-1">เปลี่ยนสถานะเป็น</label>
                                 <select id="status" name="status" class="w-full border rounded p-2 text-sm">
                                     {% for s in issue.ALLOWED_STATUSES %}
-                                    <option value="{{ s }}" {% if s == issue.status %}selected{% endif %}>
-                                        {{ s }}
-                                    </option>
+                                    <option value="{{ s }}" {% if s == issue.status %}selected{% endif %}>{{ s }}</option>
                                     {% endfor %}
                                 </select>
                             </div>

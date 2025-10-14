@@ -5,8 +5,13 @@
     <title>Admin Dashboard | BOK DAI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Kanit', sans-serif; }
@@ -72,11 +77,10 @@
                         <canvas id="issueChart" data-chart='{{ chart_data|tojson }}'></canvas>
                     </div>
                 </div>
+                
                 <div class="bg-white border border-[#8FAF8F] rounded-lg shadow p-4" style="flex:1 1 35%; min-width:220px;">
-                    <h3 class="text-sm font-medium mb-2">การแจ้งเตือน</h3>
-                    <ul class="list-disc pl-5 text-sm space-y-1">
-                        <li>(Coming Soon)</li>
-                    </ul>
+                    <h3 class="text-sm font-medium mb-2">แผนที่ความหนาแน่นปัญหา (30 จุดล่าสุด)</h3>
+                    <div id="hotspotMap" class="rounded-lg border border-gray-200" style="height: 220px;"></div>
                 </div>
             </section>
 
@@ -102,14 +106,14 @@
                                 <td class="px-3 py-2">{{ issue.category }}</td>
                                 <td class="px-3 py-2">{{ issue.detail[:50] }}{% if issue.detail|length > 50 %}...{% endif %}</td>
                                 <td class="px-3 py-2">{{ issue.date_reported.strftime('%Y-%m-%d') }}</td>
-                                <td class="px-3 py-2 text-center">
+                                <td class="px-3 py-2 text-left">
                                     {% if issue.urgency == '🔴' %}<span class="urgency-dot">🔴</span><span class="sr-only">เร่งด่วนมาก</span>
                                     {% elif issue.urgency == '🟠' %}<span class="urgency-dot">🟠</span><span class="sr-only">ปานกลาง</span>
                                     {% elif issue.urgency == '🟢' %}<span class="urgency-dot">🟢</span><span class="sr-only">ไม่เร่งด่วน</span>
                                     {% else %}<span class="text-xs text-gray-700">{{ issue.urgency }}</span>
                                     {% endif %}
                                 </td>
-                                <td class="px-3 py-2 text-center">
+                                <td class="px-3 py-2 text-left">
                                     {% if issue.status == 'กำลังดำเนินการ' %}<span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full">กำลังดำเนินการ</span>
                                     {% elif issue.status == 'แก้ไขแล้ว' %}<span class="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full">แก้ไขแล้ว</span>
                                     {% else %}<span class="inline-block bg-gray-100 text-gray-700 text-xs px-2.5 py-0.5 rounded-full">{{ issue.status }}</span>
@@ -141,6 +145,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- 1. โค้ดสำหรับสร้างกราฟ ---
             const canvas = document.getElementById('issueChart');
             if (canvas) {
                 const chartDataString = canvas.dataset.chart;
@@ -148,11 +154,8 @@
                     try {
                         const chartData = JSON.parse(chartDataString);
                         if (chartData.labels && chartData.labels.length > 0) {
-                            
                             Chart.register(ChartDataLabels);
                             Chart.defaults.font.family = "'Kanit', sans-serif";
-                            
-                            // ++ FIX: ปรับสีตัวอักษรเริ่มต้นให้เข้ากับธีม ++
                             Chart.defaults.color = '#2F4F2F';
 
                             const ctx = canvas.getContext('2d');
@@ -164,25 +167,9 @@
                                         data: chartData.values,
                                         maxBarThickness: 50,
                                         borderRadius: 6,
-                                        
-                                        // ++ FIX: ปรับชุดสีให้เข้ากับธีม ++
-                                        backgroundColor: [
-                                            'rgba(92, 127, 92, 0.6)',
-                                            'rgba(143, 175, 143, 0.6)',
-                                            'rgba(194, 211, 194, 0.6)',
-                                            'rgba(161, 181, 161, 0.6)',
-                                            'rgba(212, 224, 212, 0.6)'
-                                        ],
-                                        borderColor: [
-                                            'rgba(92, 127, 92, 1)',
-                                            'rgba(143, 175, 143, 1)',
-                                            'rgba(194, 211, 194, 1)',
-                                            'rgba(161, 181, 161, 1)',
-                                            'rgba(212, 224, 212, 1)'
-                                        ],
-                                        borderWidth: 1.5,
-                                        hoverBackgroundColor: 'rgba(47, 79, 47, 0.7)',
-
+                                        backgroundColor: 'rgba(92, 127, 92, 0.6)',
+                                        borderColor: 'rgba(92, 127, 92, 1)',
+                                        hoverBackgroundColor: 'rgba(92, 127, 92, 0.8)',
                                         barPercentage: 0.7
                                     }]
                                 },
@@ -196,11 +183,8 @@
                                             font: { size: 16 },
                                             padding: { bottom: 20 }
                                         },
-                                        legend: {
-                                            display: false
-                                        },
+                                        legend: { display: false },
                                         tooltip: {
-                                            // ++ FIX: ปรับสไตล์ Tooltip ให้เข้ากับธีม ++
                                             backgroundColor: '#2F4F2F',
                                             titleColor: '#E6E8E5',
                                             bodyColor: '#C2D3C2',
@@ -220,41 +204,62 @@
                                         datalabels: {
                                             anchor: 'end',
                                             align: 'top',
-                                            color: '#2F4F2F',
-                                            font: {
-                                                weight: 'bold',
-                                                size: 12
-                                            },
-                                            formatter: function(value, context) {
-                                                return value > 0 ? value : '';
-                                            }
+                                            font: { weight: 'bold', size: 12 },
+                                            formatter: (value) => value > 0 ? value : ''
                                         }
                                     },
                                     scales: {
                                         y: {
                                             beginAtZero: true,
-                                            title: {
-                                                display: true,
-                                                text: 'จำนวน (รายการ)'
-                                            },
-                                            grid: {
-                                                display: true, // เปิดเส้นตารางบางๆ
-                                                color: 'rgba(143, 175, 143, 0.2)'
-                                            },
+                                            title: { display: true, text: 'จำนวน (รายการ)' },
+                                            grid: { display: false },
                                             grace: '10%'
                                         },
-                                        x: {
-                                            grid: {
-                                                display: false
-                                            }
-                                        }
+                                        x: { grid: { display: false } }
                                     }
                                 }
                             });
                         }
-                    } catch (e) {
-                        console.error("Failed to parse chart data:", e);
+                    } catch (e) { console.error("Failed to parse chart data:", e); }
+                }
+            }
+
+            // --- 2. โค้ดสำหรับสร้างแผนที่ ---
+            const mapElement = document.getElementById('hotspotMap');
+            const hotspotDataString = '{{ hotspot_data|safe }}'; 
+
+            if (mapElement && hotspotDataString) {
+                try {
+                    const hotspotData = JSON.parse(hotspotDataString);
+                    const map = L.map('hotspotMap').setView([13.736717, 100.523186], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19, attribution: '© OpenStreetMap'
+                    }).addTo(map);
+
+                    if (hotspotData.length > 0) {
+                        const markers = [];
+                        hotspotData.forEach(point => {
+                            let color = '#5C7F5C'; // Green
+                            if (point.urgency === '🔴') color = '#DC2626'; // Red
+                            if (point.urgency === '🟠') color = '#F97316'; // Orange
+
+                            const circle = L.circle([point.lat, point.lng], {
+                                color: color, fillColor: color, fillOpacity: 0.6, radius: 40
+                            }).addTo(map);
+
+                            const popupContent = `<b>หมวดหมู่:</b> ${point.category}<br><b>ความเร่งด่วน:</b> ${point.urgency}<br><a href="/admin/issue/update/${point.issue_id}" class="text-blue-600 hover:underline">ดูรายละเอียด</a>`;
+                            circle.bindPopup(popupContent);
+                            markers.push(circle);
+                        });
+
+                        const featureGroup = L.featureGroup(markers);
+                        map.fitBounds(featureGroup.getBounds().pad(0.1));
+                    } else {
+                        mapElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 p-4 text-center">ไม่มีข้อมูลพิกัดสำหรับแสดงผล</div>';
                     }
+                } catch(e) {
+                    console.error("Failed to parse or render hotspot data", e);
+                    mapElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500">เกิดข้อผิดพลาด</div>';
                 }
             }
         });
