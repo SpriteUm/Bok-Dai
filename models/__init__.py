@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-# import model หลังจากสร้าง db
+# import models ที่เหลือ
 from .user import User
 from .issue import Issue
 from .issueimage import IssueImage
