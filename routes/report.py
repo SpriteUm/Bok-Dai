@@ -8,13 +8,15 @@ from wtforms.validators import DataRequired
 from datetime import datetime
 from models import db
 from models.issue import Issue
+from report import report_bp
 
 try:
     from models.issue_image import IssueImage
 except ImportError:
     IssueImage = None
 
-report_bp = Blueprint('report', __name__, template_folder='../templates')
+report_bp = Blueprint('report', __name__, url_prefix='/report')
+from report import report_bp
 
 def ensure_upload_folder():
     folder = current_app.config.get('UPLOAD_FOLDER', os.path.join(current_app.root_path, 'static', 'uploads'))

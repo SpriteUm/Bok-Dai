@@ -5,6 +5,7 @@ from models.user import User
 from routes.report import report_bp
 from routes.auth import auth_bp
 from routes.indexuser import indexuser_bp
+import os
 
 def create_app():
     app = Flask(__name__)
@@ -44,10 +45,10 @@ def create_app():
     with app.app_context():
         import models.user
         import models.issue
-        import models.issue_image
+        import models.issueimage
         # try both possible filenames for history module (tolerate naming)
         try:
-            import models.issue_status_history
+            import models.issueStatusHistory
         except ImportError:
             try:
                 import models.issueStatusHistory
