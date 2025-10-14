@@ -22,7 +22,7 @@ class Issue(db.Model):
     date_reported = db.Column(db.Date, nullable=False)
 
     # ข้อความระบุสถานที่
-    location_text = db.Column(db.String(200))
+    location_link = db.Column(db.String(200))
 
     # ความเร่งด่วน (ใช้ emoji เพื่อแสดงระดับ)
     urgency = db.Column(

@@ -63,7 +63,6 @@ def report():
                 category=category_value,
                 detail=form.detail.data,
                 date_reported=form.date_reported.data,
-                location_text=form.location_text.data,
                 location_link=form.location_link.data,
                 urgency=form.urgency.data,
                 # --- ++ FIX: เพิ่มสถานะเริ่มต้นให้ปัญหาใหม่ ++ ---
