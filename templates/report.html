@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>รายงานปัญหา - BOK DAI</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
-
 <body class="min-h-screen bg-gradient-to-br from-green-100 via-[#e6f7ec] to-green-50 flex items-start justify-center p-6">
   <div class="w-full max-w-4xl">
 
@@ -33,7 +31,7 @@
 
         <!-- ฟอร์มรายงาน -->
         <form id="reportForm" method="POST" enctype="multipart/form-data"
-              action="{{ url_for('report.report') }}"
+              action="{{ url_for('report.report') }}"  <!-- แก้ตรงนี้ -->
               class="p-4 md:p-6" novalidate>
           {{ form.hidden_tag() }}
           <h2 class="text-2xl font-bold text-green-800 mb-2">BOK DAI REPORT</h2>
@@ -76,7 +74,7 @@
           </label>
 
           <!-- Hidden input สำหรับ Google Maps link -->
-          <input type="hidden" id="location_link" name="location_link" value="">
+          {{ form.location_link(id="location_link", type="hidden") }}
 
           <!-- ปุ่ม -->
           <div class="flex items-center gap-3 mt-4">
@@ -112,7 +110,6 @@
 
           <!-- Leaflet Map -->
           <div id="map" class="rounded-lg border mt-2" style="height: 300px;"></div>
-
           <p class="text-xs text-gray-500 mt-2">
             📍 คลิกบนแผนที่เพื่อเปลี่ยนตำแหน่ง หรือใช้ปุ่มด้านบนเพื่อระบุตำแหน่งปัจจุบัน
           </p>

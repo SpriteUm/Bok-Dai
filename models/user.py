@@ -16,6 +16,6 @@ class User(db.Model, UserMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relationship กับ Issues
+    # ความสัมพันธ์
     issues = db.relationship('Issue', backref='user', lazy=True)
     status_updates = db.relationship('IssueStatusHistory', backref='updated_by_user', lazy=True)

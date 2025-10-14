@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
+# create the SQLAlchemy db object
 db = SQLAlchemy()
 
 # import model หลังจากสร้าง db
