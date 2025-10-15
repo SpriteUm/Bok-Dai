@@ -4,6 +4,9 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>หน้าหลักผู้ใช้งาน</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Kanit', sans-serif; } </style>
   <link href="{{ url_for('static', filename='dist/output.css') }}" rel="stylesheet" />
 </head>
 <body class="font-kanit bg-custom-green-lightest min-h-screen">
@@ -20,15 +23,6 @@
         <a href="{{ url_for('index') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">หน้าหลัก</a>
         <a href="{{ url_for('report.report') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">แจ้งปัญหาใหม่</a>
         <a href="{{ url_for('auth.logout') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">ออกจากระบบ</a>
-
-        <a href="{{ url_for('indexuser.notifications') }}" class="relative inline-block ml-3">
-          <button class="bg-white px-3 py-1 rounded-full text-sm">แจ้งเตือน</button>
-          {% if unread_notifications_count and unread_notifications_count > 0 %}
-            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
-              {{ unread_notifications_count }}
-            </span>
-          {% endif %}
-        </a>
       </div>
     </nav>
   </header>
@@ -63,7 +57,6 @@
     <div id="issue-list" class="space-y-2">
       {% if recent_issues %}
         {% for issue in recent_issues %}
-          {# get latest history entry safely #}
           {% set latest = (issue.status_history | sort(attribute='timestamp', reverse=True) | first) if issue.status_history else None %}
           <div class="issue-card flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border rounded shadow-sm hover:shadow-md transition duration-150"
                data-issue-id="{{ issue.id }}">
@@ -163,8 +156,6 @@
   </main>
 
   <script>
-    // Polling: ทุก 8 วินาที ตรวจ issue แต่ละอันที่แสดงในหน้าเพื่อดึง latest history (status, notes, response_image_url)
-    // ต้องมี endpoint server: /indexuser/issue/<id>/latest.json  (ถ้ายังไม่มี ให้เพิ่มตามตัวอย่างที่คุยไว้)
     (function () {
       const POLL_INTERVAL = 8000;
       const issueCards = document.querySelectorAll('.issue-card');

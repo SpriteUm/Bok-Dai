@@ -60,9 +60,14 @@
       {% if images %}
         <div class="mt-6">
           <p class="text-sm text-gray-600 mb-1">รูปภาพที่แนบ</p>
-          <div class="grid grid-cols-2 gap-4">
+
+          <!-- ปรับเป็น grid responsive และใช้ thumbnail ขนาดใหญ่; แต่ละรูปเป็นลิงก์ที่เปิด modal -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for src in images %}
-              <img src="{{ src }}" alt="image" class="w-full h-40 object-cover rounded border" />
+              <a href="{{ src }}" data-full-src="{{ src }}" class="block group">
+                <img src="{{ src }}" alt="image"
+                     class="w-full h-64 md:h-80 lg:h-96 object-cover rounded border transition-transform transform group-hover:scale-105 cursor-pointer" />
+              </a>
             {% endfor %}
           </div>
         </div>
@@ -86,5 +91,47 @@
       </div>
     </div>
   </main>
+
+  <!-- Modal ขยายภาพ -->
+  <div id="image-modal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-70 z-50">
+    <div class="relative w-full max-w-6xl mx-4">
+      <button id="image-modal-close" class="absolute right-2 top-2 text-white text-3xl leading-none">&times;</button>
+      <img id="image-modal-img" src="" alt="ขยายรูป" class="w-full h-auto max-h-[90vh] object-contain rounded-md shadow-lg" />
+    </div>
+  </div>
+
+  <script>
+    // เปิด modal เมื่อคลิกที่รูปหรือลิงก์ที่มี data-full-src
+    document.addEventListener('click', function (e) {
+      const el = e.target.closest('a[data-full-src], img');
+      if (!el) return;
+      const link = el.closest('a[data-full-src]') || el.closest('a') || el;
+      const src = link.getAttribute('data-full-src') || link.getAttribute('href') || link.getAttribute('src');
+      if (!src) return;
+      // ถ้คลิกบนลิงก์ที่ไปยังไฟล์อื่นแต่ไม่ได้มี data-full-src ให้ไม่ขัดจังหวะ (ขอให้ data-full-src มีทุกภาพ)
+      if (!link.hasAttribute('data-full-src')) return;
+      e.preventDefault();
+      const modal = document.getElementById('image-modal');
+      const modalImg = document.getElementById('image-modal-img');
+      modalImg.src = src;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    });
+
+    // ปิด modal
+    document.getElementById('image-modal-close').addEventListener('click', function () {
+      const modal = document.getElementById('image-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.getElementById('image-modal-img').src = '';
+    });
+    document.getElementById('image-modal').addEventListener('click', function (e) {
+      if (e.target === this) {
+        this.classList.add('hidden');
+        this.classList.remove('flex');
+        document.getElementById('image-modal-img').src = '';
+      }
+    });
+  </script>
 </body>
 </html>
