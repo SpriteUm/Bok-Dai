@@ -14,7 +14,7 @@
 
             <div class="text-xl font-bold text-white">
                 {% if current_user.is_authenticated %}
-                    สวัสดี, {{ current_user.username }}
+                    สวัสดี {{ current_user.username }}
                 {% else %}
                     Bokdai
                 {% endif %}
