@@ -45,25 +45,68 @@ npm run dev
 ## Project Structure
 <pre>
 BOKDAI/
-├── pycache/ # cache ของ Python
-├── node_modules/ # npm dependencies
-├── public/ # Static assets (frontend)
+├── pycache/              # cache ของ Python
+├── node_modules/         # npm dependencies
+├── public/               # Static assets (frontend เช่น รูปภาพ favicon ฯลฯ)
 ├── static/
-│ ├── dist/
-│ │ └── output.css # Tailwind build
-│ └── src/
-│ └── input.css # Tailwind source
+│   ├── dist/
+│   │   └── output.css    # ไฟล์ CSS ที่ build จาก Tailwind
+│   └── src/
+│       └── input.css     # ไฟล์ CSS ต้นฉบับสำหรับ Tailwind
 ├── templates/
-│ └── index.html # main template
-├── venv/ # Python virtual environment
-├── .env # Environment variables
-├── .gitignore # Git ignore rules
-├── app.py # main Flask app
-├── package-lock.json # lockfile npm
-├── package.json # npm scripts + deps
-├── postcss.config.js # Tailwind/PostCSS config
-├── README.md # documentation
-├── requirements.txt # Python packages
-└── tailwind.config.js # Tailwind config
+│   └── index.html        # main template สำหรับ Flask (Jinja2)
+├── venv/                 # Python virtual environment
+├── .env                  # Environment variables (เช่น DB, SECRET_KEY)
+├── .gitignore            # Git ignore rules
+├── app.py                # main Flask app (entry point ของ backend)
+├── package-lock.json     # lockfile npm
+├── package.json          # npm scripts + deps
+├── postcss.config.js     # Tailwind/PostCSS config
+├── README.md             # documentation
+├── requirements.txt      # Python packages
+└── tailwind.config.js    # Tailwind config
 </pre>
+
+## 📂 รายละเอียดไฟล์สำคัญ
+
+- **app.py**  
+  ไฟล์หลักของ Flask backend รวม logic สำหรับรับ request, routing, การเชื่อมต่อฐานข้อมูล, และการ render template
+
+- **requirements.txt**  
+  รายการ Python packages ที่จำเป็น เช่น Flask, Jinja2, ฯลฯ
+
+- **package.json**  
+  กำหนด dependencies ฝั่ง frontend (เช่น tailwindcss, postcss) และ npm scripts สำหรับ build
+
+- **tailwind.config.js / postcss.config.js**  
+  กำหนด config สำหรับ Tailwind CSS และ PostCSS
+
+- **static/src/input.css**  
+  ไฟล์ CSS ต้นฉบับที่ใช้เขียน style ด้วย Tailwind
+
+- **static/dist/output.css**  
+  ไฟล์ CSS ที่ถูก build แล้วจาก Tailwind สำหรับใช้งานจริง
+
+- **templates/index.html**  
+  Template หลักสำหรับแสดงหน้าเว็บ (ใช้ Jinja2)
+
+- **.env**  
+  เก็บค่าคอนฟิกสำคัญ เช่น DATABASE_URL, SECRET_KEY, ฯลฯ (ไม่ควร commit ลง git)
+
+- **public/**  
+  เก็บไฟล์ static อื่น ๆ เช่น รูปภาพ โลโก้ favicon ฯลฯ
+
+- **venv/**  
+  โฟลเดอร์ virtual environment สำหรับ Python
+
+## 🛠️ การทำงานหลัก
+
+- ผู้ใช้สามารถแจ้งปัญหาโดยกรอกฟอร์มและแนบรูปภาพ
+- ข้อมูลจะถูกบันทึกลงฐานข้อมูล (เช่น SQLite, PostgreSQL)
+- ผู้ดูแลระบบสามารถดูรายการปัญหาและอัปเดตสถานะผ่าน Dashboard
+- มีระบบกรองและแสดงตำแหน่งปัญหาบนแผนที่
+
+## 📞 ติดต่อ/แจ้งปัญหาเพิ่มเติม
+
+หากพบปัญหาในการติดตั้งหรือใช้งาน สามารถติดต่อทีมพัฒนาได้ที่ [email/ช่องทางติดต่อ]
 
