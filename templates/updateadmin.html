@@ -26,7 +26,7 @@
         <main class="flex-1 p-6">
             <header class="mb-6">
                 <h2 class="text-2xl font-semibold">รายละเอียดปัญหา #{{ issue.id }}</h2>
-                <p class="text-xs text-gray-500">{{ issue.category }} — แจ้งเมื่อ {{ issue.created_at.strftime('%Y-%m-%d') }}</p>
+                <p class="text-xs text-gray-500">{{ issue.category }} — แจ้งเมื่อ {% if issue.created_at is string %}{{ issue.created_at }}{% else %}{{ issue.created_at.strftime('%Y-%m-%d') }}{% endif %}</p>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -37,7 +37,7 @@
                             <dt class="font-medium">ผู้แจ้ง:</dt><dd>{{ issue.user.username }}</dd>
                             <dt class="font-medium">หมวดหมู่:</dt><dd>{{ issue.category }}</dd>
                             <dt class="font-medium">ความเร่งด่วน:</dt><dd>{{ issue.urgency }}</dd>
-                            <dt class="font-medium">สถานที่:</dt><dd>{{ issue.location_text }}</dd>
+                            <dt class="font-medium">สถานที่:</dt><dd>{{ issue.location_text or '-' }}</dd>
                             <dt class="font-medium col-span-full">รายละเอียด:</dt>
                             <dd class="col-span-full bg-gray-50 p-2 rounded">{{ issue.detail }}</dd>
                         </dl>
@@ -66,8 +66,12 @@
 
                 <div class="space-y-6">
                     <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
-                        <h3 class="text-lg font-medium mb-3">อัปเดตสถานะ</h3>
-                        <form method="POST" action="{{ url_for('admin.update_issue_status', issue_id=issue.id) }}">
+                        <h3 class="text-lg font-medium mb-3">อัปเดตสถานะ และตอบกลับผู้แจ้ง</h3>
+                        <!--
+                          Form: multipart/form-data เพื่อรองรับการอัปโหลดรูปภาพตอบกลับ
+                          Backend: ต้องรองรับ request.files['response_image'] และ request.form['notify_user']
+                        -->
+                        <form method="POST" action="{{ url_for('admin.update_issue_status', issue_id=issue.id) }}" enctype="multipart/form-data">
                             <div class="mb-4">
                                 <label for="status" class="block text-sm font-medium mb-1">เปลี่ยนสถานะเป็น</label>
                                 <select id="status" name="status" class="w-full border rounded p-2 text-sm">
@@ -76,13 +80,28 @@
                                     {% endfor %}
                                 </select>
                             </div>
+
                             <div class="mb-4">
-                                <label for="notes" class="block text-sm font-medium mb-1">หมายเหตุ (ถ้ามี)</label>
-                                <textarea id="notes" name="notes" rows="3" class="w-full border rounded p-2 text-sm" placeholder="เช่น: เจ้าหน้าที่รับเรื่องแล้ว"></textarea>
+                                <label for="notes" class="block text-sm font-medium mb-1">หมายเหตุที่จะแจ้งกับผู้แจ้ง (ข้อความที่จะส่ง)</label>
+                                <textarea id="notes" name="notes" rows="4" class="w-full border rounded p-2 text-sm" placeholder="เช่น: ทีมงานดำเนินการแก้ไขแล้ว กรุณาตรวจสอบ">{{ request.form.get('notes','') }}</textarea>
                             </div>
+
+                            <div class="mb-4">
+                                <label for="response_image" class="block text-sm font-medium mb-1">แนบรูปภาพตอบกลับ (เช่น รูปก่อน/หลังการแก้ไข)</label>
+                                <input id="response_image" name="response_image" type="file" accept="image/*" class="w-full text-sm">
+                                <p class="text-xs text-gray-500 mt-1">ไฟล์รูปจะถูกอัปโหลดและแนบในบันทึกการอัปเดต</p>
+                            </div>
+
+                            <div class="mb-4 flex items-center gap-3">
+                                <input id="notify_user" name="notify_user" type="checkbox" value="1" class="h-4 w-4">
+                                <label for="notify_user" class="text-sm">ส่งแจ้งเตือน/ข้อความถึงผู้แจ้งเมื่อบันทึก (เปิด/ปิด)</label>
+                            </div>
+
                             <button type="submit" class="w-full bg-[#5C7F5C] text-white py-2 rounded-lg hover:bg-[#4e6e4e] transition">
-                                บันทึกการอัปเดต
+                                บันทึกการอัปเดตและแจ้งผู้แจ้ง
                             </button>
+
+                            <p class="mt-2 text-xs text-gray-500">หมายเหตุ: ฝั่งเซิร์ฟเวอร์จะต้องบันทึก IssueStatusHistory พร้อมไฟล์ภาพ (ถ้ามี) และส่งการแจ้งเตือนไปยังผู้แจ้งเมื่อเลือก "ส่งแจ้งเตือน"</p>
                         </form>
                     </div>
 
@@ -93,11 +112,22 @@
                                 <li class="text-sm">
                                     <div class="flex justify-between">
                                         <span class="font-medium text-[#5C7F5C]">{{ entry.status }}</span>
-                                        <span class="text-xs text-gray-500">{{ entry.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                                        <span class="text-xs text-gray-500">
+                                          {% if entry.timestamp is string %}{{ entry.timestamp }}{% else %}{{ entry.timestamp.strftime('%Y-%m-%d %H:%M') }}{% endif %}
+                                        </span>
                                     </div>
-                                    <p class="text-xs text-gray-400">โดย: {{ entry.changer.username }}</p>
+                                    <p class="text-xs text-gray-400">โดย: {{ entry.changer.username if entry.changer else '—' }}</p>
+
                                     {% if entry.notes %}
                                     <p class="mt-1 text-gray-600 text-sm bg-gray-50 p-2 rounded">"{{ entry.notes }}"</p>
+                                    {% endif %}
+
+                                    {% if entry.response_image %}
+                                    <div class="mt-2">
+                                        <a href="{{ url_for('static', filename='uploads/' + entry.response_image) }}" target="_blank">
+                                            <img src="{{ url_for('static', filename='uploads/' + entry.response_image) }}" alt="รูปตอบกลับ" class="rounded-md w-full object-cover border">
+                                        </a>
+                                    </div>
                                     {% endif %}
                                 </li>
                             {% else %}

@@ -4,7 +4,7 @@ import json
 
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, request, current_app
 from flask_login import login_required, current_user
-from sqlalchemy import func, or_, text
+from sqlalchemy import func, text
 
 from models import db
 from models.user import User
@@ -52,7 +52,10 @@ def dashboard():
                 "status": getattr(it, "status", "รอดำเนินการ") or "รอดำเนินการ",
                 "urgency": getattr(it, "urgency", "") or "",
                 "date_reported": date_reported,
-                "created_at": created
+                "created_at": created,
+                # location_text may not exist in DB; use attribute if model provides it
+                "location_text": getattr(it, "location_text", "") or "",
+                "location_link": getattr(it, "location_link", "") or ""
             })
 
         chart_rows = db.session.query(Issue.category, func.count(Issue.id)) \
@@ -72,7 +75,8 @@ def dashboard():
                         'lng': lng,
                         'category': issue.category,
                         'urgency': issue.urgency,
-                        'issue_id': issue.id
+                        'issue_id': issue.id,
+                        'location_link': issue.location_link or ''
                     })
             except (IndexError, ValueError, TypeError):
                 continue
@@ -91,6 +95,7 @@ def dashboard():
             pass
 
         try:
+            # removed i.location_text to avoid "no such column"
             sql = text("SELECT id, category, detail, status, urgency, created_at, location_link FROM issues ORDER BY created_at DESC LIMIT 30")
             rows = db.session.execute(sql).mappings().all()
             for row in rows:
@@ -109,7 +114,10 @@ def dashboard():
                     "status": status,
                     "urgency": urgency_display,
                     "date_reported": date_reported,
-                    "created_at": created
+                    "created_at": created,
+                    # no location_text column in SQL: fill safely
+                    "location_text": row.get('location_text') or '',
+                    "location_link": row.get('location_link') or ''
                 })
 
             chart_rows = db.session.execute(text("SELECT category, COUNT(id) as cnt FROM issues GROUP BY category ORDER BY cnt DESC LIMIT 5")).mappings().all()
@@ -127,7 +135,8 @@ def dashboard():
                             'lng': lng,
                             'category': row.get('category'),
                             'urgency': row.get('urgency'),
-                            'issue_id': row.get('id')
+                            'issue_id': row.get('id'),
+                            'location_link': row.get('location_link') or ''
                         })
                 except (IndexError, ValueError, TypeError):
                     continue
@@ -172,20 +181,21 @@ def manage_issues():
     if filter_urgency:
         where_clauses.append("i.urgency = :urgency")
         params['urgency'] = filter_urgency
+    # handle date filters: convert to plain YYYY-MM-DD strings and compare with DATE(...)
     if start_date_str:
         try:
-            start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-            where_clauses.append("i.date_reported >= :start_date")
-            params['start_date'] = start_date
+            sd = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            where_clauses.append("DATE(i.date_reported) >= :start_date")
+            params['start_date'] = sd.strftime('%Y-%m-%d')
         except ValueError:
-            pass
+            current_app.logger.warning("manage_issues: invalid start_date format: %s", start_date_str)
     if end_date_str:
         try:
-            end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-            where_clauses.append("i.date_reported <= :end_date")
-            params['end_date'] = end_date
+            ed = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+            where_clauses.append("DATE(i.date_reported) <= :end_date")
+            params['end_date'] = ed.strftime('%Y-%m-%d')
         except ValueError:
-            pass
+            current_app.logger.warning("manage_issues: invalid end_date format: %s", end_date_str)
 
     allowed_sorts = {'category': 'i.category', 'date_reported': 'i.date_reported', 'status': 'i.status', 'created_at': 'i.created_at'}
     sort_col = allowed_sorts.get(sort_by, 'i.created_at')
@@ -198,7 +208,7 @@ def manage_issues():
     try:
         total = db.session.execute(count_sql, params).scalar() or 0
     except Exception as e:
-        current_app.logger.warning("Count query failed in manage_issues: %s", e)
+        current_app.logger.exception("Count query failed in manage_issues: %s", e)
         total = 0
 
     offset = (page - 1) * per_page
@@ -206,7 +216,7 @@ def manage_issues():
     data_sql = text(f"""
         SELECT
             i.id, i.category, i.detail, i.date_reported, i.status, i.urgency,
-            i.location_text, i.location_link, i.created_at,
+            i.location_link, i.created_at,
             u.id AS user_id, u.username
         FROM issues i
         LEFT JOIN users u ON u.id = i.user_id
@@ -216,9 +226,14 @@ def manage_issues():
     """)
     params.update({"limit": per_page, "offset": offset})
 
+    # --- Improved data fetch with debug and fallback ---
     issues = []
     try:
         rows = db.session.execute(data_sql, params).mappings().all()
+        current_app.logger.debug("manage_issues: fetched rows count=%s params=%s", len(rows), params)
+        if len(rows) == 0 and total > 0:
+            current_app.logger.warning("manage_issues: zero rows returned but total=%s; where_sql=%s params=%s", total, where_sql, params)
+
         for r in rows:
             created = r.get('created_at')
             dr = r.get('date_reported')
@@ -246,8 +261,50 @@ def manage_issues():
                 }
             })
     except Exception as e:
-        current_app.logger.error("Data query failed in manage_issues: %s", e)
-        issues = []
+        current_app.logger.exception("Data query failed in manage_issues: %s -- will attempt simple fallback", e)
+        # fallback: try a simpler query without filters to validate DB connectivity
+        try:
+            fallback_sql = text("""
+                SELECT i.id, i.category, i.detail, i.date_reported, i.status, i.urgency,
+                       i.location_link, i.created_at,
+                       u.id AS user_id, u.username
+                FROM issues i
+                LEFT JOIN users u ON u.id = i.user_id
+                ORDER BY i.created_at DESC
+                LIMIT :limit OFFSET :offset
+            """)
+            fb_params = {"limit": per_page, "offset": offset}
+            fb_rows = db.session.execute(fallback_sql, fb_params).mappings().all()
+            current_app.logger.debug("manage_issues fallback rows count=%s", len(fb_rows))
+            for r in fb_rows:
+                created = r.get('created_at')
+                dr = r.get('date_reported')
+                if dr is None:
+                    if hasattr(created, 'strftime'):
+                        date_reported = created.strftime('%Y-%m-%d')
+                    else:
+                        date_reported = str(created) if created else ''
+                else:
+                    date_reported = dr.strftime('%Y-%m-%d') if hasattr(dr, 'strftime') else str(dr)
+
+                issues.append({
+                    "id": r.get('id'),
+                    "category": r.get('category') or "-",
+                    "detail": r.get('detail') or "-",
+                    "date_reported": date_reported,
+                    "status": r.get('status') or 'รอดำเนินการ',
+                    "urgency": r.get('urgency') or '',
+                    "location_text": r.get('location_text') or '',
+                    "location_link": r.get('location_link') or '',
+                    "created_at": created,
+                    "user": {
+                        "id": r.get('user_id'),
+                        "username": r.get('username') or '—'
+                    }
+                })
+        except Exception as e2:
+            current_app.logger.exception("Fallback data query also failed in manage_issues: %s", e2)
+            issues = []
 
     class SimplePagination:
         def __init__(self, page, per_page, total):

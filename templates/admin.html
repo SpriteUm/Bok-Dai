@@ -5,13 +5,10 @@
     <title>Admin Dashboard | BOK DAI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Kanit', sans-serif; }
@@ -21,7 +18,6 @@
 </head>
 <body class="bg-[#E6E8E5] text-[#2F4F2F] min-h-screen">
     <div class="min-h-screen flex">
-
         <aside class="w-60 bg-[#5C7F5C] text-white flex flex-col">
             <div class="px-4 py-4 border-b border-[#8FAF8F]">
                 <h1 class="text-lg font-bold">BOK DAI</h1>
@@ -36,7 +32,6 @@
         </aside>
 
         <main class="flex-1 p-6 flex flex-col gap-6">
-
             <header>
                 <h2 class="text-xl font-semibold">ภาพรวมสถานะ</h2>
                 <p class="text-xs text-[#8FAF8F]">ระบบจัดการปัญหาในพื้นที่</p>
@@ -77,7 +72,6 @@
                         <canvas id="issueChart" data-chart='{{ chart_data|tojson }}'></canvas>
                     </div>
                 </div>
-                
                 <div class="bg-white border border-[#8FAF8F] rounded-lg shadow p-4" style="flex:1 1 35%; min-width:220px;">
                     <h3 class="text-sm font-medium mb-2">แผนที่ความหนาแน่นปัญหา (30 จุดล่าสุด)</h3>
                     <div id="hotspotMap" class="rounded-lg border border-gray-200" style="height: 220px;"></div>
@@ -136,9 +130,15 @@
                                 <td class="px-3 py-2">{{ issue.location_text }}</td>
                                 <td class="px-3 py-2">
                                     {% if issue.location_link %}
-                                        <a href="{{ issue.location_link }}" target="_blank" rel="noopener noreferrer" class="inline-block px-3 py-1 text-xs font-medium rounded border border-[#26403a] text-[#1b6b44] bg-[#dff3e8] hover:bg-[#bfe6cf] transition">ดูแผนที่</a>
+                                        <button type="button"
+                                                class="map-btn inline-block px-3 py-1 text-xs font-medium rounded border border-[#26403a] text-[#1b6b44] bg-[#dff3e8] hover:bg-[#bfe6cf] transition"
+                                                data-link="{{ issue.location_link|e }}">
+                                            ดูแผนที่
+                                        </button>
                                     {% else %}
-                                        <button class="inline-block px-3 py-1 text-xs font-medium rounded border border-gray-300 text-gray-600 bg-gray-100 cursor-not-allowed" disabled>ไม่มีลิงก์</button>
+                                        <button class="inline-block px-3 py-1 text-xs font-medium rounded border border-gray-300 text-gray-600 bg-gray-100 cursor-not-allowed" disabled>
+                                            ไม่มีลิงก์
+                                        </button>
                                     {% endif %}
                                 </td>
                                 <td class="px-3 py-2">
@@ -157,10 +157,21 @@
         </main>
     </div>
 
+    <!-- Map Modal -->
+    <div id="mapModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-xl relative">
+        <div class="flex justify-between items-center px-4 py-2 border-b">
+          <h3 class="text-sm font-semibold text-[#2F4F2F]">ตำแหน่งที่แจ้ง</h3>
+          <button onclick="closeMapModal()" class="text-gray-500 hover:text-gray-700 text-sm">✕</button>
+        </div>
+        <div id="mapContainer" class="w-full h-72"></div>
+      </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
-            // --- 1. Chart rendering ---
+
+            // Chart rendering (unchanged)
             const canvas = document.getElementById('issueChart');
             if (canvas) {
                 const chartDataString = canvas.dataset.chart;
@@ -238,9 +249,13 @@
                 }
             }
 
-            // --- 2. Hotspot map ---
+            // Hotspot map (unchanged apart from using hotspot_data)
             const mapElement = document.getElementById('hotspotMap');
-            const hotspotDataString = '{{ hotspot_data|safe }}'; 
+            const hotspotDataString = '{{ hotspot_data|safe }}';
+
+            function generateGMapsLink(lat, lng) {
+              return `https://www.google.com/maps/@${lat},${lng},17z`;
+            }
 
             if (mapElement && hotspotDataString) {
                 try {
@@ -253,15 +268,21 @@
                     if (hotspotData.length > 0) {
                         const markers = [];
                         hotspotData.forEach(point => {
-                            let color = '#5C7F5C'; // Green
-                            if (point.urgency === '🔴') color = '#DC2626'; // Red
-                            if (point.urgency === '🟠') color = '#F97316'; // Orange
+                            let color = '#5C7F5C';
+                            if (point.urgency === '🔴') color = '#DC2626';
+                            if (point.urgency === '🟠') color = '#F97316';
 
                             const circle = L.circle([point.lat, point.lng], {
                                 color: color, fillColor: color, fillOpacity: 0.6, radius: 40
                             }).addTo(map);
 
-                            const popupContent = `<b>หมวดหมู่:</b> ${point.category}<br><b>ความเร่งด่วน:</b> ${point.urgency}<br><a href="/admin/issue/update/${point.issue_id}" class="text-blue-600 hover:underline">ดูรายละเอียด</a>`;
+                            const gmapsLink = point.location_link || generateGMapsLink(point.lat, point.lng);
+
+                            const popupContent =
+                              `<b>หมวดหมู่:</b> ${escapeHtml(point.category || '-') }<br>` +
+                              `<b>ความเร่งด่วน:</b> ${escapeHtml(point.urgency || '-') }<br>` +
+                              `<a href="${gmapsLink}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">เปิดใน Google Maps</a>`;
+
                             circle.bindPopup(popupContent);
                             markers.push(circle);
                         });
@@ -276,7 +297,106 @@
                     mapElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500">เกิดข้อผิดพลาด</div>';
                 }
             }
-        });
+
+            // map button binding: open Google Maps in new tab
+            function normalizeLinkForGMaps(raw) {
+                if (!raw) return null;
+                try {
+                    // pattern: contains @lat,lng
+                    const atMatch = raw.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+                    if (atMatch) return raw;
+                    // q=lat,lng
+                    const qMatch = raw.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+                    if (qMatch) return `https://www.google.com/maps/@${qMatch[1]},${qMatch[2]},17z`;
+                    // plain "lat,lng"
+                    const latlngMatch = raw.match(/^(-?\d+\.\d+),\s*(-?\d+\.\d+)$/);
+                    if (latlngMatch) return `https://www.google.com/maps/@${latlngMatch[1]},${latlngMatch[2]},17z`;
+                    // if already a full http(s) link, return it
+                    if (/^https?:\/\//i.test(raw)) return raw;
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            // bind map buttons that use data-link attribute
+            document.querySelectorAll('.map-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const raw = this.getAttribute('data-link') || '';
+                    const link = normalizeLinkForGMaps(raw);
+                    if (link) {
+                        window.open(link, '_blank', 'noopener,noreferrer');
+                    } else {
+                        console.warn('ไม่พบลิงก์แผนที่ที่ใช้งานได้สำหรับรายการนี้', raw);
+                        alert('ไม่พบลิงก์แผนที่ที่ใช้งานได้สำหรับรายการนี้');
+                    }
+                });
+            });
+
+        }); // DOMContentLoaded end
+
+        // Map modal functions (optional usage elsewhere)
+        let mapInstance = null;
+        function openMapModal(link) {
+          const modal = document.getElementById('mapModal');
+          const container = document.getElementById('mapContainer');
+          modal.classList.remove('hidden');
+
+          const atMatch = link.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+          const qMatch = link.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+          let lat = null, lng = null;
+          if (atMatch) { lat = parseFloat(atMatch[1]); lng = parseFloat(atMatch[2]); }
+          else if (qMatch) { lat = parseFloat(qMatch[1]); lng = parseFloat(qMatch[2]); }
+
+          container.innerHTML = `
+            <div id="map" class="w-full h-full rounded"></div>
+            <div class="px-4 py-2 border-t bg-white text-right">
+              <a id="openInGMaps" href="#" target="_blank" rel="noopener noreferrer"
+                 class="inline-block px-3 py-1 text-xs font-medium rounded border border-[#26403a] text-[#1b6b44] bg-[#dff3e8] hover:bg-[#bfe6cf] transition">
+                เปิดใน Google Maps
+              </a>
+            </div>
+          `;
+
+          if (lat !== null && lng !== null) {
+            mapInstance = L.map('map').setView([lat, lng], 17);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(mapInstance);
+            L.marker([lat, lng]).addTo(mapInstance).bindPopup("ตำแหน่งที่แจ้ง").openPopup();
+            const openBtn = document.getElementById('openInGMaps');
+            if (openBtn) openBtn.href = link && link.startsWith('http') ? link : `https://www.google.com/maps/@${lat},${lng},17z`;
+          } else {
+            const mapDiv = document.getElementById('map');
+            if (mapDiv) mapDiv.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 p-4 text-center">ไม่สามารถโหลดตำแหน่งจากลิงก์นี้ได้</div>';
+            const openBtn = document.getElementById('openInGMaps');
+            if (openBtn) {
+              if (link && link.startsWith('http')) openBtn.href = link;
+              else { openBtn.classList.add('opacity-50'); openBtn.removeAttribute('href'); }
+            }
+          }
+        }
+
+        function closeMapModal() {
+          const modal = document.getElementById('mapModal');
+          modal.classList.add('hidden');
+          if (mapInstance) {
+            try { mapInstance.remove(); } catch(e) {}
+            mapInstance = null;
+          }
+          const container = document.getElementById('mapContainer');
+          if (container) container.innerHTML = '';
+        }
+
+        // escape helper for popup content
+        function escapeHtml(unsafe) {
+          if (!unsafe && unsafe !== 0) return '';
+          return String(unsafe)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
     </script>
 </body>
 </html>
+```

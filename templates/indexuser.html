@@ -16,10 +16,20 @@
           Bokdai
         {% endif %}
       </div>
-      <div>
+      <div class="flex items-center gap-2">
         <a href="{{ url_for('index') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">หน้าหลัก</a>
         <a href="{{ url_for('report.report') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">แจ้งปัญหาใหม่</a>
         <a href="{{ url_for('auth.logout') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">ออกจากระบบ</a>
+
+        <!-- notification badge (optional: pass unread_notifications_count) -->
+        <a href="{{ url_for('indexuser.notifications') }}" class="relative inline-block ml-3">
+          <button class="bg-white px-3 py-1 rounded-full text-sm">แจ้งเตือน</button>
+          {% if unread_notifications_count and unread_notifications_count > 0 %}
+            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+              {{ unread_notifications_count }}
+            </span>
+          {% endif %}
+        </a>
       </div>
     </nav>
   </header>
@@ -43,48 +53,110 @@
     <hr class="border-custom-green-medium mb-8" />
     <h2 class="text-3xl font-bold mb-4 text-custom-green-dark">รายการปัญหาของฉัน</h2>
 
-    <div class="flex justify-between items-center mb-3 p-4 bg-custom-green-dull-green rounded-t-lg">
-      <p class="text-custom-green-darkest w-1/4">หมวดหมู่</p>
-      <p class="text-custom-green-darkest w-1/2">รายละเอียด</p>
-      <p class="text-custom-green-darkest w-1/6 text-center">สถานะ</p>
-      <p class="text-custom-green-darkest w-1/6 text-center">ความเร่งด่วน</p>
-      <p class="text-custom-green-darkest w-1/6 text-center">ดู</p>
+    <div class="hidden md:flex justify-between items-center mb-3 p-4 bg-custom-green-dull-green rounded-t-lg text-sm font-medium">
+      <div class="w-1/6">หมวดหมู่</div>
+      <div class="w-2/6">รายละเอียด</div>
+      <div class="w-1/6 text-center">สถานะ</div>
+      <div class="w-1/6 text-center">ความเร่งด่วน</div>
+      <div class="w-1/6 text-center">อัปเดตล่าสุด</div>
     </div>
 
-    <div id="issue-list">
+    <div id="issue-list" class="space-y-2">
       {% if recent_issues %}
         {% for issue in recent_issues %}
-          <div class="flex justify-between items-center p-4 bg-white border-b hover:bg-gray-50 transition duration-150">
-            <p class="w-1/4">{{ issue.category }}</p>
-            <p class="w-1/2 truncate">{{ issue.detail }}</p>
-            <p class="w-1/6 text-center">
-              {% if issue.status == 'แก้ไขแล้ว' %}
-                <span class="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full">แก้ไขแล้ว</span>
-              {% elif issue.status == 'กำลังดำเนินการ' %}
-                <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full">กำลังดำเนินการ</span>
-              {% else %}
-                <span class="inline-block bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full">รอดำเนินการ</span>
+          {# get latest history entry safely #}
+          {% set latest = (issue.status_history | sort(attribute='timestamp', reverse=True) | first) if issue.status_history else None %}
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border rounded shadow-sm hover:shadow-md transition duration-150">
+            <div class="w-full md:w-1/6 mb-2 md:mb-0">
+              <p class="text-sm font-medium">{{ issue.category or '-' }}</p>
+              <p class="text-xs text-gray-500 mt-1">
+                {% if issue.date_reported %}
+                  {{ issue.date_reported }}
+                {% elif issue.created_at %}
+                  {% if issue.created_at is string %}{{ issue.created_at }}{% else %}{{ issue.created_at.strftime('%Y-%m-%d') }}{% endif %}
+                {% else %}
+                  -
+                {% endif %}
+              </p>
+            </div>
+
+            <div class="w-full md:w-2/6 mb-2 md:mb-0">
+              <p class="text-sm text-gray-700 truncate">{{ issue.detail or '-' }}</p>
+              {% if latest and latest.notes %}
+                <p class="text-xs text-gray-500 mt-1 truncate">อัปเดตล่าสุด: {{ latest.notes[:100] }}{% if latest.notes|length > 100 %}...{% endif %}</p>
               {% endif %}
-            </p>
-            <p class="w-1/6 text-center text-2xl">
-              {% if issue.urgency in ['🔴','red','🔴'] %}
-                🔴
-              {% elif issue.urgency in ['🟠','orange'] %}
-                🟠
-              {% elif issue.urgency in ['🟢','green'] %}
-                🟢
-              {% else %}
-                <!-- fallback -->
-                🟢
+            </div>
+
+            <div class="w-full md:w-1/6 flex flex-col items-center md:items-center mb-2 md:mb-0">
+              <div>
+                {% if issue.status == 'แก้ไขแล้ว' %}
+                  <span class="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full">แก้ไขแล้ว</span>
+                {% elif issue.status == 'กำลังดำเนินการ' %}
+                  <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full">กำลังดำเนินการ</span>
+                {% else %}
+                  <span class="inline-block bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full">รอดำเนินการ</span>
+                {% endif %}
+              </div>
+              <div class="text-xs text-gray-400 mt-2">
+                {% if issue.location_text %}{{ issue.location_text }}{% endif %}
+              </div>
+            </div>
+
+            <div class="w-full md:w-1/6 text-center mb-2 md:mb-0">
+              <p class="text-2xl">
+                {% if issue.urgency in ['🔴','red'] %}
+                  🔴
+                {% elif issue.urgency in ['🟠','orange'] %}
+                  🟠
+                {% elif issue.urgency in ['🟢','green'] %}
+                  🟢
+                {% else %}
+                  🟢
+                {% endif %}
+              </p>
+            </div>
+
+            <div class="w-full md:w-1/6 flex items-center justify-end gap-3">
+              {% if latest and latest.response_image %}
+                <a href="{{ url_for('indexuser.view_issue', issue_id=issue.id) }}" class="block">
+                  <img src="{{ url_for('static', filename='uploads/' ~ latest.response_image) }}" alt="รูปตอบกลับ" class="w-16 h-12 object-cover rounded border">
+                </a>
               {% endif %}
-            </p>
-            <a href="{{ url_for('indexuser.view_issue', issue_id=issue.id) }}" class="w-1/6 text-center text-green-700 hover:text-green-900">ดู</a>
+
+              <a href="{{ url_for('indexuser.view_issue', issue_id=issue.id) }}" class="inline-block px-4 py-2 bg-[#5C7F5C] text-white rounded-md text-sm hover:bg-[#4a684a] transition">
+                ดู
+              </a>
+            </div>
           </div>
         {% endfor %}
       {% else %}
-        <div class="p-4 bg-white rounded text-center">ยังไม่มีรายการ</div>
+        <div class="p-6 bg-white rounded text-center text-gray-600">ยังไม่มีรายการ</div>
       {% endif %}
     </div>
+
+    <!-- pagination area (if provided) -->
+    {% if pagination %}
+      <div class="mt-6 flex justify-center items-center gap-2">
+        {% if pagination.has_prev %}
+          <a href="{{ url_for('indexuser.indexuser', page=pagination.prev_num) }}" class="px-3 py-1 bg-white border rounded-md hover:bg-gray-100">ก่อนหน้า</a>
+        {% endif %}
+        {% for p in pagination.iter_pages(left_edge=1,right_edge=1,left_current=2,right_current=2) %}
+          {% if p %}
+            {% if p == pagination.page %}
+              <strong class="px-3 py-1 bg-[#5C7F5C] text-white rounded-md">{{ p }}</strong>
+            {% else %}
+              <a href="{{ url_for('indexuser.indexuser', page=p) }}" class="px-3 py-1 bg-white border rounded-md hover:bg-gray-100">{{ p }}</a>
+            {% endif %}
+          {% else %}
+            <span class="px-3 py-1">...</span>
+          {% endif %}
+        {% endfor %}
+        {% if pagination.has_next %}
+          <a href="{{ url_for('indexuser.indexuser', page=pagination.next_num) }}" class="px-3 py-1 bg-white border rounded-md hover:bg-gray-100">ถัดไป</a>
+        {% endif %}
+      </div>
+    {% endif %}
   </main>
 </body>
 </html>
+  
