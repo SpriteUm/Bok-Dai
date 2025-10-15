@@ -21,7 +21,6 @@
         <a href="{{ url_for('report.report') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">แจ้งปัญหาใหม่</a>
         <a href="{{ url_for('auth.logout') }}" class="inline-block border bg-white px-4 py-1 mx-1 rounded-full text-sm font-medium">ออกจากระบบ</a>
 
-        <!-- notification badge (optional: pass unread_notifications_count) -->
         <a href="{{ url_for('indexuser.notifications') }}" class="relative inline-block ml-3">
           <button class="bg-white px-3 py-1 rounded-full text-sm">แจ้งเตือน</button>
           {% if unread_notifications_count and unread_notifications_count > 0 %}
@@ -66,7 +65,8 @@
         {% for issue in recent_issues %}
           {# get latest history entry safely #}
           {% set latest = (issue.status_history | sort(attribute='timestamp', reverse=True) | first) if issue.status_history else None %}
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border rounded shadow-sm hover:shadow-md transition duration-150">
+          <div class="issue-card flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border rounded shadow-sm hover:shadow-md transition duration-150"
+               data-issue-id="{{ issue.id }}">
             <div class="w-full md:w-1/6 mb-2 md:mb-0">
               <p class="text-sm font-medium">{{ issue.category or '-' }}</p>
               <p class="text-xs text-gray-500 mt-1">
@@ -82,13 +82,13 @@
 
             <div class="w-full md:w-2/6 mb-2 md:mb-0">
               <p class="text-sm text-gray-700 truncate">{{ issue.detail or '-' }}</p>
-              {% if latest and latest.notes %}
-                <p class="text-xs text-gray-500 mt-1 truncate">อัปเดตล่าสุด: {{ latest.notes[:100] }}{% if latest.notes|length > 100 %}...{% endif %}</p>
-              {% endif %}
+              <p class="text-xs text-gray-500 mt-1 truncate latest-notes">
+                {% if latest and latest.notes %}อัปเดตล่าสุด: {{ latest.notes[:100] }}{% if latest.notes|length > 100 %}...{% endif %}{% endif %}
+              </p>
             </div>
 
             <div class="w-full md:w-1/6 flex flex-col items-center md:items-center mb-2 md:mb-0">
-              <div>
+              <div class="status-badge">
                 {% if issue.status == 'แก้ไขแล้ว' %}
                   <span class="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full">แก้ไขแล้ว</span>
                 {% elif issue.status == 'กำลังดำเนินการ' %}
@@ -117,11 +117,16 @@
             </div>
 
             <div class="w-full md:w-1/6 flex items-center justify-end gap-3">
-              {% if latest and latest.response_image %}
-                <a href="{{ url_for('indexuser.view_issue', issue_id=issue.id) }}" class="block">
-                  <img src="{{ url_for('static', filename='uploads/' ~ latest.response_image) }}" alt="รูปตอบกลับ" class="w-16 h-12 object-cover rounded border">
-                </a>
-              {% endif %}
+              <div class="latest-image-wrap">
+                {% if latest and latest.response_image %}
+                  <a href="{{ latest.response_image_url or url_for('static', filename='uploads/' ~ latest.response_image) }}" class="block" target="_blank" rel="noopener">
+                    <img src="{{ latest.response_image_url or url_for('static', filename='uploads/' ~ latest.response_image) }}" alt="รูปตอบกลับ"
+                         class="latest-thumb w-16 h-12 object-cover rounded border">
+                  </a>
+                {% else %}
+                  <div class="latest-thumb-placeholder w-16 h-12 bg-gray-100 rounded border flex items-center justify-center text-xs text-gray-400">ไม่มีรูป</div>
+                {% endif %}
+              </div>
 
               <a href="{{ url_for('indexuser.view_issue', issue_id=issue.id) }}" class="inline-block px-4 py-2 bg-[#5C7F5C] text-white rounded-md text-sm hover:bg-[#4a684a] transition">
                 ดู
@@ -134,7 +139,6 @@
       {% endif %}
     </div>
 
-    <!-- pagination area (if provided) -->
     {% if pagination %}
       <div class="mt-6 flex justify-center items-center gap-2">
         {% if pagination.has_prev %}
@@ -157,6 +161,76 @@
       </div>
     {% endif %}
   </main>
+
+  <script>
+    // Polling: ทุก 8 วินาที ตรวจ issue แต่ละอันที่แสดงในหน้าเพื่อดึง latest history (status, notes, response_image_url)
+    // ต้องมี endpoint server: /indexuser/issue/<id>/latest.json  (ถ้ายังไม่มี ให้เพิ่มตามตัวอย่างที่คุยไว้)
+    (function () {
+      const POLL_INTERVAL = 8000;
+      const issueCards = document.querySelectorAll('.issue-card');
+      if (!issueCards || issueCards.length === 0) return;
+
+      async function fetchLatestForIssue(issueId) {
+        try {
+          const res = await fetch(`/indexuser/issue/${issueId}/latest.json`, { credentials: 'same-origin' });
+          if (!res.ok) return null;
+          return await res.json();
+        } catch (e) {
+          console.error('fetchLatestForIssue error', e);
+          return null;
+        }
+      }
+
+      async function updateCard(card) {
+        const issueId = card.getAttribute('data-issue-id');
+        if (!issueId) return;
+        const data = await fetchLatestForIssue(issueId);
+        if (!data) return;
+
+        // Update status badge
+        const badge = card.querySelector('.status-badge');
+        if (badge && data.status) {
+          let html = '';
+          if (data.status === 'แก้ไขแล้ว') {
+            html = '<span class="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full">แก้ไขแล้ว</span>';
+          } else if (data.status === 'กำลังดำเนินการ') {
+            html = '<span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full">กำลังดำเนินการ</span>';
+          } else {
+            html = '<span class="inline-block bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full">รอดำเนินการ</span>';
+          }
+          badge.innerHTML = html;
+        }
+
+        // Update notes preview
+        const notesEl = card.querySelector('.latest-notes');
+        if (notesEl) {
+          const notes = data.latest_history && data.latest_history.notes ? data.latest_history.notes : '';
+          notesEl.textContent = notes ? `อัปเดตล่าสุด: ${notes.length > 100 ? notes.slice(0,100) + '...' : notes}` : '';
+        }
+
+        // Update thumbnail
+        const imgWrap = card.querySelector('.latest-image-wrap');
+        if (imgWrap) {
+          const lh = data.latest_history;
+          if (lh && lh.response_image_url) {
+            const url = lh.response_image_url + '?v=' + (lh.timestamp ? Date.parse(lh.timestamp) : Date.now());
+            imgWrap.innerHTML = `<a href="${url}" class="block" target="_blank" rel="noopener">
+              <img src="${url}" alt="รูปตอบกลับ" class="latest-thumb w-16 h-12 object-cover rounded border" />
+              </a>`;
+          } else {
+            imgWrap.innerHTML = '<div class="latest-thumb-placeholder w-16 h-12 bg-gray-100 rounded border flex items-center justify-center text-xs text-gray-400">ไม่มีรูป</div>';
+          }
+        }
+      }
+
+      // initial run
+      issueCards.forEach(card => updateCard(card));
+
+      // periodic polling
+      setInterval(() => {
+        issueCards.forEach(card => updateCard(card));
+      }, POLL_INTERVAL);
+    })();
+  </script>
 </body>
 </html>
-  

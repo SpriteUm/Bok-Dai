@@ -67,10 +67,6 @@
                 <div class="space-y-6">
                     <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
                         <h3 class="text-lg font-medium mb-3">อัปเดตสถานะ และตอบกลับผู้แจ้ง</h3>
-                        <!--
-                          Form: multipart/form-data เพื่อรองรับการอัปโหลดรูปภาพตอบกลับ
-                          Backend: ต้องรองรับ request.files['response_image'] และ request.form['notify_user']
-                        -->
                         <form method="POST" action="{{ url_for('admin.update_issue_status', issue_id=issue.id) }}" enctype="multipart/form-data">
                             <div class="mb-4">
                                 <label for="status" class="block text-sm font-medium mb-1">เปลี่ยนสถานะเป็น</label>
@@ -108,31 +104,34 @@
                     <div class="bg-white border border-[#8FAF8F] rounded-lg p-4 shadow">
                         <h3 class="text-lg font-medium mb-3">ประวัติการเปลี่ยนสถานะ</h3>
                         <ul class="space-y-4">
-                            {% for entry in issue.status_history | sort(attribute='timestamp', reverse=True) %}
-                                <li class="text-sm">
-                                    <div class="flex justify-between">
-                                        <span class="font-medium text-[#5C7F5C]">{{ entry.status }}</span>
-                                        <span class="text-xs text-gray-500">
-                                          {% if entry.timestamp is string %}{{ entry.timestamp }}{% else %}{{ entry.timestamp.strftime('%Y-%m-%d %H:%M') }}{% endif %}
-                                        </span>
-                                    </div>
-                                    <p class="text-xs text-gray-400">โดย: {{ entry.changer.username if entry.changer else '—' }}</p>
+                            {% set history = status_history if status_history is defined else (issue.status_history if issue is defined else []) %}
+                            {% if history %}
+                                {% for entry in history | sort(attribute='timestamp', reverse=True) %}
+                                    <li class="text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium text-[#5C7F5C]">{{ entry.status }}</span>
+                                            <span class="text-xs text-gray-500">
+                                              {% if entry.timestamp is string %}{{ entry.timestamp }}{% elif entry.timestamp %}{{ entry.timestamp.strftime('%Y-%m-%d %H:%M') }}{% else %}{% endif %}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-gray-400">โดย: {{ (entry.changer.username if entry.changer is defined else (entry.changer_username if entry.changer_username is defined else (entry.changer.username if entry.changer else '—'))) }}</p>
 
-                                    {% if entry.notes %}
-                                    <p class="mt-1 text-gray-600 text-sm bg-gray-50 p-2 rounded">"{{ entry.notes }}"</p>
-                                    {% endif %}
+                                        {% if entry.notes %}
+                                        <p class="mt-1 text-gray-600 text-sm bg-gray-50 p-2 rounded">"{{ entry.notes }}"</p>
+                                        {% endif %}
 
-                                    {% if entry.response_image %}
-                                    <div class="mt-2">
-                                        <a href="{{ url_for('static', filename='uploads/' + entry.response_image) }}" target="_blank">
-                                            <img src="{{ url_for('static', filename='uploads/' + entry.response_image) }}" alt="รูปตอบกลับ" class="rounded-md w-full object-cover border">
-                                        </a>
-                                    </div>
-                                    {% endif %}
-                                </li>
+                                        {% if entry.response_image %}
+                                        <div class="mt-2">
+                                            <a href="{{ entry.response_image_url or url_for('static', filename='uploads/' ~ entry.response_image) }}" target="_blank">
+                                                <img src="{{ entry.response_image_url or url_for('static', filename='uploads/' ~ entry.response_image) }}" alt="รูปตอบกลับ" class="rounded-md w-full object-cover border">
+                                            </a>
+                                        </div>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
                             {% else %}
                                 <li class="text-sm text-gray-500">ยังไม่มีประวัติการอัปเดต</li>
-                            {% endfor %}
+                            {% endif %}
                         </ul>
                     </div>
                 </div>

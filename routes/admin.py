@@ -1,6 +1,7 @@
 from datetime import datetime, date
 from functools import wraps
 import json
+import os
 
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, request, current_app
 from flask_login import login_required, current_user
@@ -9,7 +10,11 @@ from sqlalchemy import func, text
 from models import db
 from models.user import User
 from models.issue import Issue
-from models.issueStatusHistory import IssueStatusHistory
+
+try:
+    from models.issue_status_history import IssueStatusHistory
+except Exception:
+    IssueStatusHistory = None
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin', template_folder='../templates')
 
@@ -32,7 +37,6 @@ def dashboard():
     hotspot_data = []
 
     try:
-        # ORM path (preferred)
         total_issues = Issue.query.count()
         issues_pending = Issue.query.filter_by(status='รอดำเนินการ').count()
         issues_in_progress = Issue.query.filter_by(status='กำลังดำเนินการ').count()
@@ -53,7 +57,6 @@ def dashboard():
                 "urgency": getattr(it, "urgency", "") or "",
                 "date_reported": date_reported,
                 "created_at": created,
-                # location_text may not exist in DB; use attribute if model provides it
                 "location_text": getattr(it, "location_text", "") or "",
                 "location_link": getattr(it, "location_link", "") or ""
             })
@@ -82,7 +85,6 @@ def dashboard():
                 continue
 
     except Exception as e:
-        # Fallback raw SQL path if ORM fails (eg. Enum LookupError)
         current_app.logger.warning("ORM failed in admin.dashboard, falling back to raw SQL: %s", e)
         try:
             total_issues = db.session.execute(text("SELECT COUNT(*) FROM issues")).scalar() or 0
@@ -93,55 +95,6 @@ def dashboard():
             issues_urgent = db.session.execute(text("SELECT COUNT(*) FROM issues WHERE urgency = :u"), {"u": "🔴"}).scalar() or 0
         except Exception:
             pass
-
-        try:
-            # removed i.location_text to avoid "no such column"
-            sql = text("SELECT id, category, detail, status, urgency, created_at, location_link FROM issues ORDER BY created_at DESC LIMIT 30")
-            rows = db.session.execute(sql).mappings().all()
-            for row in rows:
-                created = row.get('created_at')
-                if hasattr(created, 'strftime'):
-                    date_reported = created.strftime('%Y-%m-%d')
-                else:
-                    date_reported = str(created) if created else ''
-                status = row.get('status') or 'รอดำเนินการ'
-                urgency_raw = row.get('urgency') or ''
-                urgency_display = '🔴' if urgency_raw in ('🔴','red') else ('🟠' if urgency_raw in ('🟠','orange') else ('🟢' if urgency_raw in ('🟢','green') else ''))
-                recent_issues.append({
-                    "id": row.get('id'),
-                    "category": row.get('category') or "-",
-                    "detail": row.get('detail') or "-",
-                    "status": status,
-                    "urgency": urgency_display,
-                    "date_reported": date_reported,
-                    "created_at": created,
-                    # no location_text column in SQL: fill safely
-                    "location_text": row.get('location_text') or '',
-                    "location_link": row.get('location_link') or ''
-                })
-
-            chart_rows = db.session.execute(text("SELECT category, COUNT(id) as cnt FROM issues GROUP BY category ORDER BY cnt DESC LIMIT 5")).mappings().all()
-            chart_data = {"labels": [r['category'] for r in chart_rows], "values": [r['cnt'] for r in chart_rows]}
-
-            hotspot_rows = db.session.execute(text("SELECT id, category, urgency, location_link FROM issues WHERE location_link IS NOT NULL AND location_link != '' ORDER BY created_at DESC LIMIT 30")).mappings().all()
-            for row in hotspot_rows:
-                try:
-                    loc = row.get('location_link') or ''
-                    if '@' in loc:
-                        coords_part = loc.split('@')[1].split(',')[0:2]
-                        lat = float(coords_part[0]); lng = float(coords_part[1])
-                        hotspot_data.append({
-                            'lat': lat,
-                            'lng': lng,
-                            'category': row.get('category'),
-                            'urgency': row.get('urgency'),
-                            'issue_id': row.get('id'),
-                            'location_link': row.get('location_link') or ''
-                        })
-                except (IndexError, ValueError, TypeError):
-                    continue
-        except Exception as e2:
-            current_app.logger.error("Raw SQL fallback in dashboard also failed: %s", e2)
 
     return render_template('admin.html',
                            total_issues=total_issues or 0,
@@ -168,7 +121,6 @@ def manage_issues():
     sort_by = request.args.get('sort_by', 'created_at')
     sort_order = request.args.get('sort_order', 'desc')
 
-    # Build WHERE clauses and params for raw SQL (join users)
     where_clauses = ["1=1"]
     params = {}
 
@@ -181,7 +133,6 @@ def manage_issues():
     if filter_urgency:
         where_clauses.append("i.urgency = :urgency")
         params['urgency'] = filter_urgency
-    # handle date filters: convert to plain YYYY-MM-DD strings and compare with DATE(...)
     if start_date_str:
         try:
             sd = datetime.strptime(start_date_str, '%Y-%m-%d').date()
@@ -203,7 +154,6 @@ def manage_issues():
 
     where_sql = " AND ".join(where_clauses)
 
-    # total count
     count_sql = text(f"SELECT COUNT(*) FROM issues i LEFT JOIN users u ON u.id = i.user_id WHERE {where_sql}")
     try:
         total = db.session.execute(count_sql, params).scalar() or 0
@@ -213,10 +163,26 @@ def manage_issues():
 
     offset = (page - 1) * per_page
 
+    col_info = db.session.execute(text("PRAGMA table_info('issues')")).mappings().all()
+    issue_cols = {r['name'] for r in col_info}
+
+    base_cols = [
+        "i.id", "i.category", "i.detail", "i.date_reported", "i.status", "i.urgency"
+    ]
+    if 'location_text' in issue_cols:
+        base_cols.append("i.location_text")
+    else:
+        base_cols.append("'' AS location_text")
+    if 'location_link' in issue_cols:
+        base_cols.append("i.location_link")
+    else:
+        base_cols.append("'' AS location_link")
+
+    base_cols.append("i.created_at")
+
     data_sql = text(f"""
         SELECT
-            i.id, i.category, i.detail, i.date_reported, i.status, i.urgency,
-            i.location_link, i.created_at,
+            {', '.join(base_cols)},
             u.id AS user_id, u.username
         FROM issues i
         LEFT JOIN users u ON u.id = i.user_id
@@ -226,14 +192,10 @@ def manage_issues():
     """)
     params.update({"limit": per_page, "offset": offset})
 
-    # --- Improved data fetch with debug and fallback ---
     issues = []
     try:
         rows = db.session.execute(data_sql, params).mappings().all()
         current_app.logger.debug("manage_issues: fetched rows count=%s params=%s", len(rows), params)
-        if len(rows) == 0 and total > 0:
-            current_app.logger.warning("manage_issues: zero rows returned but total=%s; where_sql=%s params=%s", total, where_sql, params)
-
         for r in rows:
             created = r.get('created_at')
             dr = r.get('date_reported')
@@ -262,49 +224,7 @@ def manage_issues():
             })
     except Exception as e:
         current_app.logger.exception("Data query failed in manage_issues: %s -- will attempt simple fallback", e)
-        # fallback: try a simpler query without filters to validate DB connectivity
-        try:
-            fallback_sql = text("""
-                SELECT i.id, i.category, i.detail, i.date_reported, i.status, i.urgency,
-                       i.location_link, i.created_at,
-                       u.id AS user_id, u.username
-                FROM issues i
-                LEFT JOIN users u ON u.id = i.user_id
-                ORDER BY i.created_at DESC
-                LIMIT :limit OFFSET :offset
-            """)
-            fb_params = {"limit": per_page, "offset": offset}
-            fb_rows = db.session.execute(fallback_sql, fb_params).mappings().all()
-            current_app.logger.debug("manage_issues fallback rows count=%s", len(fb_rows))
-            for r in fb_rows:
-                created = r.get('created_at')
-                dr = r.get('date_reported')
-                if dr is None:
-                    if hasattr(created, 'strftime'):
-                        date_reported = created.strftime('%Y-%m-%d')
-                    else:
-                        date_reported = str(created) if created else ''
-                else:
-                    date_reported = dr.strftime('%Y-%m-%d') if hasattr(dr, 'strftime') else str(dr)
-
-                issues.append({
-                    "id": r.get('id'),
-                    "category": r.get('category') or "-",
-                    "detail": r.get('detail') or "-",
-                    "date_reported": date_reported,
-                    "status": r.get('status') or 'รอดำเนินการ',
-                    "urgency": r.get('urgency') or '',
-                    "location_text": r.get('location_text') or '',
-                    "location_link": r.get('location_link') or '',
-                    "created_at": created,
-                    "user": {
-                        "id": r.get('user_id'),
-                        "username": r.get('username') or '—'
-                    }
-                })
-        except Exception as e2:
-            current_app.logger.exception("Fallback data query also failed in manage_issues: %s", e2)
-            issues = []
+        issues = []
 
     class SimplePagination:
         def __init__(self, page, per_page, total):
@@ -323,10 +243,10 @@ def manage_issues():
                 if num <= left_edge or \
                    (num > self.page - left_current - 1 and num < self.page + right_current) or \
                    num > self.pages - right_edge:
-                    if last + 1 != num:
-                        yield None
-                    yield num
-                    last = num
+                        if last + 1 != num:
+                            yield None
+                        yield num
+                        last = num
 
     pagination = SimplePagination(page, per_page, total)
 
@@ -352,7 +272,43 @@ def update_issue_page(issue_id):
         db.session.commit()
         flash(f'อัปเดตรายละเอียดของ Issue #{issue.id} เรียบร้อยแล้ว', 'success')
         return redirect(url_for('admin.update_issue_page', issue_id=issue.id))
-    return render_template('updateadmin.html', issue=issue)
+
+    col_info = db.session.execute(text("PRAGMA table_info('issue_status_history')")).mappings().all()
+    cols = {r['name'] for r in col_info}
+
+    select_cols = []
+    select_cols.append("id")
+    select_cols.append("status")
+    select_cols.append("note AS notes" if 'note' in cols else ("notes AS notes" if 'notes' in cols else "NULL AS notes"))
+    select_cols.append("timestamp" if 'timestamp' in cols else ("created_at AS timestamp" if 'created_at' in cols else "NULL AS timestamp"))
+    select_cols.append("response_id AS response_image" if 'response_id' in cols else ("response_image AS response_image" if 'response_image' in cols else "NULL AS response_image"))
+    if 'chang_id' in cols:
+        select_cols.append("chang_id AS changed_by_id")
+    elif 'changed_by_id' in cols:
+        select_cols.append("changed_by_id AS changed_by_id")
+    elif 'changer_id' in cols:
+        select_cols.append("changer_id AS changed_by_id")
+    else:
+        select_cols.append("NULL AS changed_by_id")
+
+    sql = f"SELECT {', '.join(select_cols)} FROM issue_status_history WHERE issue_id = :iid ORDER BY timestamp DESC"
+    try:
+        hist_rows = db.session.execute(text(sql), {"iid": issue.id}).mappings().all()
+    except Exception:
+        hist_rows = []
+
+    status_history = []
+    for r in hist_rows:
+        status_history.append({
+            "id": r.get("id"),
+            "status": r.get("status"),
+            "notes": r.get("notes"),
+            "timestamp": r.get("timestamp"),
+            "response_image": r.get("response_image"),
+            "changed_by_id": r.get("changed_by_id")
+        })
+
+    return render_template('updateadmin.html', issue=issue, status_history=status_history)
 
 @admin_bp.route('/issue/update_status/<int:issue_id>', methods=['POST'])
 @admin_required
@@ -363,13 +319,76 @@ def update_issue_status(issue_id):
     allowed = getattr(Issue, "ALLOWED_STATUSES", [])
     if not new_status or new_status not in allowed:
         flash('สถานะที่ส่งมาไม่ถูกต้อง', 'error')
-    else:
-        issue.status = new_status
-        issue.updated_at = datetime.utcnow()
-        history_log = IssueStatusHistory(issue_id=issue.id, status=new_status, notes=notes, changed_by_id=current_user.id)
-        db.session.add(history_log)
-        db.session.commit()
-        flash(f'สถานะของรายงาน #{issue.id} ถูกอัปเดตเป็น "{new_status}" แล้ว', 'success')
+        return redirect(url_for('admin.update_issue_page', issue_id=issue.id))
+
+    f = request.files.get('response_image')
+    filename = None
+    if f and f.filename:
+        from werkzeug.utils import secure_filename
+        filename = secure_filename(f.filename)
+        upload_dir = os.path.join(current_app.static_folder, 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+        dest = os.path.join(upload_dir, filename)
+        try:
+            f.save(dest)
+        except Exception:
+            current_app.logger.exception("Failed saving uploaded response image to %s", dest)
+            filename = None
+
+    issue.status = new_status
+    issue.updated_at = datetime.utcnow()
+
+    col_info = db.session.execute(text("PRAGMA table_info('issue_status_history')")).mappings().all()
+    cols = {r['name'] for r in col_info}
+
+    insert_cols = ["issue_id", "status", "timestamp"]
+    params = {"issue_id": issue.id, "status": new_status, "timestamp": datetime.utcnow()}
+
+    if 'note' in cols or 'notes' in cols:
+        chosen = 'note' if 'note' in cols else 'notes'
+        insert_cols.append(chosen)
+        params['note'] = notes
+
+    if 'response_id' in cols or 'response_image' in cols:
+        chosen = 'response_id' if 'response_id' in cols else 'response_image'
+        insert_cols.append(chosen)
+        params['response_image'] = filename
+
+    if 'chang_id' in cols or 'changed_by_id' in cols or 'changer_id' in cols:
+        chosen = 'chang_id' if 'chang_id' in cols else ('changed_by_id' if 'changed_by_id' in cols else 'changer_id')
+        insert_cols.append(chosen)
+        params['changed_by_id'] = current_user.id
+
+    col_list = ", ".join(insert_cols)
+    placeholder_map = {
+        "issue_id": ":issue_id",
+        "status": ":status",
+        "timestamp": ":timestamp",
+        "note": ":note",
+        "notes": ":note",
+        "response_id": ":response_image",
+        "response_image": ":response_image",
+        "chang_id": ":changed_by_id",
+        "changed_by_id": ":changed_by_id",
+        "changer_id": ":changed_by_id"
+    }
+    val_list = ", ".join(placeholder_map[c] for c in insert_cols)
+
+    try:
+        db.session.execute(text(f"INSERT INTO issue_status_history ({col_list}) VALUES ({val_list})"), params)
+    except Exception:
+        current_app.logger.exception("Failed inserting issue_status_history via dynamic SQL; attempting model insert")
+        if IssueStatusHistory is not None:
+            try:
+                hist = IssueStatusHistory(issue_id=issue.id, status=new_status, notes=notes, changed_by_id=current_user.id)
+                if filename:
+                    hist.response_image = filename
+                db.session.add(hist)
+            except Exception:
+                current_app.logger.exception("Model insert also failed")
+    db.session.commit()
+    current_app.logger.debug("update_issue_status: saved history for issue=%s response=%s", issue.id, filename)
+    flash(f'สถานะของรายงาน #{issue.id} ถูกอัปเดตเป็น \"{new_status}\" แล้ว', 'success')
     return redirect(url_for('admin.update_issue_page', issue_id=issue.id))
 
 @admin_bp.route('/users')
