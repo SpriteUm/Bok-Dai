@@ -51,10 +51,11 @@ class Issue(db.Model):
     )
 
     # ประวัติการเปลี่ยนสถานะ
+    # ใช้ back_populates คู่กับ IssueStatusHistory.issue เพื่อหลีกเลี่ยง backref collision
     status_history = db.relationship(
         'IssueStatusHistory',
-        backref='issue',
-        lazy=True,
+        back_populates='issue',
+        lazy='dynamic',
         cascade="all, delete-orphan"
     )
 

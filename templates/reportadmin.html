@@ -11,6 +11,7 @@
     .urgency-dot { font-size: 1.25rem; line-height: 1; vertical-align: middle; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
     .sort-arrow { display: inline-block; margin-left: 5px; color: #8FAF8F; }
+    .debug { font-size: 12px; color: #6b7280; }
   </style>
 </head>
 <body class="bg-[#E6E8E5] text-[#2F4F2F] min-h-screen">
@@ -39,22 +40,22 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label for="search" class="block font-medium mb-1">ค้นหา:</label>
-              <input type="text" name="search" id="search" value="{{ search_term or '' }}" placeholder="รายละเอียด, หมวดหมู่, ผู้แจ้ง..." class="w-full border-gray-300 rounded-md shadow-sm">
+              <input type="text" name="search" id="search" value="{{ search_term or '' }}" placeholder="รายละเอียด, หมวดหมู่, ผู้แจ้ง..." class="w-full border-gray-300 rounded-md shadow-sm px-2 py-1">
             </div>
             <div>
               <label for="status" class="block font-medium mb-1">สถานะ:</label>
-              <select name="status" id="status" class="w-full border-gray-300 rounded-md shadow-sm">
+              <select name="status" id="status" class="w-full border-gray-300 rounded-md shadow-sm px-2 py-1">
                 <option value="">-- ทุกสถานะ --</option>
                 {% for s in issue_statuses %}<option value="{{ s }}" {% if s == filter_status %}selected{% endif %}>{{ s }}</option>{% endfor %}
               </select>
             </div>
             <div>
               <label for="start_date" class="block font-medium mb-1">วันที่แจ้ง (เริ่มต้น):</label>
-              <input type="date" name="start_date" id="start_date" value="{{ start_date or '' }}" class="w-full border-gray-300 rounded-md shadow-sm">
+              <input type="date" name="start_date" id="start_date" value="{{ start_date or '' }}" class="w-full border-gray-300 rounded-md shadow-sm px-2 py-1">
             </div>
             <div>
               <label for="end_date" class="block font-medium mb-1">วันที่แจ้ง (สิ้นสุด):</label>
-              <input type="date" name="end_date" id="end_date" value="{{ end_date or '' }}" class="w-full border-gray-300 rounded-md shadow-sm">
+              <input type="date" name="end_date" id="end_date" value="{{ end_date or '' }}" class="w-full border-gray-300 rounded-md shadow-sm px-2 py-1">
             </div>
           </div>
           <div class="mt-4 flex justify-end gap-3">
@@ -65,6 +66,11 @@
       </section>
 
       <section class="bg-white border border-[#8FAF8F] rounded-lg shadow overflow-x-auto">
+        <div class="p-3 border-b">
+          <span class="text-sm">ผลลัพธ์: <strong>{{ issues|length }}</strong> รายการ</span>
+          <span class="debug ml-4">(หน้า {{ pagination.page }} / {{ pagination.pages }})</span>
+        </div>
+
         <table class="min-w-full text-xs">
           <thead class="bg-[#C2D3C2] text-[#2F4F2F]">
             <tr>
@@ -90,7 +96,19 @@
               <td class="px-3 py-2">{{ issue.category }}</td>
               <td class="px-3 py-2">{{ issue.detail[:70] }}{% if issue.detail|length > 70 %}...{% endif %}</td>
               <td class="px-3 py-2">{{ issue.user.username }}</td>
-              <td class="px-3 py-2">{{ issue.date_reported or '-' }}</td>
+              <td class="px-3 py-2">
+                {% if issue.date_reported %}
+                  {{ issue.date_reported }}
+                {% elif issue.created_at %}
+                  {% if issue.created_at is string %}
+                    {{ issue.created_at }}
+                  {% else %}
+                    {{ issue.created_at.strftime('%Y-%m-%d') }}
+                  {% endif %}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
               <td class="px-3 py-2 text-center">
                 {% if issue.urgency == '🔴' %}<span class="urgency-dot">🔴</span><span class="sr-only">เร่งด่วนมาก</span>
                 {% elif issue.urgency == '🟠' %}<span class="urgency-dot">🟠</span><span class="sr-only">ปานกลาง</span>
@@ -149,6 +167,19 @@
           {% endif %}
         </div>
       </nav>
+
+      <!-- Debug section: shows raw issues JSON when no rows (helpful for troubleshooting) -->
+      {% if issues|length == 0 %}
+        <div class="mt-4 bg-yellow-50 border-l-4 border-yellow-300 p-3 text-sm text-yellow-800">
+          Debug: ไม่มีรายการในตัวแปร issues ที่ส่งมาจาก backend.
+          {% if request.args %}
+            <div class="mt-2 text-xs text-gray-600">Query params: {{ request.args.to_dict() }}</div>
+          {% endif %}
+          {% if pagination %}
+            <div class="mt-1 text-xs text-gray-600">Pagination: page={{ pagination.page }}, per_page={{ pagination.per_page }}, total={{ pagination.total }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
     </main>
   </div>
 </body>
